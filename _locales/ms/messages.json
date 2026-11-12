@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "Read Aloud: Natural Voices"
+  },
+  "appDescription": {
+    "message": "Dengar halaman, teks terpilih, dan dokumen dengan suara asli."
+  },
+  "appName": {
+    "message": "Read Aloud: Natural Voices"
+  },
+  "commandReadHere": {
+    "message": "Baca dari kursor secara kuat"
+  },
+  "commandReadPage": {
+    "message": "Baca halaman secara kuat"
+  },
+  "commandReadSelection": {
+    "message": "Baca pilihan secara kuat"
+  },
+  "commandStop": {
+    "message": "Hentikan bacaan kuat"
+  },
+  "commandToggle": {
+    "message": "Main / jeda"
+  }
+}

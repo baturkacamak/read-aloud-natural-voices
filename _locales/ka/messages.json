@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "ხმამაღლა წაკითხვა: ბუნებრივი ხმები"
+  },
+  "appDescription": {
+    "message": "მოუსმინეთ ვებგვერდებს, არჩეულ ტექსტს და დოკუმენტებს ბუნებრივი ხმებით."
+  },
+  "appName": {
+    "message": "ხმამაღლა წაკითხვა: ბუნებრივი ხმები"
+  },
+  "commandReadHere": {
+    "message": "კურსორიდან ხმამაღლა წაკითხვა"
+  },
+  "commandReadPage": {
+    "message": "გვერდის ხმამაღლა წაკითხვა"
+  },
+  "commandReadSelection": {
+    "message": "არჩევანის ხმამაღლა წაკითხვა"
+  },
+  "commandStop": {
+    "message": "ხმამაღლა კითხვის შეწყვეტა"
+  },
+  "commandToggle": {
+    "message": "დაკვრა / პაუზა"
+  }
+}

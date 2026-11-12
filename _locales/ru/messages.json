@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "Вслух: Естественные голоса"
+  },
+  "appDescription": {
+    "message": "Слушайте страницы, выделенный текст и документы с помощью естественных голосов Microsoft Edge."
+  },
+  "appName": {
+    "message": "Вслух: Естественные голоса"
+  },
+  "commandReadHere": {
+    "message": "Прочитать вслух от курсора"
+  },
+  "commandReadPage": {
+    "message": "Прочитать страницу вслух"
+  },
+  "commandReadSelection": {
+    "message": "Прочитать выделение вслух"
+  },
+  "commandStop": {
+    "message": "Остановить чтение вслух"
+  },
+  "commandToggle": {
+    "message": "Воспроизведение / пауза"
+  }
+}

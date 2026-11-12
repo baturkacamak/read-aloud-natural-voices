@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "Funda Ngokuzwakalayo: Amazwi Angokwemvelo"
+  },
+  "appDescription": {
+    "message": "Lalela amakhasi, umbhalo okhethiwe namadokhumenti ngamazwi angokwemvelo."
+  },
+  "appName": {
+    "message": "Funda Ngokuzwakalayo: Amazwi Angokwemvelo"
+  },
+  "commandReadHere": {
+    "message": "Funda kusuka kusikhombisi ngokuzwakalayo"
+  },
+  "commandReadPage": {
+    "message": "Funda leli khasi ngokuzwakalayo"
+  },
+  "commandReadSelection": {
+    "message": "Funda okukhethiwe ngokuzwakalayo"
+  },
+  "commandStop": {
+    "message": "Misa ukufunda ngokuzwakalayo"
+  },
+  "commandToggle": {
+    "message": "Dlala / misa kancane"
+  }
+}

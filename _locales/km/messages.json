@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "អានឱ្យឮៗ៖ សំឡេងធម្មជាតិ"
+  },
+  "appDescription": {
+    "message": "ស្តាប់ទំព័រ អត្ថបទដែលបានជ្រើសរើស និងឯកសារឱ្យឮៗជាមួយសំឡេងធម្មជាតិ។"
+  },
+  "appName": {
+    "message": "អានឱ្យឮៗ៖ សំឡេងធម្មជាតិ"
+  },
+  "commandReadHere": {
+    "message": "អានឱ្យខ្លាំងពីទស្សន៍ទ្រនិច"
+  },
+  "commandReadPage": {
+    "message": "អានទំព័រឱ្យខ្លាំង"
+  },
+  "commandReadSelection": {
+    "message": "អានការជ្រើសរើសឱ្យខ្លាំង"
+  },
+  "commandStop": {
+    "message": "បញ្ឈប់ការអានឱ្យខ្លាំង"
+  },
+  "commandToggle": {
+    "message": "ចាក់ / ផ្អាក"
+  }
+}

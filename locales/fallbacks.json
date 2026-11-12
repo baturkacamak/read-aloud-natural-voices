@@ -1,0 +1,29 @@
+{
+  "am": [
+    "experience.pointMarked"
+  ],
+  "ha": [
+    "tools.statsDay",
+    "experience.preview",
+    "experience.pointA",
+    "experience.pointB",
+    "experience.pointMarked"
+  ],
+  "ig": [
+    "tools.statsDay",
+    "experience.preview",
+    "experience.pointMarked"
+  ],
+  "yue": [
+    "tools.statsToday",
+    "tools.statsWeek",
+    "tools.statsDay",
+    "experience.progressAria",
+    "experience.preview",
+    "experience.pointA",
+    "experience.pointB",
+    "experience.pointMarked",
+    "reader.pdfPreparing",
+    "reader.ready"
+  ]
+}

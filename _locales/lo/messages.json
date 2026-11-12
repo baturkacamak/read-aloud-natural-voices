@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "ອ່ານອອກສຽງ: ສຽງທຳມະຊາດ"
+  },
+  "appDescription": {
+    "message": "ຟັງໜ້າເວັບ, ຂໍ້ຄວາມທີ່ເລືອກ ແລະ ເອກະສານດ້ວຍສຽງທຳມະຊາດ."
+  },
+  "appName": {
+    "message": "ອ່ານອອກສຽງ: ສຽງທຳມະຊາດ"
+  },
+  "commandReadHere": {
+    "message": "ອ່ານອອກສຽງຈາກຕົວກະພິບ"
+  },
+  "commandReadPage": {
+    "message": "ອ່ານໜ້ານີ້ອອກສຽງ"
+  },
+  "commandReadSelection": {
+    "message": "ອ່ານສ່ວນທີ່ເລືອກອອກສຽງ"
+  },
+  "commandStop": {
+    "message": "ຢຸດການອ່ານອອກສຽງ"
+  },
+  "commandToggle": {
+    "message": "ຫຼິ້ນ / ຢຸດຊົ່ວຄາວ"
+  }
+}

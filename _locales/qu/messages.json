@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "Read Aloud: Natural Voices"
+  },
+  "appDescription": {
+    "message": "Sapan suñuq kayninwan qillqasqakunata, p'anqakunata ñawiriypi uyariy."
+  },
+  "appName": {
+    "message": "Read Aloud: Natural Voices"
+  },
+  "commandReadHere": {
+    "message": "Kursurmanta sesli ñawinchay"
+  },
+  "commandReadPage": {
+    "message": "P'anqata sesli ñawinchay"
+  },
+  "commandReadSelection": {
+    "message": "Akllasqata sesli ñawinchay"
+  },
+  "commandStop": {
+    "message": "Sesli ñawinchayta sayachiy"
+  },
+  "commandToggle": {
+    "message": "Pukllay / samaykuy"
+  }
+}

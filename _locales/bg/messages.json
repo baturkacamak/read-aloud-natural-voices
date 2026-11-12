@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "Read Aloud: Natural Voices"
+  },
+  "appDescription": {
+    "message": "Слушайте уеб страници, избран текст и документи с естествени гласове."
+  },
+  "appName": {
+    "message": "Read Aloud: Natural Voices"
+  },
+  "commandReadHere": {
+    "message": "Прочети от курсора на глас"
+  },
+  "commandReadPage": {
+    "message": "Прочети страницата на глас"
+  },
+  "commandReadSelection": {
+    "message": "Прочети селекцията на глас"
+  },
+  "commandStop": {
+    "message": "Спри гласовото четене"
+  },
+  "commandToggle": {
+    "message": "Възпроизвеждане / пауза"
+  }
+}

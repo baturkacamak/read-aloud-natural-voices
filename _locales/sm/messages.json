@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "Faitau Leotele: Leo Faanatura"
+  },
+  "appDescription": {
+    "message": "Faʻalogo i itulau, tusitusiga filifilia, ma pepa faʻatasi ma leo faʻanatura."
+  },
+  "appName": {
+    "message": "Faitau Leotele: Leo Faanatura"
+  },
+  "commandReadHere": {
+    "message": "Faitau leotele mai le fa'ailoga"
+  },
+  "commandReadPage": {
+    "message": "Faitau leotele le itulau"
+  },
+  "commandReadSelection": {
+    "message": "Faitau leotele le filifiliga"
+  },
+  "commandStop": {
+    "message": "Taofi le faitau leotele"
+  },
+  "commandToggle": {
+    "message": "Ta'alo / taofi lē tumau"
+  }
+}

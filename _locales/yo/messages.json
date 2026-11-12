@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "Ka Sókè: Àwọn Ohùn Àdánidá"
+  },
+  "appDescription": {
+    "message": "Gbọ́ àwọn ojú-ewé, ọ̀rọ̀ tí a yàn, àti àwọn ìwé pẹ̀lú ohùn àdánidá."
+  },
+  "appName": {
+    "message": "Ka Sókè: Àwọn Ohùn Àdánidá"
+  },
+  "commandReadHere": {
+    "message": "Kà sókè láti kọ́sọ̀"
+  },
+  "commandReadPage": {
+    "message": "Kà ojú-ìwé sókè"
+  },
+  "commandReadSelection": {
+    "message": "Kà àṣàyàn sókè"
+  },
+  "commandStop": {
+    "message": "Dá kíkà sókè dúró"
+  },
+  "commandToggle": {
+    "message": "Ṣiṣẹ́ / dádúró"
+  }
+}

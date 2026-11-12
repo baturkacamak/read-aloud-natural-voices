@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "خواندن با صدای بلند: صداهای طبیعی"
+  },
+  "appDescription": {
+    "message": "صفحات، متن انتخابی و اسناد را با صداهای طبیعی گوش دهید."
+  },
+  "appName": {
+    "message": "خواندن با صدای بلند: صداهای طبیعی"
+  },
+  "commandReadHere": {
+    "message": "خواندن از مکان‌نما با صدای بلند"
+  },
+  "commandReadPage": {
+    "message": "خواندن صفحه با صدای بلند"
+  },
+  "commandReadSelection": {
+    "message": "خواندن انتخاب با صدای بلند"
+  },
+  "commandStop": {
+    "message": "توقف خواندن با صدای بلند"
+  },
+  "commandToggle": {
+    "message": "پخش / مکث"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "زور ਨਾਲ ਪੜ੍ਹੋ: ਕੁਦਰਤੀ ਆਵਾਜ਼ਾਂ"
+  },
+  "appDescription": {
+    "message": "Microsoft Edge ਦੀਆਂ ਕੁਦਰਤੀ ਆਵਾਜ਼ਾਂ ਨਾਲ ਪੰਨਿਆਂ, ਚੁਣੇ ਹੋਏ ਟੈਕਸਟ ਅਤੇ ਦਸਤਾਵੇਜ਼ਾਂ ਨੂੰ ਸੁਣੋ।"
+  },
+  "appName": {
+    "message": "زور ਨਾਲ ਪੜ੍ਹੋ: ਕੁਦਰਤੀ ਆਵਾਜ਼ਾਂ"
+  },
+  "commandReadHere": {
+    "message": "ਕਰਸਰ ਤੋਂ ਉੱਚੀ ਪੜ੍ਹੋ"
+  },
+  "commandReadPage": {
+    "message": "ਪੰਨਾ ਉੱਚੀ ਪੜ੍ਹੋ"
+  },
+  "commandReadSelection": {
+    "message": "ਚੋਣ ਉੱਚੀ ਪੜ੍ਹੋ"
+  },
+  "commandStop": {
+    "message": "ਉੱਚੀ ਪੜ੍ਹਨਾ ਬੰਦ ਕਰੋ"
+  },
+  "commandToggle": {
+    "message": "ਚਲਾਓ / ਰੋਕੋ"
+  }
+}

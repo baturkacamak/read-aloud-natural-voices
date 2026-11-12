@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "ಗಟ್ಟಿಯಾಗಿ ಓದಿ: ಸ್ವಾಭಾವಿಕ ಧ್ವನಿಗಳು"
+  },
+  "appDescription": {
+    "message": "ಸ್ವಾಭಾವಿಕ ಧ್ವನಿಗಳೊಂದಿಗೆ ಪುಟಗಳು, ಆಯ್ಕೆಮಾಡಿದ ಪಠ್ಯ ಮತ್ತು ದಾಖಲೆಗಳನ್ನು ಕೇಳಿ."
+  },
+  "appName": {
+    "message": "ಗಟ್ಟಿಯಾಗಿ ಓದಿ: ಸ್ವಾಭಾವಿಕ ಧ್ವನಿಗಳು"
+  },
+  "commandReadHere": {
+    "message": "ಕರ್ಸರ್‌ನಿಂದ ಗಟ್ಟಿಯಾಗಿ ಓದಿ"
+  },
+  "commandReadPage": {
+    "message": "ಪುಟವನ್ನು ಗಟ್ಟಿಯಾಗಿ ಓದಿ"
+  },
+  "commandReadSelection": {
+    "message": "ಆಯ್ಕೆಯನ್ನು ಗಟ್ಟಿಯಾಗಿ ಓದಿ"
+  },
+  "commandStop": {
+    "message": "ಗಟ್ಟಿಯಾಗಿ ಓದುವುದನ್ನು ನಿಲ್ಲಿಸಿ"
+  },
+  "commandToggle": {
+    "message": "ಪ್ಲೇ / ವಿರಾಮ"
+  }
+}

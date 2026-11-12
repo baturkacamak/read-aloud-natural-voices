@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "Czytaj na głos: Naturalne głosy"
+  },
+  "appDescription": {
+    "message": "Słuchaj stron, zaznaczonego tekstu i dokumentów za pomocą naturalnych głosów."
+  },
+  "appName": {
+    "message": "Czytaj na głos: Naturalne głosy"
+  },
+  "commandReadHere": {
+    "message": "Czytaj od kursora na głos"
+  },
+  "commandReadPage": {
+    "message": "Czytaj stronę na głos"
+  },
+  "commandReadSelection": {
+    "message": "Czytaj zaznaczenie na głos"
+  },
+  "commandStop": {
+    "message": "Zatrzymaj czytanie na głos"
+  },
+  "commandToggle": {
+    "message": "Odtwórz / wstrzymaj"
+  }
+}

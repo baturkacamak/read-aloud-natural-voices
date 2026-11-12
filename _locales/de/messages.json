@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "Vorlesen: Natürliche Stimmen"
+  },
+  "appDescription": {
+    "message": "Hören Sie sich Webseiten, markierten Text und Dokumente mit den natürlichen Microsoft Edge-Stimmen an."
+  },
+  "appName": {
+    "message": "Vorlesen: Natürliche Stimmen"
+  },
+  "commandReadHere": {
+    "message": "Ab Cursor laut vorlesen"
+  },
+  "commandReadPage": {
+    "message": "Seite laut vorlesen"
+  },
+  "commandReadSelection": {
+    "message": "Auswahl laut vorlesen"
+  },
+  "commandStop": {
+    "message": "Vorlesen stoppen"
+  },
+  "commandToggle": {
+    "message": "Wiedergabe / Pause"
+  }
+}

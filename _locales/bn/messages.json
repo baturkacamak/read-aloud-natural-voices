@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "উচ্চস্বরে পড়ুন: স্বাভাবিক কণ্ঠস্বর"
+  },
+  "appDescription": {
+    "message": "মাইক্রোসফট এজের প্রাকৃতিক কণ্ঠস্বর ব্যবহার করে পেজ, নির্বাচিত পাঠ্য এবং নথি শুনুন।"
+  },
+  "appName": {
+    "message": "উচ্চস্বরে পড়ুন: স্বাভাবিক কণ্ঠস্বর"
+  },
+  "commandReadHere": {
+    "message": "কার্সার থেকে জোরে পড়ুন"
+  },
+  "commandReadPage": {
+    "message": "পৃষ্ঠাটি জোরে পড়ুন"
+  },
+  "commandReadSelection": {
+    "message": "নির্বাচিত অংশ জোরে পড়ুন"
+  },
+  "commandStop": {
+    "message": "জোরে পড়া থামান"
+  },
+  "commandToggle": {
+    "message": "চালান / থামান"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "Read Aloud: Natural Voices"
+  },
+  "appDescription": {
+    "message": "Klausykitės puslapių, pažymėto teksto ir dokumentų naudodami natūralius balsus."
+  },
+  "appName": {
+    "message": "Read Aloud: Natural Voices"
+  },
+  "commandReadHere": {
+    "message": "Skaityti nuo žymeklio garsiai"
+  },
+  "commandReadPage": {
+    "message": "Skaityti puslapį garsiai"
+  },
+  "commandReadSelection": {
+    "message": "Skaityti pasirinkimą garsiai"
+  },
+  "commandStop": {
+    "message": "Sustabdyti garsinį skaitymą"
+  },
+  "commandToggle": {
+    "message": "Leisti / pristabdyti"
+  }
+}

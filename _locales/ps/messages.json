@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "په لوړ غږ لوستل: طبیعي غږونه"
+  },
+  "appDescription": {
+    "message": "پاڼې، ټاکل شوی متن او اسناد په لوړ غږ د طبیعي غږونو په واسطه واورئ."
+  },
+  "appName": {
+    "message": "په لوړ غږ لوستل: طبیعي غږونه"
+  },
+  "commandReadHere": {
+    "message": "له کرسر څخه په لوړ غږ ولولئ"
+  },
+  "commandReadPage": {
+    "message": "پاڼه په لوړ غږ ولولئ"
+  },
+  "commandReadSelection": {
+    "message": "ټاکنه په لوړ غږ ولولئ"
+  },
+  "commandStop": {
+    "message": "په لوړ غږ لوستل ودروئ"
+  },
+  "commandToggle": {
+    "message": "غږول / ځنډول"
+  }
+}

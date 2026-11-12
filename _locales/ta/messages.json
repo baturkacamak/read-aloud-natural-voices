@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "உரக்கப்படி: இயற்கையான குரல்கள்"
+  },
+  "appDescription": {
+    "message": "Microsoft Edge இன் இயற்கையான குரல்களைக் கொண்டு பக்கங்கள், தேர்ந்தெடுக்கப்பட்ட உரை மற்றும் ஆவணங்களைக் கேளுங்கள்."
+  },
+  "appName": {
+    "message": "உரக்கப்படி: இயற்கையான குரல்கள்"
+  },
+  "commandReadHere": {
+    "message": "குறிப்பிலிருந்து உரக்கப் படி"
+  },
+  "commandReadPage": {
+    "message": "பக்கத்தை உரக்கப் படி"
+  },
+  "commandReadSelection": {
+    "message": "தேர்வை உரக்கப் படி"
+  },
+  "commandStop": {
+    "message": "உரக்க வாசிப்பதை நிறுத்து"
+  },
+  "commandToggle": {
+    "message": "இயக்கு / இடைநிறுத்து"
+  }
+}

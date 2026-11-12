@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "Read Aloud: Natural Voices"
+  },
+  "appDescription": {
+    "message": "Klausieties lapas, atlasīto tekstu un dokumentus ar dabiskajām balsīm."
+  },
+  "appName": {
+    "message": "Read Aloud: Natural Voices"
+  },
+  "commandReadHere": {
+    "message": "Lasīt no kursora skaļi"
+  },
+  "commandReadPage": {
+    "message": "Lasīt lapu skaļi"
+  },
+  "commandReadSelection": {
+    "message": "Lasīt atlasi skaļi"
+  },
+  "commandStop": {
+    "message": "Apturēt skaļo lasīšanu"
+  },
+  "commandToggle": {
+    "message": "Atskaņot / pauzēt"
+  }
+}

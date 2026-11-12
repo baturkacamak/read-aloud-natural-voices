@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "読み上げ: 自然な音声"
+  },
+  "appDescription": {
+    "message": "Microsoft Edgeの自然な音声を使って、ページや選択テキスト、ドキュメントを聴く。"
+  },
+  "appName": {
+    "message": "読み上げ: 自然な音声"
+  },
+  "commandReadHere": {
+    "message": "カーソルから音声読み上げ"
+  },
+  "commandReadPage": {
+    "message": "ページを音声読み上げ"
+  },
+  "commandReadSelection": {
+    "message": "選択範囲を音声読み上げ"
+  },
+  "commandStop": {
+    "message": "音声読み上げを停止"
+  },
+  "commandToggle": {
+    "message": "再生 / 一時停止"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "קריאה בקול: קולות טבעיים"
+  },
+  "appDescription": {
+    "message": "האזינו לדפים, לטקסט נבחר ולמסמכים באמצעות קולות טבעיים."
+  },
+  "appName": {
+    "message": "קריאה בקול: קולות טבעיים"
+  },
+  "commandReadHere": {
+    "message": "קרא מהסמן בקול"
+  },
+  "commandReadPage": {
+    "message": "קרא את הדף בקול"
+  },
+  "commandReadSelection": {
+    "message": "קרא את הבחירה בקול"
+  },
+  "commandStop": {
+    "message": "עצור הקראה"
+  },
+  "commandToggle": {
+    "message": "נגן / השהה"
+  }
+}

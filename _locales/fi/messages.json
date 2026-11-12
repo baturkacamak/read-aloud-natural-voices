@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "Lue ääneen: Luonnolliset äänet"
+  },
+  "appDescription": {
+    "message": "Kuuntele sivuja, valittua tekstiä ja asiakirjoja luonnollisilla äänillä."
+  },
+  "appName": {
+    "message": "Lue ääneen: Luonnolliset äänet"
+  },
+  "commandReadHere": {
+    "message": "Lue ääneen kohdistimesta"
+  },
+  "commandReadPage": {
+    "message": "Lue sivu ääneen"
+  },
+  "commandReadSelection": {
+    "message": "Lue valinta ääneen"
+  },
+  "commandStop": {
+    "message": "Pysäytä ääneen luku"
+  },
+  "commandToggle": {
+    "message": "Toista / tauko"
+  }
+}

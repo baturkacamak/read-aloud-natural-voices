@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "Lees Hardop: Natuurlike Stemme"
+  },
+  "appDescription": {
+    "message": "Luister na webblaaie, geselekteerde teks en dokumente met natuurlike stemme."
+  },
+  "appName": {
+    "message": "Lees Hardop: Natuurlike Stemme"
+  },
+  "commandReadHere": {
+    "message": "Lees hardop vanaf wyser"
+  },
+  "commandReadPage": {
+    "message": "Lees bladsy hardop"
+  },
+  "commandReadSelection": {
+    "message": "Lees seleksie hardop"
+  },
+  "commandStop": {
+    "message": "Stop hardoplees"
+  },
+  "commandToggle": {
+    "message": "Speel / pouse"
+  }
+}

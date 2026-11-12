@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "Read Aloud: Natural Voices"
+  },
+  "appDescription": {
+    "message": "Kuulake lehti, valitud teksti ja dokumente loomulike häältega."
+  },
+  "appName": {
+    "message": "Read Aloud: Natural Voices"
+  },
+  "commandReadHere": {
+    "message": "Loe kursorist ette"
+  },
+  "commandReadPage": {
+    "message": "Loe leht ette"
+  },
+  "commandReadSelection": {
+    "message": "Loe valik ette"
+  },
+  "commandStop": {
+    "message": "Peata ettelugemine"
+  },
+  "commandToggle": {
+    "message": "Esita / paus"
+  }
+}

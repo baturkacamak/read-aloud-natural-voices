@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "Sesli Oku: Doğal Sesler"
+  },
+  "appDescription": {
+    "message": "Microsoft Edge'in doğal sesleriyle web sayfalarını, seçili metni ve belgeleri sesli dinleyin."
+  },
+  "appName": {
+    "message": "Sesli Oku: Doğal Sesler"
+  },
+  "commandReadHere": {
+    "message": "İmleçten sesli oku"
+  },
+  "commandReadPage": {
+    "message": "Sayfayı sesli oku"
+  },
+  "commandReadSelection": {
+    "message": "Seçimi sesli oku"
+  },
+  "commandStop": {
+    "message": "Sesli okumayı durdur"
+  },
+  "commandToggle": {
+    "message": "Oynat / duraklat"
+  }
+}

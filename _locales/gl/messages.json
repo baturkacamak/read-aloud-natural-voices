@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "Ler en voz alta: Voces naturais"
+  },
+  "appDescription": {
+    "message": "Escoita páxinas, texto seleccionado e documentos con voces naturais."
+  },
+  "appName": {
+    "message": "Ler en voz alta: Voces naturais"
+  },
+  "commandReadHere": {
+    "message": "Ler en voz alta desde o cursor"
+  },
+  "commandReadPage": {
+    "message": "Ler a páxina en voz alta"
+  },
+  "commandReadSelection": {
+    "message": "Ler a selección en voz alta"
+  },
+  "commandStop": {
+    "message": "Deter a lectura en voz alta"
+  },
+  "commandToggle": {
+    "message": "Reproducir / pausar"
+  }
+}

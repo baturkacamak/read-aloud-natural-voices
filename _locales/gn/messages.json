@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "Read Aloud: Natural Voices"
+  },
+  "appDescription": {
+    "message": "Ehendu kuatiañe'ẽ, ta'ãnga ha marandurenda ñe'ẽporã reheve."
+  },
+  "appName": {
+    "message": "Read Aloud: Natural Voices"
+  },
+  "commandReadHere": {
+    "message": "Emoñe’ẽ ko’ápe"
+  },
+  "commandReadPage": {
+    "message": "Emoñe’ẽ página"
+  },
+  "commandReadSelection": {
+    "message": "Emoñe’ẽ ojeporavóva"
+  },
+  "commandStop": {
+    "message": "Moñe’ẽrã emboty"
+  },
+  "commandToggle": {
+    "message": "Embovoka / pyta’imi"
+  }
+}

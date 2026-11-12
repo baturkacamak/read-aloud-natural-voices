@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "Llegeix en Veu Alta: Veus Naturals"
+  },
+  "appDescription": {
+    "message": "Escolta pàgines web, text seleccionat i documents amb veus naturals."
+  },
+  "appName": {
+    "message": "Llegeix en Veu Alta: Veus Naturals"
+  },
+  "commandReadHere": {
+    "message": "Llegeix en veu alta des del cursor"
+  },
+  "commandReadPage": {
+    "message": "Llegeix la pàgina en veu alta"
+  },
+  "commandReadSelection": {
+    "message": "Llegeix la selecció en veu alta"
+  },
+  "commandStop": {
+    "message": "Atura la lectura en veu alta"
+  },
+  "commandToggle": {
+    "message": "Reprodueix / pausa"
+  }
+}

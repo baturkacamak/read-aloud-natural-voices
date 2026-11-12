@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "Aqra B'leħen: Leħen Naturali"
+  },
+  "appDescription": {
+    "message": "Isma' paġni web, test magħżul u dokumenti bil-leħen naturali."
+  },
+  "appName": {
+    "message": "Aqra B'leħen: Leħen Naturali"
+  },
+  "commandReadHere": {
+    "message": "Aqra b'leħen għoli mill-cursor"
+  },
+  "commandReadPage": {
+    "message": "Aqra l-paġna b'leħen għoli"
+  },
+  "commandReadSelection": {
+    "message": "Aqra l-għażla b'leħen għoli"
+  },
+  "commandStop": {
+    "message": "Waqqaf il-qari b'leħen għoli"
+  },
+  "commandToggle": {
+    "message": "Ilgħab / waqqaf temporanjament"
+  }
+}

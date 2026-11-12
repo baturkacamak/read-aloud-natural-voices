@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "जोर से पढ़ें: प्राकृतिक आवाजें"
+  },
+  "appDescription": {
+    "message": "Microsoft Edge की प्राकृतिक आवाज़ों का उपयोग करके पृष्ठों, चयनित पाठ और दस्तावेज़ों को सुनें।"
+  },
+  "appName": {
+    "message": "जोर से पढ़ें: प्राकृतिक आवाजें"
+  },
+  "commandReadHere": {
+    "message": "कर्सर से ज़ोर से पढ़ें"
+  },
+  "commandReadPage": {
+    "message": "पृष्ठ ज़ोर से पढ़ें"
+  },
+  "commandReadSelection": {
+    "message": "चयन ज़ोर से पढ़ें"
+  },
+  "commandStop": {
+    "message": "ज़ोर से पढ़ना रोकें"
+  },
+  "commandToggle": {
+    "message": "चलाएं / रोकें"
+  }
+}

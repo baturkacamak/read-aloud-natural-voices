@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "బిగ్గరగా చదవండి: సహజమైన గొంతులు"
+  },
+  "appDescription": {
+    "message": "Microsoft Edge యొక్క సహజమైన గొంతులతో పేజీలు, ఎంచుకున్న టెక్స్ట్ మరియు పత్రాలను వినండి."
+  },
+  "appName": {
+    "message": "బిగ్గరగా చదవండి: సహజమైన గొంతులు"
+  },
+  "commandReadHere": {
+    "message": "కర్సర్ నుండి బిగ్గరగా చదవండి"
+  },
+  "commandReadPage": {
+    "message": "పేజీని బిగ్గరగా చదవండి"
+  },
+  "commandReadSelection": {
+    "message": "ఎంపికను బిగ్గరగా చదవండి"
+  },
+  "commandStop": {
+    "message": "బిగ్గరగా చదవడం ఆపివేయి"
+  },
+  "commandToggle": {
+    "message": "ప్లే / పాజ్ చేయండి"
+  }
+}

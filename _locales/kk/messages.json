@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "Дауыстап оқу: Табиғи дауыстар"
+  },
+  "appDescription": {
+    "message": "Табиғи дауыстармен веб-беттерді, таңдалған мәтінді және құжаттарды тыңдаңыз."
+  },
+  "appName": {
+    "message": "Дауыстап оқу: Табиғи дауыстар"
+  },
+  "commandReadHere": {
+    "message": "Курсордан дауыстап оқу"
+  },
+  "commandReadPage": {
+    "message": "Бетті дауыстап оқу"
+  },
+  "commandReadSelection": {
+    "message": "Таңдалғанды дауыстап оқу"
+  },
+  "commandStop": {
+    "message": "Дауыстап оқуды тоқтату"
+  },
+  "commandToggle": {
+    "message": "Ойнату / кідірту"
+  }
+}

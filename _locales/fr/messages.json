@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "Lire à haute voix : Voix naturelles"
+  },
+  "appDescription": {
+    "message": "Écoutez des pages, du texte sélectionné et des documents avec les voix naturelles de Microsoft Edge."
+  },
+  "appName": {
+    "message": "Lire à haute voix : Voix naturelles"
+  },
+  "commandReadHere": {
+    "message": "Lire à haute voix depuis le curseur"
+  },
+  "commandReadPage": {
+    "message": "Lire la page à haute voix"
+  },
+  "commandReadSelection": {
+    "message": "Lire la sélection à haute voix"
+  },
+  "commandStop": {
+    "message": "Arrêter la lecture à haute voix"
+  },
+  "commandToggle": {
+    "message": "Lecture / Pause"
+  }
+}

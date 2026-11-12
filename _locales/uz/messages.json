@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "Ovoz chiqarib o'qish: Tabiiy ovozlar"
+  },
+  "appDescription": {
+    "message": "Tabiiy ovozlar yordamida sahifalar va hujjatlarni tinglang."
+  },
+  "appName": {
+    "message": "Ovoz chiqarib o'qish: Tabiiy ovozlar"
+  },
+  "commandReadHere": {
+    "message": "Kursordan ovoz chiqarib o'qish"
+  },
+  "commandReadPage": {
+    "message": "Sahifani ovoz chiqarib o'qish"
+  },
+  "commandReadSelection": {
+    "message": "Tanlovni ovoz chiqarib o'qish"
+  },
+  "commandStop": {
+    "message": "Ovoz chiqarib o'qishni to'xtatish"
+  },
+  "commandToggle": {
+    "message": "O'ynatish / To'xtatib turish"
+  }
+}

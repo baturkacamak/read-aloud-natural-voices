@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "Waca Kanthi Swara: Swara Alami"
+  },
+  "appDescription": {
+    "message": "Rungokake kaca, teks sing dipilih, lan dokumen nganggo swara alami."
+  },
+  "appName": {
+    "message": "Waca Kanthi Swara: Swara Alami"
+  },
+  "commandReadHere": {
+    "message": "Maca saka kursor kanthi banter"
+  },
+  "commandReadPage": {
+    "message": "Maca kaca kanthi banter"
+  },
+  "commandReadSelection": {
+    "message": "Maca pilihan kanthi banter"
+  },
+  "commandStop": {
+    "message": "Mandhegake maca banter"
+  },
+  "commandToggle": {
+    "message": "Puter / ngaso"
+  }
+}

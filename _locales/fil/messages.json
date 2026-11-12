@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "Basahin nang Malakas: Natural Voices"
+  },
+  "appDescription": {
+    "message": "Makinig sa mga pahina, napiling teksto, at dokumento gamit ang natural na boses."
+  },
+  "appName": {
+    "message": "Basahin nang Malakas: Natural Voices"
+  },
+  "commandReadHere": {
+    "message": "Basahin nang malakas mula sa cursor"
+  },
+  "commandReadPage": {
+    "message": "Basahin ang pahina nang malakas"
+  },
+  "commandReadSelection": {
+    "message": "Basahin nang malakas ang seleksyon"
+  },
+  "commandStop": {
+    "message": "Ihinto ang pagbabasa nang malakas"
+  },
+  "commandToggle": {
+    "message": "I-play / i-pause"
+  }
+}

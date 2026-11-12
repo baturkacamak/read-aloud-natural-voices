@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "Ανάγνωση δυνατά: Φυσικές φωνές"
+  },
+  "appDescription": {
+    "message": "Ακούστε ιστοσελίδες, επιλεγμένο κείμενο και έγγραφα με φυσικές φωνές."
+  },
+  "appName": {
+    "message": "Ανάγνωση δυνατά: Φυσικές φωνές"
+  },
+  "commandReadHere": {
+    "message": "Ανάγνωση από τον δρομέα"
+  },
+  "commandReadPage": {
+    "message": "Ανάγνωση σελίδας"
+  },
+  "commandReadSelection": {
+    "message": "Ανάγνωση επιλογής"
+  },
+  "commandStop": {
+    "message": "Διακοπή ανάγνωσης"
+  },
+  "commandToggle": {
+    "message": "Αναπαραγωγή / παύση"
+  }
+}

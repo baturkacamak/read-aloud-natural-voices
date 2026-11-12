@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "Baca Nyaring: Suara Alami"
+  },
+  "appDescription": {
+    "message": "Dengarkan halaman, teks pilihan, dan dokumen dengan suara alami Microsoft Edge."
+  },
+  "appName": {
+    "message": "Baca Nyaring: Suara Alami"
+  },
+  "commandReadHere": {
+    "message": "Baca dari kursor dengan lantang"
+  },
+  "commandReadPage": {
+    "message": "Baca halaman dengan lantang"
+  },
+  "commandReadSelection": {
+    "message": "Baca pilihan dengan lantang"
+  },
+  "commandStop": {
+    "message": "Hentikan baca dengan lantang"
+  },
+  "commandToggle": {
+    "message": "Putar / jeda"
+  }
+}

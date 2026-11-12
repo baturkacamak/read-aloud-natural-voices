@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "ကျယ်လောင်စွာဖတ်ရန်: သဘာဝအသံများ"
+  },
+  "appDescription": {
+    "message": "သဘာဝအသံများဖြင့် စာမျက်နှာများနှင့် စာရွက်စာတမ်းများကို နားထောင်ပါ။"
+  },
+  "appName": {
+    "message": "ကျယ်လောင်စွာဖတ်ရန်: သဘာဝအသံများ"
+  },
+  "commandReadHere": {
+    "message": "ကာဆာမှ အသံထွက်ဖတ်ရန်"
+  },
+  "commandReadPage": {
+    "message": "စာမျက်နှာကို အသံထွက်ဖတ်ရန်"
+  },
+  "commandReadSelection": {
+    "message": "ရွေးချယ်မှုကို အသံထွက်ဖတ်ရန်"
+  },
+  "commandStop": {
+    "message": "အသံထွက်ဖတ်ခြင်းကို ရပ်ရန်"
+  },
+  "commandToggle": {
+    "message": "ဖွင့် / ခေတ္တရပ်ရန်"
+  }
+}

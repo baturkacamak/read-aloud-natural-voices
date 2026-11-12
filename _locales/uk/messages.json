@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "Вголос: Природні голоси"
+  },
+  "appDescription": {
+    "message": "Слухайте сторінки, виділений текст і документи природними голосами."
+  },
+  "appName": {
+    "message": "Вголос: Природні голоси"
+  },
+  "commandReadHere": {
+    "message": "Читати від курсора вголос"
+  },
+  "commandReadPage": {
+    "message": "Читати сторінку вголос"
+  },
+  "commandReadSelection": {
+    "message": "Читати виділене вголос"
+  },
+  "commandStop": {
+    "message": "Зупинити читання вголос"
+  },
+  "commandToggle": {
+    "message": "Відтворити / пауза"
+  }
+}

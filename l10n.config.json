@@ -1,0 +1,36 @@
+{
+  "baseLanguage": "tr",
+  "localesDir": "locales",
+  "localeFileName": "translation.json",
+  "source": {
+    "directories": [
+      "src"
+    ],
+    "extensions": [
+      ".js"
+    ],
+    "exclude": [
+      ".test.",
+      ".spec.",
+      ".integration.",
+      "src/locales/",
+      "src/vendor/"
+    ],
+    "functionNames": [
+      "t"
+    ]
+  },
+  "provider": {
+    "type": "google-web",
+    "concurrency": 4,
+    "batchSize": 40,
+    "maxChars": 4500,
+    "attempts": 4,
+    "delayMs": 1200
+  },
+  "stateDir": ".l10n",
+  "languageMap": {
+    "prs": "fa-AF",
+    "yue": "zh-TW"
+  }
+}

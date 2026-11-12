@@ -1,16 +1,32 @@
 {
-  "name": "sesli-oku-tests",
+  "name": "read-aloud-natural-voices",
   "private": true,
   "type": "module",
   "scripts": {
     "test": "node tests/run.mjs",
-    "vendor:readers": "node scripts/vendor-readers.mjs"
+    "test:i18n": "npm run locales:check && node tests/i18n.mjs",
+    "locales:build": "node scripts/enforce-invariants.mjs && node scripts/build-locales.mjs",
+    "locales:check": "node scripts/build-locales.mjs --check",
+    "l10n:add": "node scripts/add-language.mjs",
+    "l10n:check": "localization-toolkit check",
+    "l10n:translate": "node scripts/l10n-translate.mjs && node scripts/enforce-invariants.mjs && npm run locales:build",
+    "l10n:ui": "localization-toolkit ui",
+    "vendor:readers": "node scripts/vendor-readers.mjs",
+    "l10n:store": "bash scripts/gemini-magaza.sh",
+    "l10n:store:check": "node scripts/check-store.mjs",
+    "test:diagnostics": "node tests/diagnostics.mjs",
+    "dev": "node ../browser-extension-toolkit/scripts/live-dev/server.mjs",
+    "vendor:audio": "node scripts/vendor-audio.mjs"
   },
   "devDependencies": {
+    "@baturkacamak/localization-toolkit": "^0.1.1",
     "@tesseract.js-data/eng": "1.0.0",
     "@tesseract.js-data/tur": "1.0.0",
+    "esbuild": "0.25.12",
     "fflate": "0.8.3",
+    "lamejs": "1.2.1",
     "pdfjs-dist": "5.5.207",
+    "soundtouchjs": "0.1.30",
     "tesseract.js": "7.0.0",
     "ws": "^8.18.0"
   }

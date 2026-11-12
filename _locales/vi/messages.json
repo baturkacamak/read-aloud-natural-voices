@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "Đọc to: Giọng nói tự nhiên"
+  },
+  "appDescription": {
+    "message": "Nghe các trang web, văn bản đã chọn và tài liệu bằng giọng nói tự nhiên của Microsoft Edge."
+  },
+  "appName": {
+    "message": "Đọc to: Giọng nói tự nhiên"
+  },
+  "commandReadHere": {
+    "message": "Đọc to từ con trỏ"
+  },
+  "commandReadPage": {
+    "message": "Đọc to trang này"
+  },
+  "commandReadSelection": {
+    "message": "Đọc to vùng chọn"
+  },
+  "commandStop": {
+    "message": "Dừng đọc to"
+  },
+  "commandToggle": {
+    "message": "Phát / tạm dừng"
+  }
+}

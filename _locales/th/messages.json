@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "อ่านออกเสียง: เสียงธรรมชาติ"
+  },
+  "appDescription": {
+    "message": "ฟังหน้าเว็บ ข้อความที่เลือก และเอกสารด้วยเสียงธรรมชาติ"
+  },
+  "appName": {
+    "message": "อ่านออกเสียง: เสียงธรรมชาติ"
+  },
+  "commandReadHere": {
+    "message": "อ่านออกเสียงจากเคอร์เซอร์"
+  },
+  "commandReadPage": {
+    "message": "อ่านหน้าเว็บออกเสียง"
+  },
+  "commandReadSelection": {
+    "message": "อ่านส่วนที่เลือกออกเสียง"
+  },
+  "commandStop": {
+    "message": "หยุดการอ่านออกเสียง"
+  },
+  "commandToggle": {
+    "message": "เล่น / หยุดชั่วคราว"
+  }
+}

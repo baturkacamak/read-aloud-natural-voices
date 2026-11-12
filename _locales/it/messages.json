@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "Leggi ad alta voce: Voci naturali"
+  },
+  "appDescription": {
+    "message": "Ascolta pagine, testo selezionato e documenti con le voci naturali."
+  },
+  "appName": {
+    "message": "Leggi ad alta voce: Voci naturali"
+  },
+  "commandReadHere": {
+    "message": "Leggi dal cursore ad alta voce"
+  },
+  "commandReadPage": {
+    "message": "Leggi la pagina ad alta voce"
+  },
+  "commandReadSelection": {
+    "message": "Leggi la selezione ad alta voce"
+  },
+  "commandStop": {
+    "message": "Ferma la lettura ad alta voce"
+  },
+  "commandToggle": {
+    "message": "Riproduci / Pausa"
+  }
+}

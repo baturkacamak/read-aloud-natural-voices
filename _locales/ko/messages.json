@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "소리 내어 읽기: 자연스러운 음성"
+  },
+  "appDescription": {
+    "message": "자연스러운 음성으로 웹페이지, 선택한 텍스트, 문서를 음성으로 들으세요."
+  },
+  "appName": {
+    "message": "소리 내어 읽기: 자연스러운 음성"
+  },
+  "commandReadHere": {
+    "message": "커서부터 소리 내어 읽기"
+  },
+  "commandReadPage": {
+    "message": "페이지 소리 내어 읽기"
+  },
+  "commandReadSelection": {
+    "message": "선택 영역 소리 내어 읽기"
+  },
+  "commandStop": {
+    "message": "소리 내어 읽기 중지"
+  },
+  "commandToggle": {
+    "message": "재생 / 일시 정지"
+  }
+}

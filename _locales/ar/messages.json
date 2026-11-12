@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "قراءة بصوت عالٍ: أصوات طبيعية"
+  },
+  "appDescription": {
+    "message": "استمع إلى الصفحات والنصوص المحددة والمستندات باستخدام أصوات Microsoft Edge الطبيعية."
+  },
+  "appName": {
+    "message": "قراءة بصوت عالٍ: أصوات طبيعية"
+  },
+  "commandReadHere": {
+    "message": "القراءة صوتياً من المؤشر"
+  },
+  "commandReadPage": {
+    "message": "قراءة الصفحة صوتياً"
+  },
+  "commandReadSelection": {
+    "message": "قراءة التحديد صوتياً"
+  },
+  "commandStop": {
+    "message": "إيقاف القراءة الصوتية"
+  },
+  "commandToggle": {
+    "message": "تشغيل / إيقاف مؤقت"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "Citește cu voce tare: Voci naturale"
+  },
+  "appDescription": {
+    "message": "Ascultă pagini, text selectat și documente cu vocile naturale."
+  },
+  "appName": {
+    "message": "Citește cu voce tare: Voci naturale"
+  },
+  "commandReadHere": {
+    "message": "Citește cu voce tare de la cursor"
+  },
+  "commandReadPage": {
+    "message": "Citește pagina cu voce tare"
+  },
+  "commandReadSelection": {
+    "message": "Citește selecția cu voce tare"
+  },
+  "commandStop": {
+    "message": "Oprește citirea cu voce tare"
+  },
+  "commandToggle": {
+    "message": "Redare / Pauză"
+  }
+}

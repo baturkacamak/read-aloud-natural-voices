@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "મોટેથી વાંચો: કુદરતી અવાજો"
+  },
+  "appDescription": {
+    "message": "કુદરતી અવાજો સાથે પૃષ્ઠો, પસંદ કરેલ લખાણ અને દસ્તાવેજો સાંભળો."
+  },
+  "appName": {
+    "message": "મોટેથી વાંચો: કુદરતી અવાજો"
+  },
+  "commandReadHere": {
+    "message": "કર્સરથી મોટેથી વાંચો"
+  },
+  "commandReadPage": {
+    "message": "પૃષ્ઠને મોટેથી વાંચો"
+  },
+  "commandReadSelection": {
+    "message": "પસંદગીને મોટેથી વાંચો"
+  },
+  "commandStop": {
+    "message": "મોટેથી વાંચવાનું બંધ કરો"
+  },
+  "commandToggle": {
+    "message": "પ્લે / પૉઝ"
+  }
+}

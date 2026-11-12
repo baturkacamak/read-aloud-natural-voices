@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "Li byen fò: Vwa natirèl"
+  },
+  "appDescription": {
+    "message": "Koute paj web, tèks seleksyone ak dokiman ak vwa natirèl."
+  },
+  "appName": {
+    "message": "Li byen fò: Vwa natirèl"
+  },
+  "commandReadHere": {
+    "message": "Li apati kote kurseur a ye a avèk vwa wotvwa"
+  },
+  "commandReadPage": {
+    "message": "Li paj la avèk vwa wotvwa"
+  },
+  "commandReadSelection": {
+    "message": "Li seleksyon an avèk vwa wotvwa"
+  },
+  "commandStop": {
+    "message": "Sispann lekti vokal la"
+  },
+  "commandToggle": {
+    "message": "Jwe / pran poz"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "Читање на глас: Природни гласови"
+  },
+  "appDescription": {
+    "message": "Слушајте странице, изабрани текст и документе уз природне гласове."
+  },
+  "appName": {
+    "message": "Читање на глас: Природни гласови"
+  },
+  "commandReadHere": {
+    "message": "Pročitaj od kursorâ naglas"
+  },
+  "commandReadPage": {
+    "message": "Pročitaj stranicu naglas"
+  },
+  "commandReadSelection": {
+    "message": "Pročitaj izbor naglas"
+  },
+  "commandStop": {
+    "message": "Zaustavi glasno čitanje"
+  },
+  "commandToggle": {
+    "message": "Pusti / pauziraj"
+  }
+}

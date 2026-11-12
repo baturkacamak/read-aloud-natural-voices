@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "በድምፅ አንብብ፡ የተፈጥሮ ድምፆች"
+  },
+  "appDescription": {
+    "message": "ተፈጥሯዊ ድምፆችን በመጠቀም ገጾችን፣ የተመረጠ ጽሑፍን እና ሰነዶችን ያዳምጡ።"
+  },
+  "appName": {
+    "message": "በድምፅ አንብብ፡ የተፈጥሮ ድምፆች"
+  },
+  "commandReadHere": {
+    "message": "ከጠቋሚው ድምጽ አውጥተህ አንብብ"
+  },
+  "commandReadPage": {
+    "message": "ገጹን ድምጽ አውጥተህ አንብብ"
+  },
+  "commandReadSelection": {
+    "message": "ምርጫውን ድምጽ አውጥተህ አንብብ"
+  },
+  "commandStop": {
+    "message": "ድምጽ አውጥቶ ማንበብ አቁም"
+  },
+  "commandToggle": {
+    "message": "አጫውት / አቁም"
+  }
+}

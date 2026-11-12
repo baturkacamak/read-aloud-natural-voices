@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "Karanta Muryar Halitta"
+  },
+  "appDescription": {
+    "message": "Saurari shafuka, zababbun rubututtuka, da takardu tare da muryoyin halitta."
+  },
+  "appName": {
+    "message": "Karanta Muryar Halitta"
+  },
+  "commandReadHere": {
+    "message": "Karanta daga siginan kwamfuta da murya"
+  },
+  "commandReadPage": {
+    "message": "Karanta shafin da murya"
+  },
+  "commandReadSelection": {
+    "message": "Karanta abin da aka zaɓa da murya"
+  },
+  "commandStop": {
+    "message": "Dakatar da karatun murya"
+  },
+  "commandToggle": {
+    "message": "Kunna / dakatar"
+  }
+}

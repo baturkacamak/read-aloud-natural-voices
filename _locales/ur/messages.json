@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "پڑھ کر سنائیں: قدرتی آوازیں"
+  },
+  "appDescription": {
+    "message": "Microsoft Edge کی قدرتی آوازوں کے ساتھ صفحات، منتخب متن اور دستاویزات کو سنیں۔"
+  },
+  "appName": {
+    "message": "پڑھ کر سنائیں: قدرتی آوازیں"
+  },
+  "commandReadHere": {
+    "message": "کرسر سے بلند آواز سے پڑھیں"
+  },
+  "commandReadPage": {
+    "message": "صفحے کو بلند آواز سے پڑھیں"
+  },
+  "commandReadSelection": {
+    "message": "انتخاب کو بلند آواز سے پڑھیں"
+  },
+  "commandStop": {
+    "message": "بلند آواز سے پڑھنا روکیں"
+  },
+  "commandToggle": {
+    "message": "چلائیں / روکیں"
+  }
+}

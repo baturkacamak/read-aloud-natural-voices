@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "Voorlezen: Natuurlijke stemmen"
+  },
+  "appDescription": {
+    "message": "Luister naar pagina's, geselecteerde tekst en documenten met natuurlijke stemmen."
+  },
+  "appName": {
+    "message": "Voorlezen: Natuurlijke stemmen"
+  },
+  "commandReadHere": {
+    "message": "Voorlezen vanaf cursor"
+  },
+  "commandReadPage": {
+    "message": "Pagina voorlezen"
+  },
+  "commandReadSelection": {
+    "message": "Selectie voorlezen"
+  },
+  "commandStop": {
+    "message": "Voorlezen stoppen"
+  },
+  "commandToggle": {
+    "message": "Afspelen / pauzeren"
+  }
+}

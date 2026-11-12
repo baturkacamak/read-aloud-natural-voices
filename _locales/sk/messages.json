@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "Čítať nahlas: Prirodzené hlasy"
+  },
+  "appDescription": {
+    "message": "Počúvajte stránky, vybraný text a dokumenty pomocou prirodzených hlasov."
+  },
+  "appName": {
+    "message": "Čítať nahlas: Prirodzené hlasy"
+  },
+  "commandReadHere": {
+    "message": "Prečítať nahlas od kurzora"
+  },
+  "commandReadPage": {
+    "message": "Prečítať stranu nahlas"
+  },
+  "commandReadSelection": {
+    "message": "Prečítať výber nahlas"
+  },
+  "commandStop": {
+    "message": "Zastaviť hlasné čítanie"
+  },
+  "commandToggle": {
+    "message": "Prehrať / pozastaviť"
+  }
+}

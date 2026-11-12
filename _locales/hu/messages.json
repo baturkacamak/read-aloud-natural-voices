@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "Felolvasás: Természetes hangok"
+  },
+  "appDescription": {
+    "message": "Hallgassa meg a weboldalakat, a kijelölt szöveget és a dokumentumokat természetes hangokkal."
+  },
+  "appName": {
+    "message": "Felolvasás: Természetes hangok"
+  },
+  "commandReadHere": {
+    "message": "Felolvasás a kurzortól"
+  },
+  "commandReadPage": {
+    "message": "Oldal felolvasása"
+  },
+  "commandReadSelection": {
+    "message": "Kijelölés felolvasása"
+  },
+  "commandStop": {
+    "message": "Felolvasás leállítása"
+  },
+  "commandToggle": {
+    "message": "Lejátszás / szünet"
+  }
+}

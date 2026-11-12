@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "Sesli Oquv: Tabiiy Sesler"
+  },
+  "appDescription": {
+    "message": "Tabiiy seslerinen saifeler, saylanğan metin ve dokumentlerni sesli diñleñiz."
+  },
+  "appName": {
+    "message": "Sesli Oquv: Tabiiy Sesler"
+  },
+  "commandReadHere": {
+    "message": "İmleçten sesli oqu"
+  },
+  "commandReadPage": {
+    "message": "Saifeni sesli oqu"
+  },
+  "commandReadSelection": {
+    "message": "Seçimni sesli oqu"
+  },
+  "commandStop": {
+    "message": "Sesli okuvnı toqtat"
+  },
+  "commandToggle": {
+    "message": "Oyna / toqtat"
+  }
+}

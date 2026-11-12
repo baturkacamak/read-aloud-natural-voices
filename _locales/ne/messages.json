@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "ठूलो स्वरले पढ्नुहोस्: प्राकृतिक आवाजहरू"
+  },
+  "appDescription": {
+    "message": "प्राकृतिक आवाजहरू प्रयोग गरेर पृष्ठहरू र कागजातहरू सुन्नुहोस्।"
+  },
+  "appName": {
+    "message": "ठूलो स्वरले पढ्नुहोस्: प्राकृतिक आवाजहरू"
+  },
+  "commandReadHere": {
+    "message": "कर्सरबाट सुनेर पढ्नुहोस्"
+  },
+  "commandReadPage": {
+    "message": "पृष्ठ सुनेर पढ्नुहोस्"
+  },
+  "commandReadSelection": {
+    "message": "चयन सुनेर पढ्नुहोस्"
+  },
+  "commandStop": {
+    "message": "पढ्न रोक्नुहोस्"
+  },
+  "commandToggle": {
+    "message": "प्ले / पज"
+  }
+}

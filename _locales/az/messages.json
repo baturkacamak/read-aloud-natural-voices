@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "Uca oxu: Təbii səslər"
+  },
+  "appDescription": {
+    "message": "Təbii səslərlə veb-səhifələri, seçilmiş mətni və sənədləri uca səslܬ dinləyin."
+  },
+  "appName": {
+    "message": "Uca oxu: Təbii səslər"
+  },
+  "commandReadHere": {
+    "message": "Kürsərdən səslə oxu"
+  },
+  "commandReadPage": {
+    "message": "Səhifəni səslə oxu"
+  },
+  "commandReadSelection": {
+    "message": "Seçimi səslə oxu"
+  },
+  "commandStop": {
+    "message": "Səslə oxumanı dayandır"
+  },
+  "commandToggle": {
+    "message": "Oynat / fasilə ver"
+  }
+}

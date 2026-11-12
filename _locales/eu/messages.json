@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "Irakurri Ozen: Ahots Naturalak"
+  },
+  "appDescription": {
+    "message": "Entzun web-orriak, testu hautatua eta dokumentuak ahots naturalekin."
+  },
+  "appName": {
+    "message": "Irakurri Ozen: Ahots Naturalak"
+  },
+  "commandReadHere": {
+    "message": "Irakurri ozen kurtsoretik"
+  },
+  "commandReadPage": {
+    "message": "Irakurri orria ozen"
+  },
+  "commandReadSelection": {
+    "message": "Irakurri hautapena ozen"
+  },
+  "commandStop": {
+    "message": "Gelditu ahoskatzea"
+  },
+  "commandToggle": {
+    "message": "Erreproduzitu / pausatu"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "Read Aloud: Natural Voices"
+  },
+  "appDescription": {
+    "message": "Poslušajte strani, izbrano besedilo in dokumente z naravnimi glasovi."
+  },
+  "appName": {
+    "message": "Read Aloud: Natural Voices"
+  },
+  "commandReadHere": {
+    "message": "Preberi od kazalca na glas"
+  },
+  "commandReadPage": {
+    "message": "Preberi stran na glas"
+  },
+  "commandReadSelection": {
+    "message": "Preberi izbor na glas"
+  },
+  "commandStop": {
+    "message": "Ustavi glasno branje"
+  },
+  "commandToggle": {
+    "message": "Predvajaj / prekini"
+  }
+}

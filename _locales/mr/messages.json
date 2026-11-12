@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "मोठ्याने वाचा: नैसर्गिक आवाज"
+  },
+  "appDescription": {
+    "message": "Microsoft Edge च्या नैसर्गिक आवाजांसह पृष्ठे, निवडलेला मजकूर आणि दस्तऐवज ऐका."
+  },
+  "appName": {
+    "message": "मोठ्याने वाचा: नैसर्गिक आवाज"
+  },
+  "commandReadHere": {
+    "message": "कर्सरवरून मोठ्याने वाचा"
+  },
+  "commandReadPage": {
+    "message": "पृष्ठ मोठ्याने वाचा"
+  },
+  "commandReadSelection": {
+    "message": "निवड मोठ्याने वाचा"
+  },
+  "commandStop": {
+    "message": "मोठ्याने वाचन थांबवा"
+  },
+  "commandToggle": {
+    "message": "प्ले / पॉझ करा"
+  }
+}

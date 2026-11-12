@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "Gụọ N'olu Dị Elu: Ọdịdị Okwu"
+  },
+  "appDescription": {
+    "message": "Gee ntị n'ibe webụ, ederede a họọrọ, na akwụkwọ site n'olu okike."
+  },
+  "appName": {
+    "message": "Gụọ N'olu Dị Elu: Ọdịdị Okwu"
+  },
+  "commandReadHere": {
+    "message": "Gụọ n'olu dara ụda site na kọsọ"
+  },
+  "commandReadPage": {
+    "message": "Gụọ ibe n'olu dara ụda"
+  },
+  "commandReadSelection": {
+    "message": "Gụọ nhọrọ n'olu dara ụda"
+  },
+  "commandStop": {
+    "message": "Kwụsị ịgụpụta n'olu dara ụda"
+  },
+  "commandToggle": {
+    "message": "Kpọọ / kwụsịtụ"
+  }
+}

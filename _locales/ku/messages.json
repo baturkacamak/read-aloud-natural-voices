@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "بە دەنگی بلند بخوێنە: دەنگە سروشتییەکان"
+  },
+  "appDescription": {
+    "message": "پەڕەکان، دەقە هەڵبژاردراوەکان و بەڵگەنامەکان بە دەنگی سروشتی بە دەنگی بلند ببیسە."
+  },
+  "appName": {
+    "message": "بە دەنگی بلند بخوێنە: دەنگە سروشتییەکان"
+  },
+  "commandReadHere": {
+    "message": "Ji nîşankerê bi deng bixwîne"
+  },
+  "commandReadPage": {
+    "message": "Rûpelê bi deng bixwîne"
+  },
+  "commandReadSelection": {
+    "message": "Hilbijartinê bi deng bixwîne"
+  },
+  "commandStop": {
+    "message": "Xwendina dengî rawestîne"
+  },
+  "commandToggle": {
+    "message": "Lêde / Bide sekinandin"
+  }
+}

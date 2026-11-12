@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "ශබ්ද නඟා කියවන්න: ස්වාභාවික හඬ"
+  },
+  "appDescription": {
+    "message": "ස්වාභාවික හඬින් පිටු, තෝරාගත් පෙළ සහ ලේඛන ශබ්ද නඟා අසන්න."
+  },
+  "appName": {
+    "message": "ශබ්ද නඟා කියවන්න: ස්වාභාවික හඬ"
+  },
+  "commandReadHere": {
+    "message": "කර්සරයෙන් ශබ්ද නඟා කියවන්න"
+  },
+  "commandReadPage": {
+    "message": "පිටුව ශබ්ද නඟා කියවන්න"
+  },
+  "commandReadSelection": {
+    "message": "තේරීම ශබ්ද නඟා කියවන්න"
+  },
+  "commandStop": {
+    "message": "ශබ්ද නඟා කියවීම නවත්වන්න"
+  },
+  "commandToggle": {
+    "message": "වාදනය / විරාමය"
+  }
+}

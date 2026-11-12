@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "Pānui Reo: Ngā Reo Māori"
+  },
+  "appDescription": {
+    "message": "Whakarongo ki ngā whārangi, tuhinga kua tīpakohia, me ngā pukapuka me ngā reo māori."
+  },
+  "appName": {
+    "message": "Pānui Reo: Ngā Reo Māori"
+  },
+  "commandReadHere": {
+    "message": "Pānuihia mai i te pūtau"
+  },
+  "commandReadPage": {
+    "message": "Pānuihia te whārangi"
+  },
+  "commandReadSelection": {
+    "message": "Pānuihia te kōwhiringa"
+  },
+  "commandStop": {
+    "message": "Whakamutua te pānui reo"
+  },
+  "commandToggle": {
+    "message": "Purei / whakataa"
+  }
+}

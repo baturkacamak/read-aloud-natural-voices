@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "Soma Sauti: Sauti za Kiasili"
+  },
+  "appDescription": {
+    "message": "Sikiliza kurasa, maandishi yaliyochaguliwa, na nyaraka ukitumia sauti za asili za Microsoft Edge."
+  },
+  "appName": {
+    "message": "Soma Sauti: Sauti za Kiasili"
+  },
+  "commandReadHere": {
+    "message": "Soma kwa sauti kuanzia kwenye mshale"
+  },
+  "commandReadPage": {
+    "message": "Soma ukurasa kwa sauti"
+  },
+  "commandReadSelection": {
+    "message": "Soma uteuzi kwa sauti"
+  },
+  "commandStop": {
+    "message": "Simamisha kusoma kwa sauti"
+  },
+  "commandToggle": {
+    "message": "Cheza / sitisha"
+  }
+}

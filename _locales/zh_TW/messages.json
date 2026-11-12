@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "朗讀：自然人聲"
+  },
+  "appDescription": {
+    "message": "用 Microsoft Edge 嘅自然人聲嚟聽網頁、所選文字同文件。"
+  },
+  "appName": {
+    "message": "朗讀：自然人聲"
+  },
+  "commandReadHere": {
+    "message": "從游標處朗讀"
+  },
+  "commandReadPage": {
+    "message": "朗讀頁面"
+  },
+  "commandReadSelection": {
+    "message": "朗讀選取範圍"
+  },
+  "commandStop": {
+    "message": "停止朗讀"
+  },
+  "commandToggle": {
+    "message": "播放／暫停"
+  }
+}

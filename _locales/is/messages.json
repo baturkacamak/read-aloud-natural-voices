@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "Lesa upp: Náttúrlegar raddir"
+  },
+  "appDescription": {
+    "message": "Hlustaðu á vefsíður, valinn texta og skjöl með náttúrlegum röddum."
+  },
+  "appName": {
+    "message": "Lesa upp: Náttúrlegar raddir"
+  },
+  "commandReadHere": {
+    "message": "Lesa upphátt héðan"
+  },
+  "commandReadPage": {
+    "message": "Lesa síðu upphátt"
+  },
+  "commandReadSelection": {
+    "message": "Lesa valið upphátt"
+  },
+  "commandStop": {
+    "message": "Stöðva upplestur"
+  },
+  "commandToggle": {
+    "message": "Spila / gera hlé"
+  }
+}

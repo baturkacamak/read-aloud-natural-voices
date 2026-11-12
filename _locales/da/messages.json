@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "Læs højt: Naturlige stemmer"
+  },
+  "appDescription": {
+    "message": "Lyt til sider, markeret tekst og dokumenter med naturlige stemmer."
+  },
+  "appName": {
+    "message": "Læs højt: Naturlige stemmer"
+  },
+  "commandReadHere": {
+    "message": "Læs højt fra markør"
+  },
+  "commandReadPage": {
+    "message": "Læs siden højt"
+  },
+  "commandReadSelection": {
+    "message": "Læs markering højt"
+  },
+  "commandStop": {
+    "message": "Stop læsning"
+  },
+  "commandToggle": {
+    "message": "Afspil / pause"
+  }
+}

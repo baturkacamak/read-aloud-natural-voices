@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "Läs högt: Naturliga röster"
+  },
+  "appDescription": {
+    "message": "Lyssna på webbsidor, markerad text och dokument med naturliga röster."
+  },
+  "appName": {
+    "message": "Läs högt: Naturliga röster"
+  },
+  "commandReadHere": {
+    "message": "Läs upp härifrån"
+  },
+  "commandReadPage": {
+    "message": "Läs upp sidan"
+  },
+  "commandReadSelection": {
+    "message": "Läs upp markeringen"
+  },
+  "commandStop": {
+    "message": "Stoppa uppläsning"
+  },
+  "commandToggle": {
+    "message": "Spela upp / pausa"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "Read Aloud: Natural Voices"
+  },
+  "appDescription": {
+    "message": "Listen to pages, selected text, and documents aloud using Microsoft Edge's natural voices."
+  },
+  "appName": {
+    "message": "Read Aloud: Natural Voices"
+  },
+  "commandReadHere": {
+    "message": "Read aloud from here"
+  },
+  "commandReadPage": {
+    "message": "Read page aloud"
+  },
+  "commandReadSelection": {
+    "message": "Read selection aloud"
+  },
+  "commandStop": {
+    "message": "Stop read aloud"
+  },
+  "commandToggle": {
+    "message": "Play / pause"
+  }
+}

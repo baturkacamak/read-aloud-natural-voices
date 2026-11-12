@@ -1,0 +1,26 @@
+{
+  "actionTitle": {
+    "message": "朗读：自然之声"
+  },
+  "appDescription": {
+    "message": "使用 Microsoft Edge 的自然声音大声朗读网页、所选文本和文档。"
+  },
+  "appName": {
+    "message": "朗读：自然之声"
+  },
+  "commandReadHere": {
+    "message": "从光标处大声朗读"
+  },
+  "commandReadPage": {
+    "message": "大声朗读页面"
+  },
+  "commandReadSelection": {
+    "message": "大声朗读选区"
+  },
+  "commandStop": {
+    "message": "停止朗读"
+  },
+  "commandToggle": {
+    "message": "播放 / 暂停"
+  }
+}
