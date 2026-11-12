@@ -1,0 +1,15 @@
+Read Aloud: Natural Voices vam omogoča poslušanje spletnih strani in dokumentov z naravnimi glasovi.
+
+LASTNOSTI
+• Preberite celotno stran, izbrano besedilo ali od kazalca naprej.
+• Spremljajte branje s poudarjanjem besed in odstavkov; prilagodite glas, hitrost in višino.
+• Odprite datoteke PDF, EPUB in slike v bralniku dokumentov; uporabite OCR na optično prebranih straneh.
+• Upravljajte branje z zaznamki, seznamom za branje, časovnikom, pogledom ostrenja in shranjenimi posnetki brez povezave.
+• Izberite jezik vmesnika in uporabite bližnjice na tipkovnici.
+
+KAKO UPORABLJATI
+1. Odprite spletno stran in kliknite ikono razširitve.
+2. Izberite branje celotne strani ali izbranega besedila.
+3. Zaustavite, nadaljujte ali spremenite hitrost v predvajalniku.
+
+Za ustvarjanje zvoka je potreben internet, besedilo za branje pa se pošlje Microsoftovemu glasovnemu storitvenemu sistemu. Vnaprej pripravljene posnetke brez povezave je mogoče poslušati brez interneta. Ta neodvisna razširitev ni povezana z Microsoftom.

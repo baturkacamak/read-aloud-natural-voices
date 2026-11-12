@@ -1,0 +1,15 @@
+Read Aloud: Natural Voices umożliwia słuchanie stron internetowych i dokumentów za pomocą naturalnych głosów.
+
+FUNKCJE
+• Odczytuj całą stronę, zaznaczony tekst lub od miejsca kursora.
+• Śledź czytanie dzięki podświetlaniu słów i akapitów; dostosowuj głos, prędkość i wysokość tonu.
+• Otwieraj pliki PDF, EPUB i obrazy w czytniku dokumentów; korzystaj z OCR na skanowanych stronach.
+• Zarządzaj czytaniem za pomocą zakładek, listy czytania, wyłącznika czasowego, widoku skupienia i zapisów offline.
+• Wybierz język interfejsu i korzystaj ze skrótów klawiszowych.
+
+JAK UŻYWAĆ
+1. Otwórz stronę internetową i kliknij ikonę rozszerzenia.
+2. Wybierz odczytanie całej strony lub zaznaczonego tekstu.
+3. Wstrzymuj, wznawiaj lub zmieniaj prędkość za pomocą odtwarzacza.
+
+Do generowania głosu wymagany jest internet, a tekst do odczytania jest wysyłany do usługi głosowej Microsoftu. Wcześniej przygotowane nagrania offline można odsłuchiwać bez internetu. To niezależne rozszerzenie nie jest powiązane z firmą Microsoft.

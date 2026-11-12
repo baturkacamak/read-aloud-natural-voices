@@ -1,0 +1,15 @@
+Read Aloud: Natural Voices lar deg lytte til nettsider og dokumenter ved hjelp av naturlige stemmer.
+
+FUNKSJONER
+• Les hele siden, markert tekst eller fra markøren.
+• Følg med på lesingen med ord- og avsnittshøydepunkter; juster volum, hastighet og tonehøyde.
+• Åpne PDF, EPUB og bilder i dokumentleseren; bruk OCR på skannede sider.
+• Administrer lesingen med bokmerker, leseliste, tidsur, fokusvisning og offline-opptak.
+• Velg grensesnittspråk og bruk tastatursnarveier.
+
+SLIK BRUKER DU DET
+1. Åpne en nettside og klikk på utvidelsesikonet.
+2. Velg å lese hele siden eller markert tekst.
+3. Paus, fortsett eller endre hastigheten fra avspilleren.
+
+Internett kreves for talegenerering, og teksten som skal leses sendes til Microsofts taletjeneste. Forhåndsforberedte offline-opptak kan lyttes til uten internett. Denne uavhengige utvidelsen er ikke tilknyttet Microsoft.

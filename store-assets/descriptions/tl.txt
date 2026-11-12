@@ -1,0 +1,15 @@
+Read Aloud: Natural Voices ay nagbibigay-daan sa iyo na pakinggan ang mga web page at dokumento nang malakas gamit ang natural na boses.
+
+MGA TAMPOK
+• Basahin ang buong pahina, ang napiling teksto, o mula sa cursor pataas.
+• Sundan ang pagbasa gamit ang pag-highlight ng salita at talata; isaayos ang boses, bilis, at pitch.
+• Buksan ang mga PDF, EPUB, at larawan sa document reader; gumamit sa mga naka-scan na pahina ng OCR.
+• Pamahalaan ang pagbasa gamit ang mga bookmark, reading list, timer, focus view, at offline recording.
+• Pumili ng wika ng interface at gumamit ng mga shortcut sa keyboard.
+
+PAANO GAMITIN
+1. Magbukas ng web page at i-click ang icon ng extension.
+2. Piliing basahin ang buong pahina o ang napiling teksto.
+3. I-pause, ipagpatuloy, o palitan ang bilis mula sa player.
+
+Kailangan ang internet para sa paggawa ng boses at ipinapadala sa serbisyo ng boses ng Microsoft ang tekstong babasahin. Ang mga paunang handang offline recording ay mapakikinggan nang walang internet. Ang malayang extension na ito ay hindi kaakibat ng Microsoft.

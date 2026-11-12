@@ -1,0 +1,15 @@
+Read Aloud: Natural Voices mahdollistaa verkkosivujen ja asiakirjojen kuuntelemisen luonnollisilla äänillä.
+
+OMINAISUUDET
+• Lue koko sivu, valittu teksti tai kursorista alkaen.
+• Seuraa lukemista sanan ja kappaleen korostuksella; säädä äänenvoimakkuutta, nopeutta ja korkeutta.
+• Avaa PDF, EPUB ja kuvat asiakirjanlukuohjelmassa; käytä OCR:ää skannatuilla sivuilla.
+• Hallitse lukemista kirjanmerkeillä, lukulistalla, ajastimella, tarkennusnäkymällä ja offline-tallennuksilla.
+• Valitse käyttöliittymän kieli ja käytä pikanäppäimiä.
+
+KÄYTTÖOHJE
+1. Avaa verkkosivu ja napsauta laajennuskuvaketta.
+2. Valitse koko sivun tai valitun tekstin lukeminen.
+3. Keskeytä, jatka tai muuta nopeutta soittimesta.
+
+Ääni vaatii internet-yhteyden, ja luettava teksti lähetetään Microsoftin äänipalveluun. Valmiiksi tallennettuja offline-tallenteita voi kuunnella ilman internetiä. Tämä riippumaton laajennus ei ole sidoksissa Microsoftiin.

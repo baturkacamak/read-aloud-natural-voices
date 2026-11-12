@@ -1,0 +1,15 @@
+Read Aloud: Natural Voices omogućuje vam slušanje web-stranica i dokumenata s prirodnim glasovima.
+
+ZNAČAJKE
+• Čitajte cijelu stranicu, odabrani tekst ili od pokazivača.
+• Pratite čitanje uz isticanje riječi i odlomaka; prilagodite glas, brzinu i visinu tona.
+• Otvorite PDF-ove, EPUB-ove i slike u čitaču dokumenata; koristite OCR na skeniranim stranicama.
+• Upravljajte čitanjem pomoću oznaka, popisa za čitanje, mjerača vremena, prikaza fokusa i izvanmrežnih spremanja.
+• Odaberite jezik sučelja i koristite tipkovne prečace.
+
+KAKO KORISTITI
+1. Otvorite web-stranicu i kliknite na ikonu proširenja.
+2. Odaberite čitanje cijele stranice ili odabranog teksta.
+3. Pauzirajte, nastavite ili promijenite brzinu iz reproduktora.
+
+Za generiranje zvuka potrebna je internetska veza, a tekst koji se čita šalje se Microsoftovoj glasovnoj usluzi. Unaprijed pripremljena izvanmrežna spremanja mogu se slušati bez interneta. Ova neovisna ekstenzija nije povezana s Microsoftom.

@@ -1,0 +1,15 @@
+Read Aloud: Natural Voices tippermettilek tisma' paġni web u dokumenti bil-leħen naturali.
+
+KARATTERISTIĊI
+• Aqra l-paġna kollha, it-test magħżul, jew mill-kursur 'il quddiem.
+• Segwi l-qari b'enfasi fuq il-kelma u l-paragrafu; aġġusta l-vuċi, il-veloċità, u t-ton.
+• Iftaħ PDF, EPUB u stampi fil-qarrej tad-dokumenti; uża l-OCR fuq paġni skanjati.
+• Immaniġġja l-qari permezz ta' bookmarks, lista tal-qari, tajmer, dehra ta' fokus, u reġistrazzjonijiet offline.
+• Agħżel il-lingwa tal-interfaċċja u uża shortcuts tat-tastiera.
+
+KIF TUŻA
+1. Iftaħ paġna web u kklikkja l-ikona tal-estensjoni.
+2. Agħżel li taqra l-paġna kollha jew it-test magħżul.
+3. Waqqaf temporanjament, kompli, jew ibdel il-veloċità mill-plejer.
+
+L-internet huwa meħtieġ għall-ġenerazzjoni tal-vuċi u t-test li jrid jinqara jintbagħat lis-servizz tal-vuċi ta' Microsoft. Reġistrazzjonijiet offline ippreparati minn qabel jistgħu jinstemgħu mingħajr internet. Din l-estensjoni indipendenti mhijiex affiljata ma' Microsoft.

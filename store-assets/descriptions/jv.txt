@@ -1,0 +1,15 @@
+Read Aloud: Natural Voices ngidini sampeyan ngrungokake kaca web lan dokumen kanthi swara alami.
+
+FITUR
+• Waca kabeh kaca, teks sing dipilih, utawa wiwit saka kursor.
+• Tindakake wacan kanthi sorotan tembung lan paragraf; setel swara, kecepatan, lan pitch.
+• Bukak PDF, EPUB, lan gambar ing maca dokumen; gunakake OCR ing kaca sing di-scan.
+• Kelola wacan kanthi tetenger (bookmark), dhaptar wacan, timer, tampilan fokus, lan rekaman offline.
+• Pilih basa antarmuka lan gunakake trabasan keyboard.
+
+CARA MENGGUNAKAKE
+1. Bukak kaca web banjur klik lambang ekstensi.
+2. Pilih kanggo maca kabeh kaca utawa teks sing dipilih.
+3. Ngaso, diterusake, utawa ganti kecepatan saka pamuter.
+
+Butuh internet kanggo nggawe swara lan teks sing bakal diwaca dikirim menyang layanan swara Microsoft. Rekaman offline sing disiapake sadurunge bisa dirungokake tanpa internet. Ekstensi mandhiri iki ora ana gandhengane karo Microsoft.

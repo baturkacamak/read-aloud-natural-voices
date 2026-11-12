@@ -1,0 +1,15 @@
+Read Aloud: Natural Voices veb saifeler ve dokumentlerni tabiiy seslerinen sesli diñlemenizge imkân bere.
+
+HÜSUSIYETLERI
+• Saifeniñ episini, saylanğan metini ya da imleçten başlap oquñız.
+• Kelime ve paragraf vurgusunen oquvnı taqib etiñiz; ses, hız ve tınıqlıqnı tüzetiñiz.
+• PDF, EPUB ve resimlerni dokument oqucında açınız; taranğan saifelerde OCR qullanınız.
+• İşaretler, oquv tizimi, zamanlayıcı, odaklar ğörünüşü ve internet yoq yazılarnen oquvnı idare etiñiz.
+• Arayüz tilini saylap, klaviatura qısqartmalarını qullanınız.
+
+NECEN QULLANILMAQTA
+1. Bir veb saife açıp, keñetme işaretine basıñız.
+2. Saifeniñ episini ya da saylanğan metini oqumaqni saylañız.
+3. Oynatıcıdan toqtatıñız, devam etiñiz ya da hıznı deñiştiñiz.
+
+Ses çıqarıluvı içün internet kerek ve oqunacaq metin Microsoft ses hızmetine yollanılmaqtadır. Evelden azırlanğan internet yoq yazılar internet olmağan vaqıtta diñlene bile. Bu müstaqil keñetme Microsoftnen baqlı degildir.

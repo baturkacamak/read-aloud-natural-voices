@@ -1,0 +1,15 @@
+Read Aloud: Natural Voices, Microsoft Edge'in doğal sesleriyle web sayfalarını ve belgeleri sesli dinlemenizi sağlar.
+
+ÖZELLİKLER
+• Sayfanın tamamını, seçili metni veya imleçten itibaren okuyun.
+• Kelime ve paragraf vurgusuyla okumayı takip edin; ses, hız ve perdeyi ayarlayın.
+• PDF, EPUB ve görselleri belge okuyucuda açın; taranmış sayfalarda OCR kullanın.
+• Yer imleri, okuma listesi, zamanlayıcı, odak görünümü ve çevrimdışı kayıtlarla okumayı yönetin.
+• Arayüz dilini seçin ve klavye kısayollarını kullanın.
+
+NASIL KULLANILIR
+1. Bir web sayfası açın ve uzantı simgesine tıklayın.
+2. Sayfanın tamamını veya seçili metni okumayı seçin.
+3. Oynatıcıdan duraklatın, devam edin veya hızı değiştirin.
+
+Ses üretimi için internet gerekir ve okunacak metin Microsoft'un ses servisine gönderilir. Önceden hazırlanmış çevrimdışı kayıtlar internetsiz dinlenebilir. Bu bağımsız uzantı Microsoft'a bağlı değildir.

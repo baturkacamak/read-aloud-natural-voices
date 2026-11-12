@@ -1,0 +1,15 @@
+Read Aloud: Natural Voices tabiiy ovozlar yordamida veb-sahifalar va hujjatlarni ovoz chiqarib tinglash imkonini beradi.
+
+FUNKSIYALAR
+• Butun sahifani, tanlangan matnni yoki kursor turgan joydan boshlab o'qing.
+• So'z va xatboshi urg'usi bilan o'qishni kuzatib boring; ovoz, tezlik va balandlikni sozlang.
+• PDF, EPUB va rasmlarni hujjat o'quvchida oching; skanerlangan sahifalarda OCR'dan foydalaning.
+• Xatcho'plar, o'qish ro'yxati, taymer, diqqat rejimi va offlayn yozuvlar yordamida o'qishni boshqaring.
+• Interfeys tilini tanlang va klaviatura yorliqlaridan foydalaning.
+
+QANDAY FOYDALANISH KERAK
+1. Veb-sahifani oching va kengaytma belgisini bosing.
+2. Butun sahifani yoki tanlangan matnni o'qishni tanlang.
+3. Pleyerdan to'xtatib turing, davom ettiring yoki tezlikni o'zgartiring.
+
+Ovoz hosil qilish uchun internet kerak bo'ladi va o'qiladigan matn Microsoft ovoz xizmatiga yuboriladi. Oldindan tayyorlangan offlayn yozuvlarni internetsiz tinglash mumkin. Ushbu mustaqil kengaytma Microsoft'ga aloqador emas.

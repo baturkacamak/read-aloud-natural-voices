@@ -1,0 +1,15 @@
+Read Aloud: Natural Voices leidžia klausytis tinklalapių ir dokumentų naudojant natūralius balsus.
+
+FUNKCIJOS
+• Skaitykite visą puslapį, pažymėtą tekstą arba nuo žymeklio.
+• Sekite skaitymą paryškindami žodžius ir pastraipas; reguliuokite balsą, greitį ir aukštį.
+• Atidarykite PDF, EPUB ir vaizdus dokumentų skaitytuve; nuskaitytuose puslapiuose naudokite OCR.
+• Tvarkykite skaitymą naudodami žymes, skaitinių sąrašą, laikmatį, fokuso rodinį ir neprisijungus pasiekiamus įrašus.
+• Pasirinkite sąsajos kalbą ir naudokite sparčiuosius klavišus.
+
+KAIP NAUDOTI
+1. Atidarykite tinklalapį ir spustelėkite plėtinio piktogramą.
+2. Pasirinkite skaityti visą puslapį arba pažymėtą tekstą.
+3. Pristabdykite, tęskite arba pakeiskite greitį leistuve.
+
+Garso generavimui reikalingas internetas, o skaitomas tekstassiunčiamas į „Microsoft“ balso paslaugą. Iš anksto paruoštų įrašų be interneto galima klausytis neprisijungus. Šis nepriklausomas plėtinys nėra susijęs su „Microsoft“.

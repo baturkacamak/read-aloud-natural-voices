@@ -1,0 +1,15 @@
+Read Aloud: Natural Voices võimaldab kuulata veebilehti ja dokumente loomulike häältega.
+
+FUNKTSIOONID
+• Lugege läbi terve leht, valitud tekst või kursorist alates.
+• Jälgige lugemist sõnade ja lõikude esiletõstmisega; reguleerige häält, kiirust ja kõrgust.
+• Avage PDF-id, EPUB-id ja pildid dokumendilugejas; kasutage skannitud lehtedel OCR-i.
+• Hallake lugemist järjehoidjate, lugemisloendi, taimeri, fookusvaate ja võrguühenduseta salvestustega.
+• Valige liidese keel ja kasutage kiirklahve.
+
+KUIDAS KASUTADA
+1. Avage veebileht ja klõpsake laienduse ikooni.
+2. Valige terve lehe või valitud teksti lugemine.
+3. Peatage, jätkake või muutke kiirust pleierist.
+
+Heli genereerimiseks on vaja internetti ja loetav tekst saadetakse Microsofti hääleteenusesse. Eelnevalt ettevalmistatud võrguühenduseta salvestusi saab kuulata ilma internetita. See sõltumatu laiendus ei ole Microsoftiga seotud.

@@ -1,0 +1,15 @@
+Read Aloud: Natural Voices membolehkan anda mendengar halaman web dan dokumen dengan suara asli yang berkualiti tinggi.
+
+CIRI-CIRI
+• Baca keseluruhan halaman, teks terpilih, atau dari kursor.
+• Ikuti pembacaan dengan penyerlahan perkataan dan perenggan;laraskan suara, kelajuan, dan pic.
+• Buka PDF, EPUB, dan imej dalam pembaca dokumen; gunakan OCR pada halaman imbasan.
+• Urus pembacaan dengan penanda halaman, senarai bacaan, pemasa, paparan fokus, dan rakaman luar talian.
+• Pilih bahasa antara muka dan gunakan pintasan papan kekunci.
+
+CARA MENGGUNAKAN
+1. Buka halaman web dan klik ikon sambungan.
+2. Pilih untuk membaca keseluruhan halaman atau teks terpilih.
+3. Jeda, sambung semula, atau tukar kelajuan daripada pemain.
+
+Sambungan internet diperlukan untuk penjanaan suara dan teks yang hendak dibaca dihantar ke perkhidmatan suara Microsoft. Rakaman luar talian yang disediakan sebelum ini boleh didengar tanpa internet. Sambungan bebas ini tidak bergabung dengan Microsoft.

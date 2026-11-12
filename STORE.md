@@ -1,38 +1,37 @@
-# Mağaza Yayın Dosyası — Sesli Oku
+# Mağaza Yayın Dosyası — Read Aloud: Natural Voices
 
 Bu dosya, eklentiyi **Microsoft Edge Add-ons** mağazasına göndermek için gereken
 metinleri ve kontrol listesini içerir.
 
-> **Önemli:** Eklenti yalnızca Microsoft Edge'de çalışır. Microsoft'un Read Aloud
-> servisi Edge dışındaki tarayıcıların user-agent'ını reddeder (403). Bu yüzden
-> Chrome Web Store'da yayınlamayın; oradan kuran kullanıcılar ses alamaz.
+> **Uyumluluk:** Ses servisi bazı tarayıcı ve ortamlarda 403 hatası verebilir.
+> Chrome dahil hedef tarayıcılarda gerçek ses üretimini yayın öncesi test edin.
 
 ## Temel bilgiler
 
 | Alan | Değer |
 | --- | --- |
-| Ad | Sesli Oku — Edge Read Aloud |
-| Sürüm | `manifest.json` içindeki sürüm (şu an 0.7.0) |
+| Ad | Dile göre yerelleştirilir; Türkçe: Sesli Oku: Doğal Sesler |
+| Sürüm | `manifest.json` içindeki sürüm (şu an 0.7.1) |
 | Kategori | Accessibility (Erişilebilirlik) |
-| Dil | Türkçe (varsayılan), İngilizce açıklama eklenebilir |
+| Dil | Türkçe (varsayılan); yerelleştirilmiş metinler `store-assets/` altında |
 | Lisans | GPL-3.0 |
 | Gizlilik politikası | `PRIVACY.md` (yayın için herkese açık bir URL'de barındırılmalı) |
 
 ## Kısa açıklama (≤132 karakter)
 
-> Edge'in doğal sesleriyle sayfaları ve seçimleri Linux'ta dinleyin. Kelime
+> Edge'in doğal sesleriyle sayfaları ve seçimleri dinleyin. Kelime
 > vurgusu, hız kontrolü ve Türkçe sesler.
 
 Alternatif:
 
-> Linux'ta Edge Read Aloud: sayfaları ve seçimleri Microsoft'un doğal sesleriyle
+> Edge Read Aloud: sayfaları ve seçimleri Microsoft'un doğal sesleriyle
 > dinleyin.
 
 ## Uzun açıklama
 
-**Linux'ta Edge'in Read Aloud özelliği yok. Sesli Oku bunu boşluğu doldurur.**
+**Read Aloud: Natural Voices ile web sayfalarını ve belgeleri dinleyin.**
 
-Sesli Oku, Microsoft Edge'in Read Aloud servisini doğrudan kullanarak web
+Read Aloud: Natural Voices, Microsoft Edge'in Read Aloud servisini doğrudan kullanarak web
 sayfalarını ve seçili metinleri 300'den fazla doğal neural sesle okur. Türkçe
 için Emel ve Ahmet sesleri hazırdır.
 
@@ -42,12 +41,12 @@ için Emel ve Ahmet sesleri hazırdır.
 - Okunan paragrafı ve kelimeyi sayfada vurgulama, otomatik kaydırma
 - Yumuşak geçişli vurgu halesi ve seçimden sonra devam etme
 - Oynatıcıda canlı hız (0.75×–2×), önceki/sonraki paragraf, duraklat/durdur
-- Türkçe arayüz, klavye kısayolları ve sağ tık menüsü
+- Çok dilli arayüz, klavye kısayolları ve sağ tık menüsü
 - Ayarlar yerel olarak saklanır; geliştirici hiçbir veri toplamaz
 
 **Nasıl kullanılır?**
 
-1. Araç çubuğundaki Sesli Oku simgesine tıklayın.
+1. Araç çubuğundaki Read Aloud: Natural Voices simgesine tıklayın.
 2. **Sayfayı oku** veya **Seçimi oku** düğmesini seçin.
 3. Alternatif: `Alt+Shift+R` (sayfa), `Alt+Shift+S` (seçim),
    `Alt+Shift+H` (imleçten), `Alt+Shift+Space` (oynat/duraklat).
@@ -57,7 +56,7 @@ için Emel ve Ahmet sesleri hazırdır.
 
 - İnternet bağlantısı gerekir; metin seslendirme için Microsoft'un servisine
   gönderilir.
-- PDF görüntüleyici ve `edge://` sayfaları desteklenmez.
+- PDF ve EPUB dosyaları uzantının belge okuyucusunda açılır; `edge://` sayfaları desteklenmez.
 - Microsoft'un Read Aloud uç noktası resmî olmayan bir API'dir; Microsoft
   algoritmayı değiştirirse eklenti güncellemesi gerekebilir.
 - Microsoft, Edge ve Read Aloud; Microsoft Corporation'ın ticari markalarıdır.
@@ -99,7 +98,7 @@ kullanılarak 1280×800 olarak hazırlanmıştır.
 
 ## Yayın kontrol listesi
 
-- [ ] `manifest.json` sürümünü artır (`0.7.0`).
+- [ ] `manifest.json` sürümünü kontrol et (`0.7.1`).
 - [ ] `python3 scripts/package.py` ile ZIP üret.
 - [ ] ZIP'i Edge Add-ons geliştirici paneline yükle.
 - [ ] `PRIVACY.md` içeriğini herkese açık bir URL'de yayınla (GitHub Pages,
@@ -124,14 +123,14 @@ kullanılarak 1280×800 olarak hazırlanmıştır.
 
 ## Mağaza metni (İngilizce taslak)
 
-**Short description:** Listen to web pages and selections on Linux with
+**Short description:** Listen to web pages and selections with
 Microsoft Edge's natural Read Aloud voices. Word highlighting, speed control and
 Turkish voices.
 
 **Detailed description:**
 
-> Microsoft Edge's Read Aloud feature is missing on Linux. Sesli Oku fills that
-> gap by talking directly to Edge's Read Aloud service.
+> Read Aloud: Natural Voices lets you listen to web pages and documents with
+> natural voices by talking directly to Edge's Read Aloud service.
 >
 > • Read the whole page or just the selected text
 > • Highlight the current paragraph and word, with automatic scrolling
@@ -139,7 +138,7 @@ Turkish voices.
 > • Continue after a selection (can be disabled in the popup)
 > • Player with live speed (0.75×–2×), previous/next paragraph, pause and stop
 > • The current word is highlighted directly in the article text
-> • Turkish UI, keyboard shortcuts and a right-click menu
+> • Multilingual UI, keyboard shortcuts and a right-click menu
 > • Settings stay local; the developer collects no data
 >
 > Requires an internet connection: text is sent to Microsoft's speech service

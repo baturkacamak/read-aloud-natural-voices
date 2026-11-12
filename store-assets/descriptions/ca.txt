@@ -1,0 +1,15 @@
+Read Aloud: Natural Voices et permet escoltar pàgines web i documents en veu alta utilitzant veus naturals.
+
+CARACTERÍSTIQUES
+• Llegeix tota la pàgina, el text seleccionat o des del cursor.
+• Segueix la lectura amb el realçament de paraules i paràgrafs; ajusta la veu, la velocitat i el to.
+• Obre PDF, EPUB i imatges al lector de documents; utilitza OCR a les pàgines escanejades.
+• Gestiona la lectura amb marcadors, llista de lectura, temporitzador, vista de focus i gravacions fora de línia.
+• Selecciona l'idioma de la interfície i utilitza les dreceres de teclat.
+
+COM S'UTILITZA
+1. Obre una pàgina web i fes clic a la icona de l'extensió.
+2. Tria llegir tota la pàgina o el text seleccionat.
+3. Pausa, reprèn o canvia la velocitat des del reproductor.
+
+Es necessita internet per a la generació de veu i el text a llegir s'envia al servei de veu de Microsoft. Les gravacions fora de línia preparades prèviament es poden escoltar sense internet. Aquesta extensió independent no està afiliada a Microsoft.

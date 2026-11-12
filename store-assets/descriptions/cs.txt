@@ -1,0 +1,15 @@
+Read Aloud: Natural Voices vám umožňuje poslouchat webové stránky a dokumenty s přirozenými hlasy.
+
+VLASTNOSTI
+• Přečtěte si celou stránku, vybraný text nebo od kurzoru.
+• Sledujte čtení se zvýrazněním slov a odstavců; upravte hlas, rychlost a výšku tónu.
+• Otevírejte soubory PDF, EPUB a obrázky v prohlížeči dokumentů; používejte OCR na naskenovaných stránkách.
+• Spravujte čtení pomocí záložek, seznamu četby, časovače, zobrazení soustředění a offline nahrávek.
+• Vyberte jazyk rozhraní a používejte klávesové zkratky.
+
+JAK POUŽÍVAT
+1. Otevřete webovou stránku a klikněte na ikonu rozšíření.
+2. Zvolte přečtení celé stránky nebo vybraného textu.
+3. Pozastavte, pokračujte nebo změňte rychlost v přehrávači.
+
+Generování hlasu vyžaduje internet a text k přečtení je odeslán do hlasové služby společnosti Microsoft. Předem připravené offline nahrávky lze poslouchat bez internetu. Toto nezávislé rozšíření není spojeno se společností Microsoft.

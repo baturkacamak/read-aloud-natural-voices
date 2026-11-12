@@ -1,0 +1,15 @@
+Read Aloud: Natural Voices vă permite să ascultați pagini web și documente cu ajutorul vocilor naturale.
+
+FUNCȚII
+• Citiți întreaga pagină, textul selectat sau începând de la cursor.
+• Urmăriți lectura prin evidențierea cuvintelor și paragrafelor; reglați vocea, viteza și tonul.
+• Deschideți fișiere PDF, EPUB și imagini în cititorul de documente; utilizați OCR pe paginile scanate.
+• Gestionați lectura cu semne de carte, listă de lectură, cronometru, vizualizare focalizată și salvări offline.
+• Alegeți limba interfeței și folosiți comenzi rapide de la tastatură.
+
+CUM SE UTILIZEAZĂ
+1. Deschideți o pagină web și faceți clic pe pictograma extensiei.
+2. Alegeți să citiți întreaga pagină sau textul selectat.
+3. Întrerupeți, reluați sau schimbați viteza din player.
+
+Este necesară conexiunea la internet pentru generarea vocii, iar textul de citit este trimis la serviciul vocal Microsoft. Înregistrările offline pregătite în prealabil pot fi ascultate fără internet. Această extensie independentă nu este afiliată Microsoft.

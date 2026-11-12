@@ -1,0 +1,15 @@
+Read Aloud: Natural Voices ļauj klausīties tīmekļa lapas un dokumentus, izmantojot dabiskās balsis.
+
+FUNKCIJAS
+• Lasiet visu lapu, atlasīto tekstu vai no kursorpozīcijas.
+• Sekojiet lasīšanai ar vārdu un rindkopu izcelšanu; pielāgojiet balsi, ātrumu un augstumu.
+• Atveriet PDF, EPUB un attēlus dokumentu lasītājā; izmantojiet OCR skenētajās lapās.
+• Pārvaldiet lasīšanu, izmantojot grāmatzīmes, lasāmrakstu sarakstu, taimeri, fokusa skatu un bezsaistes saglabātos ierakstus.
+• Izvēlieties saskarnes valodu un izmantojiet tastatūras īsinājumtaustiņus.
+
+KĀ LIETOT
+1. Atveriet tīmekļa lapu un noklikšķiniet uz paplašinājuma ikonas.
+2. Izvēlieties lasīt visu lapu vai atlasīto tekstu.
+3. Atskaņotājā pauzējiet, turpiniet vai mainiet ātrumu.
+
+Audio ģenerēšanai ir nepieciešams internets, un lasāmais teksts tiek nosūtīts uz Microsoft balss pakalpojumu. Iepriekš sagatavotus bezsaistes ierakstus var klausīties bez interneta. Šis neatkarīgais paplašinājums nav saistīts ar Microsoft.

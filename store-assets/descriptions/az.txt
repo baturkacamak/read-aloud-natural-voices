@@ -1,0 +1,15 @@
+Read Aloud: Natural Voices veb-səhifələri və sənədləri təbii səslərlə uca səslə dinləməyə imkan verir.
+
+XÜSUSİYYƏTLƏR
+• Səhifəni tamamilə, seçilmiş mətni və ya kursor nöqtəsindən oxuyun.
+• Söz və abzas vurğusu ilə oxunuşu izləyin; səsi, sürəti və tonu tənzimləyin.
+• Sənəd oxuyucusunda PDF, EPUB və şəkilləri açın; skan edilmiş səhifələrdə OCR-dən istifadə edin.
+• Əlfəcinlər, oxu siyahısı, taymer, fokus görünüşü və offline yazılar ilə oxunuşu idarə edin.
+• İnterfeys dilini seçin və klaviatura qısayollarından istifadə edin.
+
+NECƏ İSTİFADƏ ETMƏLİ
+1. Veb-səhifə açın və genişləndirmə ikonuna klikləyin.
+2. Səhifəni tamamilə və ya seçilmiş mətni oxumağı seçin.
+3. Pleyerdən dayandırın, davam etdirin və ya sürəti dəyişdirin.
+
+Səs generasiyası üçün internet tələb olunur və oxunacaq mətn Microsoft-un səs xidmətinə göndərilir. Əvvəlcədən hazırlanmış offline yazıları internetsiz dinləmək mümkündür. Bu müstəqil genişləndirmə Microsoft-a bağlı deyil.

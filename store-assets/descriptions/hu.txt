@@ -1,0 +1,15 @@
+A Read Aloud: Natural Voices lehetővé teszi, hogy természetes hangokkal hallgassa a weboldalakat és dokumentumokat.
+
+JELLEMZŐK
+• Olvassa fel a teljes oldalt, a kijelölt szöveget vagy a kurzortól kezdve.
+• Kövesse az olvasást szó- és bekezdéskiemeléssel; állítsa be a hangot, a sebességet és a hangmagasságot.
+• Nyisson meg PDF-, EPUB-fájlokat és képeket a dokumentumolvasóban; használjon OCR-t a beolvasott oldalakhoz.
+• Kezelje az olvasást könyvjelzőkkel, olvasási listával, időzítővel, fókusz nézettel és offline felvételekkel.
+• Válasszon felületi nyelvet, és használjon billentyűparancsokat.
+
+HASZNÁLAT
+1. Nyisson meg egy weboldalat, és kattintson a bővítmény ikonjára.
+2. Válassza a teljes oldal vagy a kijelölt szöveg felolvasását.
+3. Szüneteltesse, folytassa, vagy módosítsa a sebességet a lejátszón.
+
+A hanggeneráláshoz internetkapcsolat szükséges, és az olvasandó szöveg elküldésre kerül a Microsoft hangszolgáltatásába. Az előre elkészített offline felvételek internet nélkül is hallgathatók. Ez a független bővítmény nem áll kapcsolatban a Microsofttal.

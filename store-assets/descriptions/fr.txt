@@ -1,0 +1,15 @@
+Read Aloud: Natural Voices vous permet d'écouter des pages Web et des documents à haute voix grâce aux voix naturelles de Microsoft Edge.
+
+FONCTIONNALITÉS
+• Lisez la page entière, le texte sélectionné ou à partir du curseur.
+• Suivez la lecture grâce au surfaçage des mots et des paragraphes ; ajustez la voix, la vitesse et la hauteur.
+• Ouvrez des PDF, des EPUB et des images dans le lecteur de documents ; utilisez l'OCR sur les pages numérisées.
+• Gérez la lecture avec les favoris, la liste de lecture, la minuterie, la vue de concentration et les enregistrements hors ligne.
+• Choisissez la langue de l'interface et utilisez des raccourcis clavier.
+
+COMMENT UTILISER
+1. Ouvrez une page Web et cliquez sur l'icône de l'extension.
+2. Choisissez de lire la page entière ou le texte sélectionné.
+3. Mettez en pause, reprenez ou modifiez la vitesse depuis le lecteur.
+
+Une connexion Internet est requise pour la génération vocale, et le texte à lire est envoyé au service vocal de Microsoft. Les enregistrements hors ligne préparés à l'avance peuvent être écoutés sans Internet. Cette extension indépendante n'est pas affiliée à Microsoft.

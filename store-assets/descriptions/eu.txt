@@ -1,0 +1,15 @@
+Read Aloud: Natural Voices, ahots naturalekin web-orriak eta dokumentuak ozen entzuteko aukera ematen dizu.
+
+EZAUGARRIAK
+• Irakurri orri osoa, testu hautatua edo kurtsorretik aurrera.
+• Jarraitu irakurketa hitz eta paragrafoen azpimafiaz; egokitu ahotsa, abiadura eta tonua.
+• Ireki PDF, EPUB eta irudiak dokumentu-irakurlean; erabili OCRa eskaneatutako orrietan.
+• Kudeatu irakurketa laster-markekin, irakurketa-zerrendarekin, tenporizadorearekin, foku-ikuspegiarekin eta lineaz kanpoko grabazioekin.
+• Hautatu interfazearen hizkuntza eta erabili teklatu-lasterbideak.
+
+NOLA ERABILI
+1. Ireki web-orri bat eta sakatu luzapenaren ikonoa.
+2. Aukeratu orri osoa edo testu hautatua irakurtzea.
+3. Gelditu, jarraitu edo aldatu abiadura erreproduktoretik.
+
+Ahotsa sortzeko internet behar da eta irakurri beharreko testua Microsoften ahots-zerbitzura bidaltzen da. Aldez aurretik prestatutako lineaz kanpoko grabazioak internetik gabe entzun daitezke. Luzapen independente hau ez dago Microsofti lotuta.

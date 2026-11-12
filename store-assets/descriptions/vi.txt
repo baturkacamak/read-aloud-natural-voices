@@ -1,0 +1,15 @@
+Read Aloud: Natural Voices cho phép bạn nghe các trang web và tài liệu bằng giọng nói tự nhiên của Microsoft Edge.
+
+TÍNH NĂNG
+• Đọc toàn bộ trang, văn bản đã chọn hoặc từ con trỏ trở đi.
+• Theo dõi việc đọc với tính năng làm nổi bật từ và đoạn văn; điều chỉnh giọng nói, tốc độ và cao độ.
+• Mở PDF, EPUB và hình ảnh trong trình đọc tài liệu; sử dụng OCR trên các trang đã quét.
+• Quản lý việc đọc bằng dấu trang, danh sách đọc, bộ hẹn giờ, chế độ xem tập trung và bản ghi ngoại tuyến.
+• Chọn ngôn ngữ giao diện và sử dụng các phím tắt.
+
+CÁCH SỬ DỤNG
+1. Mở một trang web và nhấp vào biểu tượng tiện ích mở rộng.
+2. Chọn đọc toàn bộ trang hoặc văn bản đã chọn.
+3. Tạm dừng, tiếp tục hoặc thay đổi tốc độ từ trình phát.
+
+Quá trình tạo giọng nói yêu cầu internet và văn bản cần đọc được gửi đến dịch vụ giọng nói của Microsoft. Các bản ghi ngoại tuyến được chuẩn bị trước có thể được nghe mà không cần internet. Tiện ích mở rộng độc lập này không liên kết với Microsoft.

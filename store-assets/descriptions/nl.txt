@@ -1,0 +1,15 @@
+Read Aloud: Natural Voices stelt u in staat om webpagina's en documenten te beluisteren met natuurlijke stemmen.
+
+FUNCTIES
+• Lees de hele pagina, geselecteerde tekst of vanaf de cursor.
+• Volg het lezen met woord- en paragraafmarkering; pas stem, snelheid en toonhoogte aan.
+• Open PDF's, EPUB's en afbeeldingen in de documentlezer; gebruik OCR op gescande pagina's.
+• Beheer het lezen met bladwijzers, leeslijst, timer, focusweergave en offline opslag.
+• Kies de interfancetaal en gebruik sneltoetsen.
+
+HOE TE GEBRUIKEN
+1. Open een webpagina en klik op het extensiepictogram.
+2. Kies ervoor om de hele pagina of geselecteerde tekst te lezen.
+3. Pauzeer, hervat of wijzig de snelheid via de speler.
+
+Voor het genereren van stemmen is internet vereist en de te lezen tekst wordt naar de spraakservice van Microsoft verzonden. Vooraf voorbereide offline opnames kunnen zonder internet worden beluisterd. Deze onafhankelijke extensie is niet gelieerd aan Microsoft.
