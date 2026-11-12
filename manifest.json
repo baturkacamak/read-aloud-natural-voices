@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "default_locale": "tr",
   "name": "__MSG_appName__",
-  "version": "0.7.3",
+  "version": "0.7.4",
   "description": "__MSG_appDescription__",
   "minimum_chrome_version": "116",
   "icons": {
