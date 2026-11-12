@@ -38,6 +38,7 @@
   const i18n = globalThis.SesliOkuI18n;
   const t = (key, params, fallback) =>
     i18n ? i18n.t(key, params, fallback) : fallback ?? key;
+  const shadowHighlightStyles = new Map();
   const themeHighlightStyle = document.createElement("style");
   themeHighlightStyle.id = "sesli-oku-theme-highlight";
 
@@ -131,6 +132,7 @@
 
   const normalizeSettings = preferences.normalize;
 
+
   function renderHighlightStyle() {
     const setting = state.settings;
     const theme = themes.current();
@@ -153,6 +155,10 @@
         ${!word || !glow || experience.focusOpen() ? "opacity: 0 !important;" : ""}
       }`;
     if (!themeHighlightStyle.isConnected) document.documentElement.appendChild(themeHighlightStyle);
+    for (const [root, style] of shadowHighlightStyles) {
+      if (!root.host.isConnected) { style.remove(); shadowHighlightStyles.delete(root); }
+      else style.textContent = themeHighlightStyle.textContent;
+    }
   }
 
   function cleanText(value) {
@@ -202,27 +208,59 @@
     return parts;
   }
 
+  // Walk the rendered (composed) tree: slots replace their fallback and open
+  // shadow roots replace a host's light children. Never enter our own player.
+  function composedChildren(node) {
+    if (node.id === "sesli-oku-host") return [];
+    if (node.nodeType === Node.ELEMENT_NODE && node.localName === "slot") {
+      const assigned = node.assignedNodes({ flatten: true });
+      if (assigned.length) return assigned;
+    }
+    return (node.shadowRoot || node).childNodes;
+  }
+
+  function composedParent(node) {
+    return node.assignedSlot || node.parentElement || node.getRootNode?.().host || null;
+  }
+
+  function composedClosest(node, selector) {
+    for (let el = node; el; el = composedParent(el)) {
+      if (el.matches?.(selector)) return el;
+    }
+    return null;
+  }
+
+  function* composedDescendants(root) {
+    for (const node of composedChildren(root)) {
+      yield node;
+      yield* composedDescendants(node);
+    }
+  }
+
   function collectBlocks() {
     if(globalThis.SesliOkuDocument?.book?.kind==='audio')return [...document.querySelectorAll('[data-book-part]')].map(el=>({el,map:buildTextMap(el),text:cleanText(el.textContent)}));
     const preferred = document.querySelector("article, main, [role='main']");
-    const scope = preferred && cleanText(preferred.innerText).length > 400
+    const scope = preferred && (buildTextMap(preferred)?.text.length || 0) > 400
       ? preferred
       : document.body;
     if (!scope) return [];
 
     const blocks = [];
-    for (const el of scope.querySelectorAll(CANDIDATE_SELECTOR)) {
-      if (el.closest(SKIP_SELECTOR)) continue;
+    for (const el of composedDescendants(scope)) {
+      if (el.nodeType !== Node.ELEMENT_NODE) continue;
+      if (!el.matches(CANDIDATE_SELECTOR) && !el.shadowRoot) continue;
+      if (el.id === "sesli-oku-host" || composedClosest(el, SKIP_SELECTOR)) continue;
       if (!el.getClientRects().length) continue;
 
-      const innerText = cleanText(el.innerText || el.textContent);
+      const map = buildTextMap(el);
+      const innerText = map?.text || "";
       if (innerText.length < 25) continue;
       if (!/[\p{L}\p{N}]/u.test(innerText)) continue;
 
       // Navigation lists and topic indexes are mostly links. Reading them as
       // article text is noisy, so skip blocks whose text is mostly link text.
-      const linkLength = Array.from(el.querySelectorAll("a")).reduce(
-        (sum, link) => sum + cleanText(link.innerText).length,
+      const linkLength = Array.from(composedDescendants(el)).filter(node => node.matches?.("a")).reduce(
+        (sum, link) => sum + (buildTextMap(link)?.text.length || 0),
         0
       );
       if (linkLength > innerText.length * 0.6) continue;
@@ -232,13 +270,13 @@
       // highlight and scroll target. Direct text outside the children is
       // preserved by keeping the wrapper.
       let childTextLength = 0;
-      for (const child of el.children) {
-        if (!child.matches(CANDIDATE_SELECTOR)) continue;
-        const childText = cleanText(child.innerText).length;
+      for (const child of composedChildren(el)) {
+        if (!child.matches?.(CANDIDATE_SELECTOR) && !child.shadowRoot) continue;
+        const childText = buildTextMap(child)?.text.length || 0;
         if (childText >= 25) childTextLength += childText;
       }
       let directTextLength = 0;
-      for (const node of el.childNodes) {
+      for (const node of composedChildren(el)) {
         if (node.nodeType === Node.TEXT_NODE) {
           directTextLength += cleanText(node.nodeValue).length;
         }
@@ -253,8 +291,7 @@
       // The range mapper and the text sent to TTS must use the same source,
       // otherwise a single soft hyphen or hidden node makes word highlighting
       // silently fail. Prefer the TreeWalker map and fall back to innerText.
-      const map = buildTextMap(el);
-      const text = map ? map.text : innerText;
+      const text = map.text;
       if (text.length < 25) continue;
 
       blocks.push({ el, text, map });
@@ -264,13 +301,13 @@
     // the same paragraph is not read twice.
     const byElement = new Map(blocks.map((block) => [block.el, block]));
     for (const block of blocks) {
-      let parent = block.el.parentElement;
+      let parent = composedParent(block.el);
       while (parent && parent !== scope) {
         if (byElement.has(parent)) {
           block.drop = true;
           break;
         }
-        parent = parent.parentElement;
+        parent = composedParent(parent);
       }
     }
     return blocks.filter((block) => !block.drop);
@@ -1123,9 +1160,20 @@
       .forEach((el) => el.classList.remove("edge-ra-current"));
   }
 
+  function ensureShadowHighlight(root) {
+    if (root.host && !shadowHighlightStyles.has(root)) {
+      const style = document.createElement("style");
+      style.dataset.sesliOkuExcluded = "";
+      style.textContent = themeHighlightStyle.textContent;
+      root.appendChild(style);
+      shadowHighlightStyles.set(root, style);
+    }
+  }
+
   function highlight(el) {
     clearHighlight();
     if (!el || !el.isConnected) return;
+    ensureShadowHighlight(el.getRootNode());
     el.classList.add("edge-ra-current");
     state.highlighted = el;
   }
@@ -1690,30 +1738,26 @@
       let node = element;
       while (node && node !== root) {
         if (isBlock(node)) return node;
-        node = node.parentElement;
+        node = composedParent(node);
       }
       return root;
     };
 
-    const walker = document.createTreeWalker(
-      root,
-      NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT,
-      {
-        acceptNode(node) {
-          if (node.nodeType === Node.ELEMENT_NODE) {
-            if (node.tagName === "BR") return NodeFilter.FILTER_ACCEPT;
-            if (node.closest(TEXT_SKIP_SELECTOR)) return NodeFilter.FILTER_REJECT;
-            return NodeFilter.FILTER_SKIP;
-          }
+    function* visibleNodes(element) {
+      for (const node of composedChildren(element)) {
+        if (node.nodeType === Node.ELEMENT_NODE) {
+          if (node.id === "sesli-oku-host" || node.matches(TEXT_SKIP_SELECTOR)) continue;
+          const style = styleOf(node);
+          if (style.display === "none" || style.visibility === "hidden") continue;
+          if (node.tagName === "BR") yield node;
+          yield* visibleNodes(node);
+        } else if (node.nodeType === Node.TEXT_NODE) {
           const parent = node.parentElement;
-          if (!parent || parent.closest(TEXT_SKIP_SELECTOR)) {
-            return NodeFilter.FILTER_REJECT;
-          }
-          if (isHidden(parent)) return NodeFilter.FILTER_REJECT;
-          return NodeFilter.FILTER_ACCEPT;
-        },
+          if (parent && !isHidden(parent)) yield node;
+        }
       }
-    );
+    }
+    if (composedClosest(root, TEXT_SKIP_SELECTOR)) return { text: "", positions: [] };
 
     let text = "";
     const positions = [];
@@ -1725,8 +1769,7 @@
       positions.push(null);
     };
 
-    let node;
-    while ((node = walker.nextNode())) {
+    for (const node of visibleNodes(root)) {
       if (node.nodeType === Node.ELEMENT_NODE) {
         if (node.tagName === "BR") pushSpace();
         continue;
@@ -1791,7 +1834,8 @@
     return offsets.map(offset => {
       if (!offset) return null;
       const first = map.positions[base + offset.start]; const last = map.positions[base + offset.end - 1];
-      if (!first || !last) return null;
+      if (!first || !last || first.node.getRootNode() !== last.node.getRootNode()) return null;
+      ensureShadowHighlight(first.node.getRootNode());
       try { const range = document.createRange(); range.setStart(first.node, first.offset); range.setEnd(last.node, last.offset + 1); return range; } catch { return null; }
     });
   }
@@ -2555,6 +2599,17 @@
 
   if (TEST_MODE) {
     window.__sesliOkuTest = {
+      shadowWord: () => {
+        const block = collectBlocks().find(b => b.text.includes("Shadow article"));
+        const chunk = buildChunks([block])[0];
+        highlight(chunk.el);
+        const range = buildWordRanges(chunk, [{text:"Shadow"}], [{start:0,end:6}])?.[0];
+        const result = { text: range?.toString(), shadow: !!range?.startContainer.getRootNode().host,
+          styled: !!range?.startContainer.getRootNode().querySelector('style[data-sesli-oku-excluded]') };
+        clearHighlight();
+        return result;
+      },
+      collect: () => collectBlocks().map(({ el, text, map }) => ({ id: el.id, text, mapped: map.positions.filter(Boolean).every(p => p.node.isConnected) })),
       syntheticAudio: (duration = 150) => {
         const frames = Math.round(8000 * duration / 1000);
         const buffer = new ArrayBuffer(44 + frames * 2);

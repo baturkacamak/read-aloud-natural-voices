@@ -367,6 +367,30 @@ async function main() {
       await checkAdditions({evalIso,check,waitFor,WAIT,open,extensionId,pageCdp});
       await evalIso(`SesliOkuSettings.update(SesliOkuSettings.defaults);SesliOkuThemes.set('modern');SesliOkuThemes.setMode('original')`,true);
     }
+    async function checkShadowReading() {
+      await evalIso(`(() => {
+        const fixture = document.createElement('div'); fixture.id = 'shadow-fixture';
+        (document.querySelector('article, main') || document.body).prepend(fixture);
+        const host = document.createElement('test-reader'); fixture.append(host);
+        host.innerHTML = '<p slot="copy" id="slotted-copy">Slotted article text must appear exactly once in the reading queue.</p><p>Unassigned secret text should never be read by this reader.</p>';
+        const root = host.attachShadow({mode:'open'});
+        root.innerHTML = '<p id="shadow-copy">Shadow article text is available for reading with real text node mappings.</p><slot name="copy"><p>Fallback secret text should never be read when assigned.</p></slot><test-nested></test-nested><p hidden>Hidden secret text must never be read by this reader.</p>';
+        root.querySelector('test-nested').attachShadow({mode:'open'}).innerHTML = '<p id="nested-copy">Nested shadow article text follows the slot in the reading queue.</p>';
+        const excluded = document.createElement('aside'); fixture.append(excluded);
+        excluded.attachShadow({mode:'open'}).innerHTML = '<p>Excluded secret text must never be read by this reader.</p>';
+      })()`);
+      try {
+        const blocks = await evalIso('__sesliOkuTest.collect()');
+        const text = blocks.map(b=>b.text).join(' ');
+        check('open and nested shadow roots are read in rendered order', text.indexOf('Shadow article')>=0 && text.indexOf('Shadow article')<text.indexOf('Slotted article') && text.indexOf('Slotted article')<text.indexOf('Nested shadow'));
+        check('slot content is read once without hidden, unassigned or excluded text', (text.match(/Slotted article/g)||[]).length===1 && !text.includes('secret text'));
+        check('shadow text maps retain connected DOM nodes for highlighting', blocks.filter(b=>/Shadow article|Nested shadow|Slotted article/.test(b.text)).every(b=>b.mapped));
+        const word = await evalIso('__sesliOkuTest.shadowWord()');
+        check('shadow word ranges select actual text and install shadow highlight styles',word.text==='Shadow' && word.shadow && word.styled);
+      } finally { await evalIso("document.querySelector('#shadow-fixture').remove()"); }
+    }
+    await checkShadowReading();
+    if(process.env.SHADOW_ONLY){console.log(`\n${passed} passed, ${failed} failed`);if(failed)process.exitCode=1;return;}
     if(process.env.SCRUB_ONLY){await checkScrubbing({evalIso,check,waitFor,WAIT,pageCdp});console.log(`\n${passed} passed, ${failed} failed`);if(failed)process.exitCode=1;return;}
     if(process.env.SPEED_ONLY){await checkPlaybackSpeed({evalIso,check,waitFor,WAIT,pageCdp});console.log(`\n${passed} passed, ${failed} failed`);if(failed)process.exitCode=1;return;}
     if(process.env.ADVANCED_ONLY){await checkAdvancedTools();console.log(`\n${passed} passed, ${failed} failed`);if(failed)process.exitCode=1;return;}
