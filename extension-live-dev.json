@@ -1,0 +1,33 @@
+{
+  "source": ".",
+  "port": 5174,
+  "hotEntries": [
+    "src/content.js"
+  ],
+  "resetGlobals": [
+    "__sesliOkuLoaded",
+    "SesliOkuThemes",
+    "SesliOkuSettings",
+    "SesliOkuTools",
+    "SesliOkuExperience",
+    "SesliOkuI18n",
+    "SesliOkuLocaleMeta",
+    "SesliOkuLocales",
+    "SesliOkuLibrary"
+  ],
+  "removeSelectors": [
+    "#sesli-oku-host",
+    "#sesli-oku-spotlight",
+    "#sesli-oku-spacer",
+    "#sesli-oku-layout",
+    "#sesli-oku-theme-highlight"
+  ],
+  "lifecycle": {
+    "src/content.js": "__liveScope.onDispose(() => {\n  globalThis.__extensionLiveDevSnapshot = { visible: !!state.host?.isConnected && state.host.style.display !== 'none', settingsOpen: !!state.ui?.settingsButton && state.ui.settingsButton.getAttribute('aria-expanded') === 'true' };\n  stop(true);\n  state.ui?.preferences?.dispose();\n  state.releaseI18n?.();\n  layoutObserver?.disconnect(); pageObserver?.disconnect();\n});\nif (globalThis.__extensionLiveDevSnapshot?.visible) { showUi(); if (globalThis.__extensionLiveDevSnapshot.settingsOpen) toggleSettings(true); }\n"
+  },
+  "assets": [
+    "_locales",
+    "icons",
+    "src"
+  ]
+}

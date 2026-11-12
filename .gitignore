@@ -3,3 +3,7 @@ dist/
 *.crx
 *.pem
 node_modules/
+.l10n/
+
+# Generated live development extension
+/dist-dev/
