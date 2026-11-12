@@ -13,3 +13,8 @@ node_modules/
 /.auth/
 /.env.cws
 /.env.amo
+
+# Browser Extension Toolkit local secrets
+.auth/chrome-web-store-service-account.json
+.env.cws
+.auth/
