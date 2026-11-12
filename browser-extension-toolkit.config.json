@@ -1,0 +1,32 @@
+{
+  "projectName": "read-aloud-natural-voices",
+  "versionFiles": {
+    "packageJson": "package.json",
+    "manifestJson": "manifest.json",
+    "packageLockJson": "package-lock.json"
+  },
+  "packaging": {
+    "distDir": "dist/extension",
+    "buildsDir": "builds",
+    "zipNameTemplate": "{name}-v{version}.zip",
+    "sourceZipNameTemplate": "{name}-v{version}-source.zip",
+    "sourceIncludePaths": [
+      "src", "icons", "_locales", "locales", "tests",
+      "scripts/build-extension.mjs", "scripts/build-locales.mjs",
+      "scripts/enforce-invariants.mjs", "scripts/package.py",
+      "manifest.json", "package.json", "package-lock.json",
+      "l10n.config.json", "extension-live-dev.json",
+      "browser-extension-toolkit.config.json",
+      "README.md", "LICENSE", "NOTICE", "PRIVACY.md"
+    ]
+  },
+  "store": {},
+  "publish": {
+    "envFile": ".env.cws",
+    "serviceAccountKeyFile": ".auth/chrome-web-store-service-account.json"
+  },
+  "locales": {
+    "baseLanguage": "tr",
+    "extensionLocalesDir": "_locales"
+  }
+}

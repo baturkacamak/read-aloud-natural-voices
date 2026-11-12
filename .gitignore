@@ -7,3 +7,9 @@ node_modules/
 
 # Generated live development extension
 /dist-dev/
+
+# Toolkit release artifacts and local store credentials
+/builds/
+/.auth/
+/.env.cws
+/.env.amo

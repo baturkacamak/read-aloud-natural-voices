@@ -675,6 +675,22 @@ tamamı tek dosya olarak tutulmaz.
 ```bash
 python3 scripts/package.py
 # dist/read-aloud-natural-voices-<sürüm>.zip
+
+### Browser Extension Toolkit release entegrasyonu
+
+`browser-extension-toolkit.config.json`, masaüstü Toolkit uygulamasının sürüm ve
+paket yollarını tanımlar. Sürüm `package.json`, `package-lock.json` ve
+`manifest.json` dosyalarında aynı olmalıdır; Toolkit sürüm artırırken üçünü günceller.
+
+`npm run build`, paketlenecek eklentiyi `dist/extension/` içine hazırlar.
+Toolkit mağaza paketlerini `builds/` içine yazar. Eski
+`python3 scripts/package.py` komutu da çalışmaya devam eder.
+
+Toolkit uygulamasında proje klasörünü yükleyip **Refresh Project** düğmesine basın.
+Sürüm ve sonraki sürüm görünmelidir. Mağazaya gönderim için Toolkit'in Store
+Credentials ekranında Chrome Web Store kimlik bilgilerini ayrıca yapılandırın.
+Firefox paketinin üretilmesi, Firefox çalışma zamanı uyumluluğunun doğrulandığı
+anlamına gelmez; Firefox yayını öncesinde ayrıca tarayıcı testi gerekir.
 ```
 
 Mağaza metinleri, izin gerekçeleri ve yayın kontrol listesi
