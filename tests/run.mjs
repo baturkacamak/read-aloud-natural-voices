@@ -1339,8 +1339,6 @@ async function main() {
       return;
     }
     check("popup and toolbar offer all five themes", await evalIso(`document.querySelector("#sesli-oku-host").shadowRoot.querySelector("#sesli-oku-theme").options.length === 5`));
-    await evalIso("__sesliOkuTest.toggleSettings(true)");
-    await WAIT(150);
     const beforeTheme = await snapshot();
     const sitePanelColor = await evalIso(`getComputedStyle(document.querySelector("#bottom-panel")).backgroundColor`);
     for (const theme of ["win95", "win98", "xp", "win7", "modern"]) {
@@ -1364,13 +1362,16 @@ async function main() {
         })()`));
         check(`${surface} ${theme} keeps the selected-era icon in sync`, true);
         if (theme === "win95") {
-          await evaluate(`(() => { const select = ${query}; select.parentElement.querySelector('.pref-select-trigger').click(); })()`);
+          if (surface === "toolbar") await evalIso("__sesliOkuTest.toggleSettings(true)");
+          await evaluate(`(() => { const select = ${query}; select.closest('.preferences').querySelector('[data-tab="appearance"]').click(); select.parentElement.querySelector('.pref-select-trigger').click(); })()`);
           await waitFor(`${surface} dropdown era icons load`, () => evaluate(`(() => {
             const select = ${query};
             const icons = [...select.parentElement.querySelectorAll('.pref-select-option-icon')];
             return icons.length === 4 && new Set(icons.map(icon => icon.src)).size === 4 && icons.every(icon => icon.complete && icon.naturalWidth > 0 && icon.alt === '');
           })()`));
           await evaluate(`(() => { const select = ${query}; select.parentElement.querySelector('.pref-select-trigger').click(); })()`);
+          await evaluate(`(() => { const select = ${query}; select.closest('.preferences').querySelector('[data-tab="reading"]').click(); })()`);
+          if (surface === "toolbar") await evalIso("__sesliOkuTest.toggleSettings(false)");
         }
 
       }
