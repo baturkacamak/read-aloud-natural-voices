@@ -5,6 +5,9 @@
  */
 (() => {
   if (globalThis.SesliOkuThemes) return;
+  const i18n = globalThis.SesliOkuI18n;
+  const t = (key, params, fallback) =>
+    i18n ? i18n.t(key, params, fallback) : fallback ?? key;
   const choices = Object.freeze([
     { id: "modern", label: "Modern" },
     { id: "win95", label: "Windows 95" },
@@ -51,12 +54,12 @@
       ["ms_sans_serif_bold.woff2", "700"],
     ].map(async ([file, weight]) => {
       const response = await fetch(chrome.runtime.getURL(`src/vendor/98.css/${file}`));
-      if (!response.ok) throw new Error("Klasik tema yazı tipi yüklenemedi.");
+      if (!response.ok) throw new Error(t("themes.fontFailed"));
       // ArrayBuffer also works on sites that restrict font URLs via CSP.
       const face = new FontFace("Sesli Oku Classic", await response.arrayBuffer(), { weight });
       document.fonts.add(await face.load());
     })).catch(error => {
-      console.warn("[Sesli Oku]", error);
+      console.warn("[Read Aloud]", error);
     });
     return classicFontsReady;
   }
@@ -756,6 +759,8 @@
       const option = document.createElement("option");
       option.value = id;
       option.textContent = label;
+      const version = { win95: "95", win98: "98", xp: "xp", win7: "7" }[id];
+      if (version) option.dataset.iconSrc = chrome.runtime.getURL(`src/assets/theme-icons/windows-${version}.svg`);
       return option;
     }));
     select.value = current;

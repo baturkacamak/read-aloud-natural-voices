@@ -4,16 +4,15 @@
 
 # Read Aloud: Natural Voices
 
-**Microsoft Edge için Linux'ta Read Aloud.**
+**Doğal seslerle metinleri dinleyin.**
 
 Edge'in doğal neural sesleriyle sayfaları, seçimleri ve imlecin olduğu yeri okuyan
 Manifest V3 eklentisi. API anahtarı yok, hesap yok, kurulum derdi yok.
 
-[![Version](https://img.shields.io/badge/version-0.7.0-84cc16?style=flat-square)](manifest.json)
+[![Version](https://img.shields.io/badge/version-0.7.1-84cc16?style=flat-square)](manifest.json)
 [![License](https://img.shields.io/badge/license-GPL--3.0-blue?style=flat-square)](LICENSE)
 [![Manifest V3](https://img.shields.io/badge/Manifest-V3-0f172a?style=flat-square)](manifest.json)
 [![Microsoft Edge](https://img.shields.io/badge/Microsoft%20Edge-116%2B-0078D4?style=flat-square&logo=microsoftedge&logoColor=white)](https://www.microsoft.com/edge)
-[![Platform](https://img.shields.io/badge/platform-Linux-FCC624?style=flat-square&logo=linux&logoColor=black)](#)
 [![No API key](https://img.shields.io/badge/API%20key-not%20required-16a34a?style=flat-square)](#)
 
 [Kurulum](#kurulum) · [Kullanım](#kullanım) · [Nasıl çalışır?](#nasıl-çalışır) · [Kelime vurgusu](#kelime-vurgusu) · [Gizlilik](#gizlilik) · [Sorun giderme](#sorun-giderme)
@@ -28,9 +27,7 @@ Manifest V3 eklentisi. API anahtarı yok, hesap yok, kurulum derdi yok.
 
 ## Neden Read Aloud: Natural Voices?
 
-Microsoft Edge'in **Read Aloud** özelliği Windows ve macOS'ta var; **Linux'ta yok.**
-Edge Linux'ta ne menüde ne de sağ tık menüsünde bu özellik bulunuyor. Read Aloud: Natural Voices,
-Edge'in kendi Read Aloud servisini doğrudan kullanarak bu boşluğu dolduruyor:
+Read Aloud: Natural Voices, Edge'in Read Aloud servisini kullanarak web sayfalarını ve belgeleri doğal seslerle okur:
 
 - Aynı Microsoft neural sesleri (Türkçe **Emel** ve **Ahmet** dahil)
 - Sayfa metnini **paragraf paragraf** okuma
@@ -78,7 +75,7 @@ Edge'in kendi Read Aloud servisini doğrudan kullanarak bu boşluğu dolduruyor:
 
 ### Gereksinimler
 
-- **Microsoft Edge 116+** (Linux)
+- **Microsoft Edge 116+**
 - İnternet bağlantısı (ses sentezi Microsoft servisinde yapılır)
 - Edge'de **Geliştirici modu** (paketlenmemiş yükleme için)
 
@@ -422,6 +419,12 @@ flowchart LR
 | --- | --- |
 | `src/drm.js` | `Sec-MS-GEC` v2 token üretimi (CS64 + SHA-256) |
 | `src/tts.js` | WebSocket protokolü, SSML, MP3 ve kelime sınırları |
+| `src/i18n.js` | Ortak sözlük çalışma zamanı, dil seçimi ve `data-i18n` uygulaması |
+| `locales/` | JSON çeviri kaynakları (82 dil, isteğe bağlı yüklenir) |
+| `src/locales/base.js` | Temel dil kataloğu + dil listesi (üretilen) |
+| `_locales/` | Manifest metinleri (üretilen) |
+| `l10n.config.json` | Localization Toolkit yapılandırması |
+| `scripts/l10n-translate.mjs` | Toplu Google Translate çeviri hattı |
 | `src/background.js` | Mesaj yönlendirme, ses listesi önbelleği, menüler |
 | `src/library.js` | Yerel kitaplık, kuyruk verisi, telaffuz eşlemesi ve kitaplık paneli |
 | `src/insights.js` | Dinleme istatistikleri ve isteğe bağlı hesap eşitlemesi |
@@ -655,9 +658,9 @@ tamamı tek dosya olarak tutulmaz.
 
 - **Resmî olmayan API.** Microsoft uç noktayı veya token algoritmasını
   değiştirebilir; bu durumda eklenti güncellemesi gerekir.
-- Doğrudan tarayıcı bağlantısı yalnızca **Microsoft Edge**'de çalışır. Servis
-  Edge dışındaki user-agent'ları reddeder; Chrome/Firefox için yerel bir köprü
-  sunucu gerekir.
+- Tarayıcı uyumluluğu kullanılan ses servisine bağlıdır. Edge dışındaki
+  tarayıcılarda 403 hatası görülebilir; Chrome ve diğer tarayıcılar ayrıca
+  test edilmelidir.
 - İnternet bağlantısı gerekir; metin Microsoft sunucularına gönderilir.
 - Tarayıcının yerleşik PDF görüntüleyicisinde ve canvas/gölge DOM içeriğinde doğrudan sayfa okuma desteklenmez. PDF ve görselleri yerel belge okuyucusunda açabilirsiniz. DRM korumalı belgeler desteklenmez.
 - Eklenti henüz mağazada yayınlanmadı; kaynak klasörden veya ZIP'ten yüklenir.
@@ -671,7 +674,7 @@ tamamı tek dosya olarak tutulmaz.
 
 ```bash
 python3 scripts/package.py
-# dist/sesli-oku-<sürüm>.zip
+# dist/read-aloud-natural-voices-<sürüm>.zip
 ```
 
 Mağaza metinleri, izin gerekçeleri ve yayın kontrol listesi
@@ -695,5 +698,36 @@ Bu proje Microsoft ile bağlantılı, onun tarafından desteklenen veya onaylana
 bir ürün değildir.
 
 <div align="center">
-  <sub>Linux'ta Edge için yapıldı · ☕ ve 🎧 ile</sub>
+  <sub>Doğal seslerle okuma · ☕ ve 🎧 ile</sub>
 </div>
+
+### Hata kayıtları
+
+Kesilen okumaları incelemek için eklenti menüsündeki **Hata kayıtları → Log dosyasını indir**
+düğmesini kullanın. Son 500 teknik olay yerel olarak saklanır; kayıtlar tarayıcı yeniden
+başlatıldığında korunur. Metin ve sayfa adresleri kaydedilmez. **Kayıtları temizle** düğmesi
+yerel günlüğü siler. Günlük yalnızca bu sürüm yüklendikten sonraki olayları kapsar;
+tarayıcının tamamen çökmesi veya eklenti bağlamının kapanması sırasında son kayıt eksik kalabilir.
+
+## Live extension development
+
+Run `npm run dev` from this directory, then load the generated `dist-dev/`
+folder once with **Load unpacked**. Keep the command running. Content JavaScript
+and CSS edits update the extension inside already-open matching pages, without
+reloading the extension or the page. Each update disposes tracked listeners,
+timers, observers and subscriptions before mounting the new code.
+
+Manifest, background, and MAIN-world hook changes require one extension/page
+reload. This workflow changes only development output; release packaging keeps
+using the original manifest and source/build output. The local bridge listens
+only on 127.0.0.1 and does not read browser profiles or send page content.
+
+During a content-code update active playback stops to avoid two audio players; the toolbar/settings visibility is restored. Theme and reading preferences remain in extension storage.
+
+Windows theme choices show the matching Windows 95, 98, XP or 7 SVG in both the
+menu and selected value. Icons are local assets, generated from YouTube Comment
+Navigator 95's shared logo components. To synchronize them, run
+`node ../browser-extension-toolkit/scripts/sync-windows-theme-icons.mjs` from this
+project; add `--check` to detect stale assets.
+
+MP3 dışa aktarma, işlem başlarken seçili oynatma hızını dosyanın sesine uygular; ses perdesini koruyan dönüşüm cihazda yapılır. 1× hızda yeniden kodlama yapılmaz. Normal hızdaki sunucu sesi önbellekte tutulur; hız değişiklikleri yeniden sentez gerektirmez. Sesli kitap/çevrimdışı kayıt oynatımı kendi hız ayarını kullanır.

@@ -387,10 +387,13 @@ async function main() {
       await waitFor('clicked word in another paragraph',()=>evalIso(`__sesliOkuTest.snapshot().wordText==='buradan'`));
       check('clicking another paragraph starts at the clicked word', (await snapshot()).index===1 && !(await snapshot()).paused);
       await evalIso('__sesliOkuTest.pause()');
+      const pausedBeforeClick = await snapshot();
       await clickAt(await wordPoint('#p1','kaydırma'));
-      await waitFor('clicked word resumes paused reading',()=>evalIso(`__sesliOkuTest.snapshot().wordText==='kaydırma' && !__sesliOkuTest.snapshot().paused`));
-      check('a text click resumes paused reading at an earlier word', (await snapshot()).index===0);
-      await evalIso(`__sesliOkuTest.pause();__sesliOkuTest.toggleSettings(true)`);
+      const pausedAfterClick = await snapshot();
+      check('a text click preserves paused reading and its position', pausedAfterClick.paused && pausedAfterClick.session===pausedBeforeClick.session && pausedAfterClick.index===pausedBeforeClick.index && pausedAfterClick.wordText===pausedBeforeClick.wordText);
+      await evalIso('__sesliOkuTest.playback()');
+      check('resuming after a paused text click keeps the original position', !(await snapshot()).paused && (await snapshot()).index===pausedBeforeClick.index && (await snapshot()).wordText===pausedBeforeClick.wordText);
+      await evalIso(`__sesliOkuTest.toggleSettings(true)`);
       await WAIT(100);
       const point = await wordPoint('#p2','Okuma');
       await clickAt(point);
@@ -510,11 +513,46 @@ async function main() {
       await waitFor("MP3 exists on disk", () => existsSync(path.join(profile,filename)));
       check("MP3 is downloaded with the article filename", readFileSync(path.join(profile,filename)).length > 3000);
       check("MP3 export preserves paused playback", (await snapshot()).paused);
-      await evalIso(`__sesliOkuTest.requestDelay(300); __sesliOkuTest.libraryAction('export')`, true);
+      const tempoChecks = await evalIso(`(async()=>{
+        const context=new OfflineAudioContext(1,132300,44100);
+        const tone=context.createBuffer(1,132300,44100);
+        const data=tone.getChannelData(0);for(let i=0;i<data.length;i++)data[i]=.5*Math.sin(2*Math.PI*440*i/44100);
+        const results=[];
+        for(const speed of [.5,1.5,2]){
+          const bytes=await SesliOkuAudioExport.encodeTempo(tone,speed);
+          const decoded=await context.decodeAudioData(bytes.buffer);
+          const pcm=decoded.getChannelData(0);const start=Math.floor(decoded.sampleRate*.3);const end=Math.min(pcm.length,start+Math.floor(decoded.sampleRate*.5));
+          let crossings=0;for(let i=start+1;i<end;i++)if(pcm[i-1]<=0&&pcm[i]>0)crossings++;
+          results.push({speed,duration:decoded.duration,frequency:crossings*decoded.sampleRate/(end-start)});
+        }
+        return results;
+      })()`,true);
+      check('MP3 tempo changes duration while preserving pitch at 0.5x, 1.5x and 2x',tempoChecks.every(item=>Math.abs(item.duration-3/item.speed)<.12&&Math.abs(item.frequency-440)<15),JSON.stringify(tempoChecks));
+      check('MP3 tempo conversion supports cancellation',await evalIso(`(async()=>{try{await SesliOkuAudioExport.encodeTempo(new AudioBuffer({length:44100,sampleRate:44100}),1.5,()=>true);return false;}catch(e){return e.name==='AbortError';}})()`,true));
+      const requestsBeforeSpeed = await evalIso(`__sesliOkuTest.snapshot().testRequests.length`);
+      await evalIso(`SesliOkuSettings.update({playbackRate:1.5})`,true);
+      await evalIso(`__sesliOkuTest.libraryAction('export')`,true);
+      await waitFor('MP3 at selected playback speed',()=>evalIso(`SesliOkuLibrary.current().export?.status==='done'&&!__sesliOkuTest.experience().exporting`));
+      const fastDuration=await evalIso(`(async()=>{const c=new OfflineAudioContext(1,1,44100);return (await c.decodeAudioData(await __sesliOkuTest.experience().exportBlob.arrayBuffer())).duration;})()`,true);
+      check('exported MP3 embeds the selected 1.5x playback speed',fastDuration<decodedDuration*.85&&fastDuration>decodedDuration*.5,String(fastDuration));
+      check('changing playback speed reuses normal-speed cached audio',await evalIso(`__sesliOkuTest.snapshot().testRequests.length`)===requestsBeforeSpeed);
+      check('MP3 export does not change live playback settings',await evalIso(`__sesliOkuTest.snapshot().settings.playbackRate===1.5&&__sesliOkuTest.snapshot().paused`));
+      await evalIso(`SesliOkuSettings.update({playbackRate:1})`,true);
+      const beforeCachedExport = await evalIso(`__sesliOkuTest.snapshot().testRequests.length`);
+      await evalIso(`__sesliOkuTest.libraryAction('export')`, true);
+      await waitFor('cached export completes',()=>evalIso(`SesliOkuLibrary.current().export?.status==='done' && !__sesliOkuTest.experience().exporting`));
+      check('completed MP3 parts are reused without synthesis', await evalIso(`__sesliOkuTest.snapshot().testRequests.length`) === beforeCachedExport);
+      await evalIso(`SesliOkuSettings.update({pitch:17})`, true);
+      await evalIso(`__sesliOkuTest.requestDelay(500); __sesliOkuTest.libraryAction('export')`, true);
       await waitFor('cancelable export',()=>evalIso(`SesliOkuLibrary.current().export?.status==='working'`));
+      await waitFor('first changed-voice part saved',()=>evalIso(`SesliOkuLibrary.current().export?.completed===1`));
       await evalIso(`__sesliOkuTest.libraryAction('cancelExport')`, true);
-      await WAIT(400);
+      await WAIT(600);
       check('canceling MP3 prevents a late completion', await evalIso(`SesliOkuLibrary.current().export.status==='canceled' && !__sesliOkuTest.experience().exporting`));
+      const beforeResume = await evalIso(`__sesliOkuTest.snapshot().testRequests.length`);
+      await evalIso(`__sesliOkuTest.requestDelay(0); __sesliOkuTest.libraryAction('export')`, true);
+      await waitFor('interrupted MP3 resumes',()=>evalIso(`SesliOkuLibrary.current().export?.status==='done' && !__sesliOkuTest.experience().exporting`));
+      check('restart reuses saved parts and requests only missing parts', await evalIso(`(()=>{const requests=__sesliOkuTest.snapshot().testRequests;const added=requests.slice(${beforeResume});return added.length>0&&added.length<=2&&added.every(item=>item.source!==requests[0].source);})()`));
       await evalIso(`__sesliOkuTest.requestDelay(0); __sesliOkuTest.toggleSettings(true); document.querySelector('#sesli-oku-host').shadowRoot.querySelector('[data-tab="library"]').click()`);
       await pageCdp.send("Emulation.setDeviceMetricsOverride", { width: 360, height: 640, deviceScaleFactor: 1, mobile: false });
       for (const theme of ['modern','win95','win98','xp','win7']) {
@@ -1211,6 +1249,18 @@ async function main() {
       return result.result.value;
     };
     await waitFor("popup theme controls", () => evalPopup(`document.querySelector("#theme")?.options.length === 5`));
+    // Persistent diagnostics across the content-script / worker / popup boundary.
+    await evalIso(`chrome.runtime.sendMessage({target:"background",type:"DIAGNOSTIC_EVENT",event:"audio.error",details:{code:3,text:"PRIVATE_TEST_TEXT",url:"https://private.test/"}})`, true);
+    const journal = await evalPopup(`chrome.runtime.sendMessage({target:"background",type:"EXPORT_DIAGNOSTICS"})`);
+    check("popup exports persistent diagnostic events", journal.ok && typeof journal.log === "string" && journal.log.includes('"event":"audio.error"'), journal.error || "");
+    check("diagnostics exclude reading text and page addresses", typeof journal.log === "string" && !journal.log.includes("PRIVATE_TEST_TEXT") && !journal.log.includes("private.test"));
+    const forbiddenLog = await evalIso(`chrome.runtime.sendMessage({target:"background",type:"EXPORT_DIAGNOSTICS"})`, true);
+    check("content scripts cannot export diagnostic logs", forbiddenLog.ok === false);
+    check("popup offers log download and clear controls", await evalPopup(`!!document.querySelector('#export-log') && !!document.querySelector('#clear-log')`));
+    await evalPopup(`document.querySelector('#clear-log').click()`);
+    await waitFor("cleared diagnostic journal", () => evalPopup(`chrome.storage.local.get('diagnosticLog').then(value=>!value.diagnosticLog)`));
+    check("popup clears persistent diagnostics", true);
+
     async function checkColorModes() {
       console.log("\n  Light and dark appearance");
       await evalIso(`__sesliOkuTest.start(); __sesliOkuTest.pause(); __sesliOkuTest.toggleSettings(true); document.querySelector('#sesli-oku-host').shadowRoot.querySelector('[data-tab="appearance"]').click()`);
@@ -1289,6 +1339,8 @@ async function main() {
       return;
     }
     check("popup and toolbar offer all five themes", await evalIso(`document.querySelector("#sesli-oku-host").shadowRoot.querySelector("#sesli-oku-theme").options.length === 5`));
+    await evalIso("__sesliOkuTest.toggleSettings(true)");
+    await WAIT(150);
     const beforeTheme = await snapshot();
     const sitePanelColor = await evalIso(`getComputedStyle(document.querySelector("#bottom-panel")).backgroundColor`);
     for (const theme of ["win95", "win98", "xp", "win7", "modern"]) {
@@ -1300,6 +1352,28 @@ async function main() {
       await waitFor(`${theme} applies to toolbar`, () => evalIso(`document.querySelector("#sesli-oku-host").shadowRoot.querySelector(".wrap").dataset.theme === ${JSON.stringify(theme)}`));
       await waitFor(`${theme} syncs to popup`, () => evalPopup(`document.body.dataset.theme === ${JSON.stringify(theme)} && document.querySelector("#theme").value === ${JSON.stringify(theme)}`));
       await WAIT(100);
+      const expectedIcon = { win95: "95", win98: "98", xp: "xp", win7: "7" }[theme];
+      for (const [surface, evaluate, query] of [
+        ["toolbar", evalIso, 'document.querySelector("#sesli-oku-host").shadowRoot.querySelector("#sesli-oku-theme")'],
+        ["popup", evalPopup, 'document.querySelector("#theme")'],
+      ]) {
+        await waitFor(`${surface} ${theme} selected icon`, () => evaluate(`(() => {
+          const select = ${query};
+          const icon = select.parentElement.querySelector('.pref-select-current-icon');
+          return ${JSON.stringify(!!expectedIcon)} ? !icon.hidden && icon.complete && icon.naturalWidth > 0 && icon.src.endsWith('windows-${expectedIcon}.svg') : icon.hidden;
+        })()`));
+        check(`${surface} ${theme} keeps the selected-era icon in sync`, true);
+        if (theme === "win95") {
+          await evaluate(`(() => { const select = ${query}; select.parentElement.querySelector('.pref-select-trigger').click(); })()`);
+          await waitFor(`${surface} dropdown era icons load`, () => evaluate(`(() => {
+            const select = ${query};
+            const icons = [...select.parentElement.querySelectorAll('.pref-select-option-icon')];
+            return icons.length === 4 && new Set(icons.map(icon => icon.src)).size === 4 && icons.every(icon => icon.complete && icon.naturalWidth > 0 && icon.alt === '');
+          })()`));
+          await evaluate(`(() => { const select = ${query}; select.parentElement.querySelector('.pref-select-trigger').click(); })()`);
+        }
+
+      }
       const themed = await snapshot();
       check(`${theme} preserves the reading session and pause state`, themed.session === beforeTheme.session && themed.paused === beforeTheme.paused && themed.index === beforeTheme.index && themed.follow === beforeTheme.follow, JSON.stringify({ before: beforeTheme, after: themed }));
       check(`${theme} keeps the toolbar fixed and page below it`, approx(themed.hostRect.top, 0) && await evalIso(`document.querySelector("#reader").getBoundingClientRect().top >= document.querySelector("#sesli-oku-host").getBoundingClientRect().bottom - 1`));

@@ -1,14 +1,22 @@
+import { record, exportLog, clearLog } from "./diagnostics.js";
+import "./locales/base.js";
+import "./i18n.js";
 import "./library.js";
 import "./settings.js";
 import "./vault.js";
 import "./tools.js";
 import "./insights.js";
 const library = globalThis.SesliOkuLibrary;
+const i18n = globalThis.SesliOkuI18n;
+const t = (key, params) => (i18n ? i18n.t(key, params) : key);
 import { tts, listVoices } from "./tts.js";
 
 const VOICES_TTL_MS = 7 * 24 * 60 * 60 * 1000;
 
 let readingTabId = null;
+record("worker.started");
+globalThis.addEventListener?.("error", event => { record("worker.error", { error: event.error || event.message }); });
+globalThis.addEventListener?.("unhandledrejection", event => { record("worker.rejection", { error: event.reason }); });
 
 /**
  * chrome.runtime messaging serializes payloads as JSON, so a Uint8Array would
@@ -112,7 +120,7 @@ async function ensureContent(tabId) {
     });
     await chrome.scripting.executeScript({
       target: { tabId },
-      files: ["src/themes.js", "src/library.js", "src/settings.js", "src/tools.js", "src/experience.js", "src/content.js"],
+      files: ["src/themes.js", "src/library.js", "src/settings.js", "src/tools.js", "src/vendor/audio/codecs.js", "src/audio-export.js", "src/experience.js", "src/content.js"],
     });
   } catch {
     return false;
@@ -127,18 +135,18 @@ async function ensureContent(tabId) {
 
 async function sendToTab(tabId, message) {
   if (!(await ensureContent(tabId))) {
-    throw new Error("Bu sayfada çalıştırılamıyor. edge:// ve mağaza sayfalarında desteklenmez.");
+    throw new Error(t("errors.unsupportedPage"));
   }
   const response = await chrome.tabs.sendMessage(tabId, message, { frameId: 0 });
   if (response && response.ok === false) {
-    throw new Error(response.error || "İşlem tamamlanamadı.");
+    throw new Error(response.error || t("errors.generic"));
   }
   return response;
 }
 
 async function startOnActiveTab(kind, extra = {}) {
   const tab = await activeTab();
-  if (!tab?.id) throw new Error("Etkin sekme bulunamadı.");
+  if (!tab?.id) throw new Error(t("errors.noActiveTab"));
   await library.ready;
   const queueOwner = library.current().queueTabId;
   if (library.current().queueRunning) {
@@ -155,30 +163,40 @@ async function startOnActiveTab(kind, extra = {}) {
   });
 }
 
+let menusCreated = false;
+
 function createMenus() {
+  menusCreated = true;
   chrome.contextMenus.removeAll(() => {
     chrome.contextMenus.create({
       id: "edge-ra-read-page",
-      title: "Sayfayı sesli oku",
+      title: t("background.menu.readPage"),
       contexts: ["page"],
     });
     chrome.contextMenus.create({
       id: "edge-ra-read-selection",
-      title: "Seçimi sesli oku",
+      title: t("background.menu.readSelection"),
       contexts: ["selection"],
     });
     chrome.contextMenus.create({
       id: "edge-ra-read-here",
-      title: "Buradan sesli oku",
+      title: t("background.menu.readHere"),
       contexts: ["page", "selection"],
     });
     chrome.contextMenus.create({
       id: "edge-ra-stop",
-      title: "Sesli okumayı durdur",
+      title: t("background.menu.stop"),
       contexts: ["page", "selection"],
     });
   });
 }
+
+i18n?.subscribe(() => {
+  if (menusCreated) createMenus();
+});
+// Rebuild once when the stored locale is known, including service-worker wakes
+// where onStartup/onInstalled did not run in this lifetime.
+i18n?.ready.then(() => createMenus());
 
 function initializeExtension() {
   createMenus();
@@ -201,7 +219,7 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
         settings: await getSettings(),
       });
     } catch (error) {
-      console.warn("[Sesli Oku]", error);
+      console.warn("[Read Aloud]", error);
     }
   } else if (info.menuItemId === "edge-ra-read-selection" && tab?.id) {
     try {
@@ -213,7 +231,7 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
         text: info.selectionText || "",
       });
     } catch (error) {
-      console.warn("[Sesli Oku]", error);
+      console.warn("[Read Aloud]", error);
     }
   } else if (info.menuItemId === "edge-ra-read-here" && tab?.id) {
     try {
@@ -225,14 +243,14 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
         settings: await getSettings(),
       });
     } catch (error) {
-      console.warn("[Sesli Oku]", error);
+      console.warn("[Read Aloud]", error);
     }
   } else if (info.menuItemId === "edge-ra-stop" && tab?.id) {
     try {
       await sendToTab(tab.id, { target: "content", type: "STOP" });
       tts.close();
     } catch (error) {
-      console.warn("[Sesli Oku]", error);
+      console.warn("[Read Aloud]", error);
     }
   }
 });
@@ -252,11 +270,12 @@ chrome.commands.onCommand.addListener(async (command) => {
       tts.close();
     }
   } catch (error) {
-    console.warn("[Sesli Oku]", error);
+    console.warn("[Read Aloud]", error);
   }
 });
 
 chrome.tabs.onRemoved.addListener((tabId) => {
+  if (tabId === readingTabId) record("reading.tab_closed", { tabId });
   if (tabId === readingTabId) {
     readingTabId = null;
     tts.close();
@@ -310,7 +329,7 @@ async function startQueuePage(tabId) {
     readingTabId = tabId;
     const result = await sendToTab(tabId, { target: "content", type: "START_PAGE", settings, queueItemId: item.id });
     if (!library.current().queueRunning || library.current().queueItemId !== item.id) return;
-    if (result?.started === false) throw new Error("Bu sayfada okunacak metin bulunamadı.");
+    if (result?.started === false) throw new Error(t("errors.pageNoText"));
     await library.mutate({ type: "queueState", id: item.id, status: "reading" });
     await chrome.alarms.clear(QUEUE_ALARM);
   } catch (error) {
@@ -320,7 +339,7 @@ async function startQueuePage(tabId) {
 }
 
 chrome.tabs.onUpdated.addListener((tabId, info) => {
-  if (info.status === "complete") startQueuePage(tabId).catch(error => console.warn("[Sesli Oku]", error));
+  if (info.status === "complete") startQueuePage(tabId).catch(error => console.warn("[Read Aloud]", error));
 });
 chrome.alarms.onAlarm.addListener(alarm => {
   if (alarm.name !== QUEUE_ALARM) return;
@@ -329,9 +348,9 @@ chrome.alarms.onAlarm.addListener(alarm => {
     if (!value.queueRunning || !value.queueItemId) return;
     const item = value.queue.find(entry => entry.id === value.queueItemId);
     if (item?.status !== "loading") return;
-    await library.mutate({ type: "queueState", id: item.id, status: "error", error: "Sayfa yükleme zaman aşımı." });
+    await library.mutate({ type: "queueState", id: item.id, status: "error", error: t("errors.pageTimeout") });
     queueStarted.delete(value.queueTabId); await advanceQueue();
-  }).catch(error => console.warn("[Sesli Oku]", error));
+  }).catch(error => console.warn("[Read Aloud]", error));
 });
 
 async function senderTabId(sender) {
@@ -342,7 +361,7 @@ async function senderTabId(sender) {
 async function libraryAction(message, sender) {
   const { action, args = {} } = message;
   const tab = sender?.tab?.id ? sender.tab : await activeTab();
-  const context = { url: sender?.tab?.id ? sender.url || tab?.url : tab?.url, title: tab?.title || "Sayfa" };
+  const context = { url: sender?.tab?.id ? sender.url || tab?.url : tab?.url, title: tab?.title || t("common.page") };
   if (action === "context") {
     if(context.url?.startsWith(chrome.runtime.getURL('src/reader.html'))){const id=new URL(context.url).searchParams.get('book');if(id){const book=await globalThis.SesliOkuVault.get(id);if(book?.kind==='audio')context.speech=book.settings;}}
     return { context };
@@ -351,23 +370,23 @@ async function libraryAction(message, sender) {
   if (action === 'syncNow') return SesliOkuInsights.synchronize();
   if (action === 'syncEnable') return SesliOkuInsights.configure(args.enabled);
   if (action === 'syncClear') return SesliOkuInsights.clearRemote();
-  if (action === 'backup') return {backup:await globalThis.SesliOkuTools.backup(),message:'Yedek indiriliyor.'};
-  if (action === 'restore') { const owner=library.current().queueTabId;const parsed=globalThis.SesliOkuTools.validateBackup(args.backup);if(!parsed)throw new Error('Geçersiz yedek.');if(owner){try{await sendToTab(owner,{target:'content',type:'STOP'});}catch{}}return globalThis.SesliOkuTools.restore(args.backup); }
-  if (action === 'siteSave') { await library.mutate({type:action,...args});return {message:'Bu sitenin ayarları kaydedildi.'}; }
-  if (action === 'siteRemove' || action === 'itemEdit') { await library.mutate({type:action,...args});return {message:'Kitaplık güncellendi.'}; }
+  if (action === 'backup') return {backup:await globalThis.SesliOkuTools.backup(),message:t('background.backupDownloading')};
+  if (action === 'restore') { const owner=library.current().queueTabId;const parsed=globalThis.SesliOkuTools.validateBackup(args.backup);if(!parsed)throw new Error(t("errors.invalidBackup"));if(owner){try{await sendToTab(owner,{target:'content',type:'STOP'});}catch{}}return globalThis.SesliOkuTools.restore(args.backup); }
+  if (action === 'siteSave') { await library.mutate({type:action,...args});return {message:t('background.siteSaved')}; }
+  if (action === 'siteRemove' || action === 'itemEdit') { await library.mutate({type:action,...args});return {message:t('background.libraryUpdated')}; }
   if (action === 'vaultList') return {books:await globalThis.SesliOkuVault.list()};
-  if (action === 'bookRemove') {await globalThis.SesliOkuVault.remove(args.id);return {message:'Yerel kayıt silindi.'};}
-  if (action === 'openReader' || action === 'bookOpen') {await chrome.tabs.create({url:chrome.runtime.getURL('src/reader.html')+(args.id?'?book='+encodeURIComponent(args.id):''),active:true});return {message:'Belge okuyucusu açıldı.'};}
-  if (action === "queueAddUrl") { await library.mutate({ type: "queueAdd", url: args.url, title: args.title }); return { message: "Okuma listesine eklendi." }; }
+  if (action === 'bookRemove') {await globalThis.SesliOkuVault.remove(args.id);return {message:t('background.vaultRemoved')};}
+  if (action === 'openReader' || action === 'bookOpen') {await chrome.tabs.create({url:chrome.runtime.getURL('src/reader.html')+(args.id?'?book='+encodeURIComponent(args.id):''),active:true});return {message:t('background.readerOpened')};}
+  if (action === "queueAddUrl") { await library.mutate({ type: "queueAdd", url: args.url, title: args.title }); return { message: t("background.queueAdded") }; }
   if (action === "queueStart") {
-    if (library.current().queueRunning) return { message: "Okuma sırası zaten çalışıyor." };
-    await library.mutate({ type: "queueStart" }); await advanceQueue(); return { message: "Okuma sırası başlatıldı." };
+    if (library.current().queueRunning) return { message: t("background.queueRunning") };
+    await library.mutate({ type: "queueStart" }); await advanceQueue(); return { message: t("background.queueStarted") };
   }
   if (action === "queueStop") {
     const owner = library.current().queueTabId;
     await library.mutate({ type: "queueStop" }); await chrome.alarms.clear(QUEUE_ALARM);
     if (owner) { try { await sendToTab(owner, { target: "content", type: "STOP" }); } catch {} }
-    return { message: "Okuma sırası durduruldu." };
+    return { message: t("background.queueStopped") };
   }
   if (["queueMove", "queueRemove", "bookmarkRemove", "excludeRemove"].includes(action)) {
     const old = library.current();
@@ -376,25 +395,56 @@ async function libraryAction(message, sender) {
       if (old.queueTabId) { try { await sendToTab(old.queueTabId, { target: "content", type: "STOP", keepQueue: true }); } catch {} }
       await advanceQueue();
     }
-    return { message: "Kitaplık güncellendi." };
+    return { message: t("background.libraryUpdated") };
   }
   if (action === "bookmarkOpen") {
     const item = library.current().bookmarks.find(entry => entry.id === args.id);
-    if (!item) throw new Error("Yer imi bulunamadı.");
+    if (!item) throw new Error(t("errors.bookmarkMissing"));
     if (context.url && library.pageKey(context.url) === library.pageKey(item.url) && tab?.id) return sendToTab(tab.id, { target: "content", type: "LIBRARY_ACTION", action: "resume", args: { anchor: item.anchor } });
     const created = await chrome.tabs.create({ url: item.url, active: true });
     await chrome.storage.session.set({ [`resume-${created.id}`]: item.anchor });
     const opened = await chrome.tabs.get(created.id);
     if (opened.status === "complete") { await chrome.storage.session.remove(`resume-${created.id}`); await sendToTab(created.id, { target: "content", type: "LIBRARY_ACTION", action: "resume", args: { anchor: item.anchor } }); }
-    return { message: "Yer imi yeni sekmede açılıyor." };
+    return { message: t("background.bookmarkOpening") };
   }
   if (action === "cancelExport" && library.current().export?.tabId) return sendToTab(library.current().export.tabId, { target: "content", type: "LIBRARY_ACTION", action, args });
-  if (!tab?.id) throw new Error("Etkin sayfa bulunamadı.");
+  if (!tab?.id) throw new Error(t("errors.noActivePage"));
   return sendToTab(tab.id, { target: "content", type: "LIBRARY_ACTION", action, args });
+}
+
+const localeCache = new Map();
+
+async function localeMessages(code) {
+  if (localeCache.has(code)) return localeCache.get(code);
+  const response = await fetch(chrome.runtime.getURL(`locales/${code}/translation.json`), { cache: "no-store" });
+  if (!response.ok) throw new Error(`Locale ${code} could not be loaded.`);
+  const messages = await response.json();
+  localeCache.set(code, messages);
+  return messages;
 }
 
 async function handleMessage(message, sender) {
   switch (message.type) {
+    case "DIAGNOSTIC_EVENT": {
+      const allowed = ["reading.started", "reading.stopped", "reading.paused", "reading.resumed", "reading.failed", "reading.finished", "audio.error", "audio.play_failed", "page.leaving"];
+      if (!allowed.includes(message.event)) return {};
+      await record(message.event, { ...message.details, tabId: sender?.tab?.id });
+      return {};
+    }
+    case "EXPORT_DIAGNOSTICS":
+    case "CLEAR_DIAGNOSTICS": {
+      // The popup may also be opened in an extension tab (including in tests).
+      // Chrome supplies sender identity and URL; a content script cannot forge them.
+      if (sender?.id !== chrome.runtime.id || sender?.url !== chrome.runtime.getURL("src/popup.html")) throw new Error("Diagnostics are available from the extension popup only.");
+      if (message.type === "CLEAR_DIAGNOSTICS") { await clearLog(); return {}; }
+      return { log: await exportLog() };
+    }
+    case "GET_LOCALE": {
+      const code = String(message.locale || "").toLowerCase();
+      const known = (globalThis.SesliOkuLocaleMeta?.languages || []).some(language => language.code === code);
+      if (!known) throw new Error("Unknown locale.");
+      return { messages: await localeMessages(code) };
+    }
     case "LIBRARY_MUTATE": {
       const operation = message.operation;
       if (operation?.type === "export" && operation.value?.status === "working") operation.value.tabId = await senderTabId(sender);
@@ -420,6 +470,13 @@ async function handleMessage(message, sender) {
       }
       if (sender?.tab?.id === readingTabId) readingTabId = null;
       return {};
+    }
+    case 'EXPORT_CACHE_GET':
+    case 'EXPORT_CACHE_PUT': {
+      const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(JSON.stringify(message.key)));
+      const id = Array.from(new Uint8Array(digest), byte => byte.toString(16).padStart(2, '0')).join('');
+      if (message.type === 'EXPORT_CACHE_GET') return {part: await globalThis.SesliOkuVault.exportGet(id)};
+      await globalThis.SesliOkuVault.exportPut(id, message.part); return {};
     }
     case 'VAULT_BEGIN': return {book:await globalThis.SesliOkuVault.begin({...message.value,ownerTabId:await senderTabId(sender)})};
     case 'VAULT_PART': await globalThis.SesliOkuVault.putPart(message.id,message.index,message.part);return {};
@@ -466,7 +523,7 @@ async function handleMessage(message, sender) {
 
     case "SET_SLEEP_TIMER": {
       const tabId = readingTabId || (await activeTab())?.id;
-      if (!tabId) throw new Error("Önce okumayı başlatın.");
+      if (!tabId) throw new Error(t("errors.startFirst"));
       return sendToTab(tabId, { target: "content", type: "SET_SLEEP_TIMER", timer: message.timer });
     }
 
@@ -483,7 +540,7 @@ async function handleMessage(message, sender) {
     }
 
     default:
-      throw new Error(`Bilinmeyen mesaj: ${message.type}`);
+      throw new Error(t("errors.unknownMessage", { type: message.type }));
   }
 }
 
@@ -491,11 +548,13 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (!message || message.target !== "background") return false;
   handleMessage(message, sender).then(
     (data) => sendResponse({ ok: true, ...data }),
-    (error) =>
+    async (error) => {
+      await record("worker.request_failed", { error, tabId: sender?.tab?.id });
       sendResponse({
         ok: false,
         error: error instanceof Error ? error.message : String(error),
-      })
+      });
+    }
   );
   return true;
 });

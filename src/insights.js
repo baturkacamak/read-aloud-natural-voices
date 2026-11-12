@@ -1,6 +1,9 @@
 /** Worker-owned listening totals and opt-in browser-account synchronization. */
 (() => {
   if (globalThis.SesliOkuInsights) return;
+  const i18n = globalThis.SesliOkuI18n;
+  const t = (key, params, fallback) =>
+    i18n ? i18n.t(key, params, fallback) : fallback ?? key;
   let writes = Promise.resolve();
   const serial = fn => { const task = writes.then(fn); writes = task.catch(() => {}); return task; };
   const dayKey = date => `${date.getFullYear()}-${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
@@ -32,11 +35,11 @@
   function encode(bytes) { let str=''; for(let i=0;i<bytes.length;i+=8192)str+=String.fromCharCode(...bytes.subarray(i,i+8192));return btoa(str); }
   async function unpack(remote) {
     const head=remote[prefix+'head'];if(!head)return null;
-    if(head.version!==1 || !Number.isInteger(head.parts) || head.parts<1 || head.parts>14)throw new Error('Eşitleme verisi tanınmıyor.');
-    let text='';for(let i=0;i<head.parts;i++){const part=remote[prefix+i];if(typeof part!=='string')throw new Error('Eşitleme aktarımı tamamlanmadı; tekrar deneyin.');text+=part;}
-    const bytes=bytesFrom(text);if(await hash(bytes)!==head.hash)throw new Error('Eşitleme aktarımı tamamlanmadı; tekrar deneyin.');
+    if(head.version!==1 || !Number.isInteger(head.parts) || head.parts<1 || head.parts>14)throw new Error(t("insights.syncUnknown"));
+    let text='';for(let i=0;i<head.parts;i++){const part=remote[prefix+i];if(typeof part!=='string')throw new Error(t("insights.syncIncomplete"));text+=part;}
+    const bytes=bytesFrom(text);if(await hash(bytes)!==head.hash)throw new Error(t("insights.syncIncomplete"));
     const stream=new Blob([bytes]).stream().pipeThrough(new DecompressionStream('gzip'));const reader=stream.getReader();let size=0;const parts=[];
-    while(true){const {done,value}=await reader.read();if(done)break;size+=value.length;if(size>5*1024*1024){await reader.cancel();throw new Error('Eşitleme verisi çok büyük.');}parts.push(value);}
+    while(true){const {done,value}=await reader.read();if(done)break;size+=value.length;if(size>5*1024*1024){await reader.cancel();throw new Error(t("insights.syncTooLarge"));}parts.push(value);}
     const payload=JSON.parse(await new Blob(parts).text());
     // Reuse the same validation boundary as file backups.
     const parsed=globalThis.SesliOkuTools.validateBackup(payload.backup);
@@ -46,7 +49,7 @@
     if(syncing)return syncing;
     syncing=(async()=>{
       const config=(await chrome.storage.local.get('syncConfig')).syncConfig||{};
-      if(!config.enabled)return {message:'Cihazlar arası eşitleme kapalı.'};
+      if(!config.enabled)return {message:t("insights.syncOff")};
       try {
         await journalWrites;
         const rawRemote=await chrome.storage.sync.get(null);
@@ -74,13 +77,13 @@
         const payload={backup,fields:journal.fields,removed:journal.removed,removedPages:journal.removedPages};
         const compressed=new Uint8Array(await new Response(new Blob([JSON.stringify(canonical(payload))]).stream().pipeThrough(new CompressionStream('gzip'))).arrayBuffer());
         const packed=encode(compressed);const count=Math.ceil(packed.length/7000);
-        if(count>14)throw new Error('Eşitleme için 95 KB sınırı aşıldı. Yerel kayıtlar korundu; JSON yedeğini kullanabilirsiniz.');
+        if(count>14)throw new Error(t("insights.syncLimit"));
         const values={};for(let i=0;i<14;i++)values[prefix+i]=i<count?packed.slice(i*7000,(i+1)*7000):'';
         values[prefix+'head']={version:1,parts:count,hash:await hash(compressed)};
         lastPublishedHash=values[prefix+'head'].hash;
         if(rawRemote[prefix+'head']?.hash!==lastPublishedHash)await chrome.storage.sync.set(values);
         await chrome.storage.local.set({syncConfig:{enabled:true,lastSync:Date.now(),error:''}});
-        return {message:'Konumlar, yer imleri ve tercihler tarayıcı hesabıyla eşitlendi.'};
+        return {message:t("insights.synced")};
       } catch(error){await chrome.storage.local.set({syncConfig:{...config,error:error.message}});if(config.enabled)chrome.alarms.create(alarm,{delayInMinutes:5});throw error;}
     })().finally(()=>{syncing=null;});return syncing;
   }
@@ -99,7 +102,7 @@
     }).catch(()=>{});
   });
   chrome.alarms.onAlarm.addListener(value=>{if(value.name===alarm)synchronize().catch(()=>{});});
-  async function configure(enabled){if(syncing)await syncing.catch(()=>{});await chrome.storage.local.set({syncConfig:{enabled:!!enabled}});if(enabled){const stored=await chrome.storage.local.get('syncJournal');if(!stored.syncJournal)await chrome.storage.local.set({syncJournal:{fields:{},removed:{}}});return synchronize();}await chrome.alarms.clear(alarm);return {message:'Eşitleme kapatıldı. Tarayıcı hesabındaki kopyayı ayrıca silebilirsiniz.'};}
-  async function clearRemote(){await configure(false);const keys=Object.keys(await chrome.storage.sync.get(null)).filter(key=>key.startsWith(prefix));await chrome.storage.sync.remove(keys);return {message:'Bu uzantının hesaptaki eşitleme kopyası silindi. Yerel kayıtlar korundu.'};}
+  async function configure(enabled){if(syncing)await syncing.catch(()=>{});await chrome.storage.local.set({syncConfig:{enabled:!!enabled}});if(enabled){const stored=await chrome.storage.local.get('syncJournal');if(!stored.syncJournal)await chrome.storage.local.set({syncJournal:{fields:{},removed:{}}});return synchronize();}await chrome.alarms.clear(alarm);return {message:t("insights.disabled")};}
+  async function clearRemote(){await configure(false);const keys=Object.keys(await chrome.storage.sync.get(null)).filter(key=>key.startsWith(prefix));await chrome.storage.sync.remove(keys);return {message:t("insights.cleared")};}
   globalThis.SesliOkuInsights={stats,synchronize,configure,clearRemote,unpack};
 })();

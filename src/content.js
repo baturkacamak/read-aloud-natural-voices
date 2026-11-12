@@ -1,5 +1,5 @@
 /**
- * Sesli Oku — content script.
+ * Read Aloud content script.
  *
  * Extracts readable blocks, turns them into paragraph-sized chunks, asks the
  * service worker for audio, and plays it with a fixed shadow-DOM toolbar.
@@ -35,6 +35,9 @@
   const themes = globalThis.SesliOkuThemes;
   const preferences = globalThis.SesliOkuSettings;
   const library = globalThis.SesliOkuLibrary;
+  const i18n = globalThis.SesliOkuI18n;
+  const t = (key, params, fallback) =>
+    i18n ? i18n.t(key, params, fallback) : fallback ?? key;
   const themeHighlightStyle = document.createElement("style");
   themeHighlightStyle.id = "sesli-oku-theme-highlight";
 
@@ -102,6 +105,15 @@
     queueItemId: null,
     voiceCatalog: null,
   };
+
+  function diagnostic(event, details = {}) {
+    try {
+      chrome.runtime.sendMessage({ target: "background", type: "DIAGNOSTIC_EVENT", event,
+        details: { session: state.session, index: state.index, chunks: state.chunks.length, ...details } }).catch(() => {});
+    } catch {} // An extension reload may invalidate this content script.
+  }
+
+  window.addEventListener("pagehide", () => { if (state.playing) diagnostic("page.leaving"); });
 
   const experience = globalThis.SesliOkuExperience.create({ state,
     prepareChunks: () => buildChunks(collectBlocks()), startSession, showUi, updateUi, setStatus, toggleSettings, renderHighlightStyle, sendToBackground, stop, togglePlayback, skip, previewWord });
@@ -292,7 +304,7 @@
     }
     const response = await request;
     if (!response?.ok) {
-      throw new Error(response?.error || "Arka plan servisi yanıt vermedi.");
+      throw new Error(response?.error || t("errors.background"));
     }
     return response;
   }
@@ -323,18 +335,24 @@
     return { ...settings, voice: voice?.ShortName || settings.voice };
   }
 
-  async function requestAudio(text, chunk = null, override = state.settings) {
+  async function requestAudio(text, chunk = null, override = state.settings, persistent = false) {
     if(globalThis.SesliOkuDocument?.book?.kind==='audio')return globalThis.SesliOkuDocument.audioFor(text,chunk);
     const settings = await speechSettings(text, chunk, override);
     const spoken = library.pronounce(text, settings.pronunciationRules);
-    if (TEST_MODE && state.testAudio) {
-      if (state.testRequestDelay) await sleep(state.testRequestDelay);
-      state.testRequests.push({ text: spoken.text, source: text, settings: { ...settings } });
-      const words = [...spoken.text.matchAll(/\S+/gu)];
-      const boundaries = words.map((word, index) => ({ offset: Math.round(index / words.length * state.testAudioMs * 10000), duration: Math.round(state.testAudioMs * 10000 / words.length), text: word[0] }));
-      return { audio: state.testAudio, boundaries, spoken, sourceOffsets: library.mapBoundaries(spoken, boundaries), voice: settings.voice };
+    // Cache the actual synthesized text and effective voice/prosody, including auto voice selection.
+    const key = [1, spoken.text, settings.voice, settings.rate, settings.pitch, settings.volume];
+    let response = persistent ? (await sendToBackground({type:'EXPORT_CACHE_GET', key})).part : null;
+    if (!response) {
+      if (TEST_MODE && state.testAudio) {
+        if (state.testRequestDelay) await sleep(state.testRequestDelay);
+        state.testRequests.push({ text: spoken.text, source: text, settings: { ...settings } });
+        const words = [...spoken.text.matchAll(/\S+/gu)];
+        const boundaries = words.map((word, index) => ({ offset: Math.round(index / words.length * state.testAudioMs * 10000), duration: Math.round(state.testAudioMs * 10000 / words.length), text: word[0] }));
+        let binary = ''; for (const byte of state.testAudio) binary += String.fromCharCode(byte);
+        response = { audio: btoa(binary), boundaries };
+      } else response = await sendToBackground({ type: "SPEAK", text: spoken.text, settings });
+      if (persistent) await sendToBackground({type:'EXPORT_CACHE_PUT', key, part:response});
     }
-    const response = await sendToBackground({ type: "SPEAK", text: spoken.text, settings });
     const boundaries = response.boundaries || [];
     return { audio: fromBase64(response.audio), boundaries, spoken, sourceOffsets: library.mapBoundaries(spoken, boundaries), voice: settings.voice };
   }
@@ -367,19 +385,28 @@
   // ---------------------------------------------------------------- player UI
 
   const languageNames = (() => {
-    try {
-      return new Intl.DisplayNames(["tr"], { type: "language" });
-    } catch {
-      return null;
-    }
+    const cache = new Map();
+    return (language) => {
+      const current = i18n?.locale() || "tr";
+      if (!cache.has(current)) {
+        try {
+          cache.set(current, new Intl.DisplayNames([current], { type: "language" }));
+        } catch {
+          cache.set(current, null);
+        }
+      }
+      try {
+        return cache.get(current)?.of(language);
+      } catch {
+        return undefined;
+      }
+    };
   })();
 
   function localeLabel(locale) {
     const [language, region] = (locale || "").split("-");
     let name = language || locale;
-    try {
-      name = languageNames?.of(language) || name;
-    } catch {}
+    name = languageNames(language) || name;
     name = name.charAt(0).toUpperCase() + name.slice(1);
     return region ? `${name} (${region})` : name;
   }
@@ -391,9 +418,9 @@
     name = name.replace(/MultilingualNeural$|Neural$/, "");
     const gender =
       voice.Gender === "Female"
-        ? "Kadın"
+        ? t("common.female")
         : voice.Gender === "Male"
-          ? "Erkek"
+          ? t("common.male")
           : "";
     return gender ? `${name} · ${gender}` : name;
   }
@@ -413,10 +440,11 @@
       groups.get(locale).push(voice);
     }
 
+    const current = i18n?.locale() || "tr";
     const sorted = [...groups.keys()].sort((a, b) => {
-      if (a.startsWith("tr")) return -1;
-      if (b.startsWith("tr")) return 1;
-      return localeLabel(a).localeCompare(localeLabel(b), "tr");
+      if (a.startsWith(current)) return -1;
+      if (b.startsWith(current)) return 1;
+      return localeLabel(a).localeCompare(localeLabel(b), current);
     });
 
     select.innerHTML = "";
@@ -425,7 +453,7 @@
       group.label = localeLabel(locale);
       const voicesInGroup = groups
         .get(locale)
-        .sort((a, b) => voiceLabel(a).localeCompare(voiceLabel(b), "tr"));
+        .sort((a, b) => voiceLabel(a).localeCompare(voiceLabel(b), current));
       for (const voice of voicesInGroup) {
         const option = document.createElement("option");
         option.value = voice.ShortName;
@@ -518,10 +546,10 @@
   }
 
   function configureSleepTimer(timer) {
-    if (!state.playing && timer.mode !== "off") throw new Error("Önce okumayı başlatın.");
+    if (!state.playing && timer.mode !== "off") throw new Error(t("errors.startFirst"));
     if (!["off", "paragraph"].includes(timer.mode)) {
       const minutes = timer.mode === "custom" ? Number(timer.minutes) : Number(timer.mode);
-      if (!Number.isFinite(minutes) || minutes < 1 || minutes > 180) throw new Error("Süre 1–180 dakika olmalıdır.");
+      if (!Number.isFinite(minutes) || minutes < 1 || minutes > 180) throw new Error(t("errors.sleepRange"));
     }
     clearTimeout(state.sleepTimeout);
     state.sleepTimeout = null;
@@ -529,7 +557,7 @@
     else if (timer.mode === "paragraph") state.sleepTimer = { mode: "paragraph", endElement: state.chunks[state.index]?.el };
     else {
       const minutes = timer.mode === "custom" ? Number(timer.minutes) : Number(timer.mode);
-      if (!Number.isFinite(minutes) || minutes < 1 || minutes > 180) throw new Error("Süre 1–180 dakika olmalıdır.");
+      if (!Number.isFinite(minutes) || minutes < 1 || minutes > 180) throw new Error(t("errors.sleepRange"));
       state.sleepTimer = { mode: "time", deadline: Date.now() + minutes * 60000 };
       armSleepTimeout();
     }
@@ -544,7 +572,7 @@
   function checkSleepDeadline() {
     if (!state.sleepTimer?.deadline || Date.now() < state.sleepTimer.deadline) return false;
     stop();
-    setStatus("Zamanlayıcı: okuma durduruldu");
+    setStatus(t("player.timerStopped"));
     return true;
   }
 
@@ -553,7 +581,7 @@
     const timer = state.sleepTimer;
     state.ui.sleepStatus.hidden = !timer;
     if (!timer) return;
-    if (timer.mode === "paragraph") state.ui.sleepStatus.textContent = "⏱ Paragraf sonu";
+    if (timer.mode === "paragraph") state.ui.sleepStatus.textContent = t("player.sleepParagraph");
     else {
       const seconds = Math.max(0, Math.ceil((timer.deadline - Date.now()) / 1000));
       state.ui.sleepStatus.textContent = `⏱ ${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
@@ -941,34 +969,36 @@
         }
       </style>
       <div class="wrap">
-        <div class="bar" role="toolbar" aria-label="Sesli okuma kontrolleri">
+        <div class="bar" role="toolbar" aria-label="${t("player.toolbar")}" data-i18n-aria-label="player.toolbar">
           <div class="brand">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 10v4m4-8v12m4-15v18m4-15v12m4-8v4"/></svg>
-            <div><strong>Sesli Oku</strong><small>Dinle, takip et.</small></div>
+            <div><strong data-i18n="app.name">${t("app.name")}</strong><small data-i18n="player.tagline">${t("player.tagline")}</small></div>
           </div>
           <div class="transport">
-          <button data-act="prev" title="Önceki paragraf">⏮</button>
-          <button data-act="toggle" class="primary" title="Oynat / duraklat">▶</button>
-          <button data-act="next" title="Sonraki paragraf">⏭</button>
+          <button data-act="prev" title="${t("player.prev")}" data-i18n-title="player.prev">⏮</button>
+          <button data-act="toggle" class="primary" title="${t("player.playPause")}" data-i18n-title="player.playPause">▶</button>
+          <button data-act="next" title="${t("player.next")}" data-i18n-title="player.next">⏭</button>
           </div>
           <span class="divider" aria-hidden="true"></span>
-          <span class="status">Hazır</span>
+          <span class="status" data-i18n="player.ready">${t("player.ready")}</span>
           <div class="player-tools">
           <span class="sleep-status" hidden></span>
-          <button data-act="follow" class="follow" title="Okumaya dön">Okumaya dön</button>
+          <button data-act="follow" class="follow" title="${t("player.follow")}" data-i18n-title="player.follow" data-i18n="player.follow">${t("player.follow")}</button>
           <div class="actions">
-          <button data-act="speed" class="speed" title="Oynatma hızı">1.0×</button>
-          <button data-act="settings" class="icon" title="Okuma ayarları" aria-label="Okuma ayarları" aria-expanded="false" aria-controls="sesli-oku-settings">⚙</button>
-          <button data-act="close" class="close" title="Durdur ve kapat">✕</button>
+          <button data-act="speed" class="speed" title="${t("player.speed")}" data-i18n-title="player.speed">1.0×</button>
+          <button data-act="settings" class="icon" title="${t("settings.title")}" aria-label="${t("settings.title")}" data-i18n-title="settings.title" data-i18n-aria-label="settings.title" aria-expanded="false" aria-controls="sesli-oku-settings">⚙</button>
+          <button data-act="close" class="close" title="${t("player.close")}" data-i18n-title="player.close">✕</button>
           </div>
           </div>
         </div>
-        <div id="sesli-oku-settings" class="settings" role="region" aria-label="Okuma ayarları"></div>
+        <div id="sesli-oku-settings" class="settings" role="region" aria-label="${t("settings.title")}" data-i18n-aria-label="settings.title"></div>
       </div>`;
 
     const themeStyle = document.createElement("style");
     themeStyle.textContent = themes.css + preferences.css + library.css;
     shadow.appendChild(themeStyle);
+    state.releaseI18n?.();
+    state.releaseI18n = i18n?.observe(shadow) || (() => {});
     state.ui?.preferences?.dispose();
     const settingsUi = preferences.mount(shadow.querySelector(".settings"), {
       prefix: "sesli-oku-", onTimer: configureSleepTimer, onLayout: schedulePageLayout,
@@ -1005,6 +1035,8 @@
       else if (action === "close") stop();
     });
 
+    host.dir = i18n?.direction?.() || "ltr";
+    host.style.direction = host.dir;
     document.documentElement.appendChild(host);
     state.host = host;
     state.ui = ui;
@@ -1060,10 +1092,10 @@
     }
 
     if (!state.playing && state.chunks.length && state.index >= state.chunks.length) {
-      ui.status.textContent = "Bitti";
+      ui.status.textContent = t("player.finished");
       ui.status.classList.remove("error");
     } else if (state.paused) {
-      ui.status.textContent = "Duraklatıldı";
+      ui.status.textContent = t("player.paused");
       ui.status.classList.remove("error");
     } else if (state.playing) {
       ui.status.textContent = `${Math.min(state.index + 1, state.chunks.length)}/${state.chunks.length}`;
@@ -1858,7 +1890,10 @@
 
       audio.onloadedmetadata = () => { if (session === state.session) { applyAudioPlaybackRate(audio); experience.metadata(audio, result); onTimeUpdate(); } };
       audio.onended = finish;
-      audio.onerror = finish;
+      audio.onerror = () => {
+        diagnostic("audio.error", { code: audio.error?.code });
+        finish();
+      };
       audio.ontimeupdate = onTimeUpdate;
       applyAudioPlaybackRate(audio);
 
@@ -1866,16 +1901,17 @@
       audio.play().catch((error) => {
         // Pausing while play() is still pending cancels that request, not the paragraph.
         if (error?.name === "AbortError" && state.paused && session === state.session) return;
+        diagnostic("audio.play_failed", { error: error?.message || error?.name });
         console.warn(
-          "[Sesli Oku] audio.play() failed:",
+          "[Read Aloud] audio.play() failed:",
           error?.name,
           error?.message
         );
         if (error?.name === "NotAllowedError") {
-          setStatus("Oynatmak için ▶ düğmesine basın", true);
+          setStatus(t("player.pressPlay"), true);
           finish({ blocked: true });
         } else {
-          setStatus("Oynatma engellendi", true);
+          setStatus(t("player.blocked"), true);
           finish();
         }
       });
@@ -1920,7 +1956,8 @@
         result = await audioFor(index);
       } catch (error) {
         if (session !== state.session) return;
-        setStatus(error.message || "Ses üretilemedi", true);
+        diagnostic("reading.failed", { error: error.message });
+        setStatus(error.message || t("errors.audio"), true);
         if (state.queueItemId) sendToBackground({ type: "READING_FAILED", queueItemId: state.queueItemId, error: error.message }).catch(() => {});
         state.playing = false;
         state.paused = false;
@@ -1953,7 +1990,7 @@
       const paragraphEnd = atParagraphEnd(index);
       if (paragraphEnd && state.sleepTimer?.mode === "paragraph" &&
           (!state.sleepTimer.endElement || state.sleepTimer.endElement === chunk.el)) {
-        stop(); setStatus("Paragraf tamamlandı"); return;
+        stop(); setStatus(t("player.paragraphDone")); return;
       }
       const repeated=experience.nextRepeat(index);
       if(repeated){startSession(repeated.index,{anchor:repeated});return;}
@@ -1970,6 +2007,7 @@
       state.sleepTimer = null;
       publishSleepTimer();
       hideUiSoon(2200);
+      diagnostic("reading.finished");
       experience.save(true, true);
       sendToBackground({ type: "READING_FINISHED", queueItemId: state.queueItemId }).catch(() => {});
     }
@@ -1984,6 +2022,7 @@
     }
     const session = state.session;
     state.index = index;
+    diagnostic("reading.started");
     experience.beforeSession(index, options);
     if (state.sleepTimer?.mode === "paragraph") state.sleepTimer.endElement = state.chunks[index]?.el;
     state.playing = true;
@@ -2006,11 +2045,12 @@
     syncSettingsInputs();
     updateUi();
     run(session).catch((error) => {
-      console.warn("[Sesli Oku] playback loop failed:", error);
+      diagnostic("reading.failed", { error: error?.message });
+      console.warn("[Read Aloud] playback loop failed:", error);
       if (session !== state.session) return;
       state.playing = false;
       state.paused = false;
-      setStatus(error?.message || "Okuma hatası", true);
+      setStatus(error?.message || t("errors.reading"), true);
       updateUi();
       hideUiSoon(5000);
     });
@@ -2026,6 +2066,7 @@
     }
 
     state.paused = !state.paused;
+    diagnostic(state.paused ? "reading.paused" : "reading.resumed");
     experience.save(true);
     if (state.audio) {
       if (state.paused) state.audio.pause();
@@ -2052,6 +2093,7 @@
   }
 
   function stop(keepQueue = false) {
+    diagnostic("reading.stopped");
     experience.stopped();
     clearTimeout(state.sleepTimeout);
     state.sleepTimeout = null;
@@ -2075,7 +2117,7 @@
       state.audio.load();
     }
 
-    setStatus("Durduruldu");
+    setStatus(t("player.stopped"));
     updateUi();
     toggleSettings(false);
     hideUiSoon(600);
@@ -2215,7 +2257,7 @@
     const target = resolveCaretTarget(fromPoint);
     if (!target) {
       showUi();
-      setStatus("İmleci bir metnin üzerine getirin", true);
+      setStatus(t("player.hoverCursor"), true);
       hideUiSoon(3500);
       return;
     }
@@ -2267,7 +2309,7 @@
 
     if (!remaining) {
       showUi();
-      setStatus("Buradan okunacak metin bulunamadı", true);
+      setStatus(t("player.noTextHere"), true);
       hideUiSoon(3500);
       return;
     }
@@ -2305,7 +2347,7 @@
       state.chunks = [];
       state.playing = false;
       showUi();
-      setStatus("Okunacak metin bulunamadı", true);
+      setStatus(t("player.noText"), true);
       hideUiSoon(3500);
       return false;
     }
@@ -2442,7 +2484,7 @@
   let readingClick = null;
   document.addEventListener("mousedown", event => {
     readingClick = null;
-    if (!state.playing || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey ||
+    if (!state.playing || state.paused || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey ||
         !(event.target instanceof Element) || event.target.closest(`${CLICK_CONTROL}, ${SKIP_SELECTOR}`)) return;
     const caret = caretRangeFromPoint(event.clientX, event.clientY);
     const node = caret?.startContainer;
@@ -2460,7 +2502,7 @@
 
   document.addEventListener("click", event => {
     const click = readingClick; readingClick = null;
-    if (!click || !event.isTrusted || event.defaultPrevented || !state.playing || click.session !== state.session ||
+    if (!click || !event.isTrusted || event.defaultPrevented || !state.playing || state.paused || click.session !== state.session ||
         event.button !== 0 || event.detail > 1 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey ||
         (event.pointerType && event.pointerType !== "mouse") || !click.range.startContainer.isConnected ||
         Math.hypot(event.clientX - click.x, event.clientY - click.y) > 6 || !window.getSelection()?.isCollapsed ||
@@ -2684,6 +2726,14 @@
 
   // ---------------------------------------------------------------- messages
 
+  i18n?.subscribe(() => {
+    if (!state.ui) return;
+    if (state.host) { state.host.dir = i18n?.direction?.() || "ltr"; state.host.style.direction = state.host.dir; }
+    updateUi();
+    updateSleepStatus();
+    if (state.voiceCatalog?.length) renderVoices(state.voiceCatalog);
+  });
+
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (!message || message.target !== "content") return false;
 
@@ -2719,7 +2769,7 @@
       else if (message.type === "SET_PLAYBACK_RATE") {
         applyReadingSettings({ playbackRate: clamp(message.playbackRate, 0.5, 2) });
       } else {
-        throw new Error(`Bilinmeyen mesaj: ${message.type}`);
+        throw new Error(t("errors.unknownMessage", { type: message.type }));
       }
       sendResponse({ ok: true });
     } catch (error) {

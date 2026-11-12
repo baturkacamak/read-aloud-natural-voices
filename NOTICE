@@ -1,4 +1,4 @@
-Sesli Oku — Edge Read Aloud for Linux
+Read Aloud: Natural Voices
 Copyright (C) 2026 Batur Kacamak
 
 This program is free software: you can redistribute it and/or modify it under
@@ -64,3 +64,5 @@ Turkish and English integer LSTM traineddata from @tesseract.js-data/{tur,eng}
 1.0.0, 4.0.0_best_int — https://github.com/naptha/tessdata
 Language model license: Apache-2.0 (src/vendor/tesseract/lang/LICENSE).
 All OCR code and models are local; no CDN or document upload is used.
+
+MP3 tempo export: SoundTouchJS 0.1.30 (LGPL-2.1) and lamejs 1.2.1 (LGPL-3.0), bundled in src/vendor/audio/codecs.js. License texts are included alongside it. Sources: https://github.com/cutterbl/SoundTouchJS/tree/v0.1.30 and https://github.com/zhuker/lamejs. Rebuild with npm run vendor:audio; integration code: src/audio-export.js.

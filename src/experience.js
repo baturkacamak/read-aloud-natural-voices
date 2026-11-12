@@ -1,6 +1,9 @@
 /** Reading controls and page-local reading tools; no site HTML is copied. */
 (() => {
   if (globalThis.SesliOkuExperience) return;
+  const i18n = globalThis.SesliOkuI18n;
+  const t = (key, params, fallback) =>
+    i18n ? i18n.t(key, params, fallback) : fallback ?? key;
   function create({ state, prepareChunks, startSession, showUi, updateUi, setStatus, toggleSettings, renderHighlightStyle, sendToBackground, stop, togglePlayback, skip, previewWord }) {
     const library = globalThis.SesliOkuLibrary;
     const preferences = globalThis.SesliOkuSettings;
@@ -20,7 +23,7 @@
     const mediaActions={play:()=>{if(!state.playing||state.paused)togglePlayback();},pause:()=>{if(state.playing&&!state.paused)togglePlayback();},stop:()=>stop(),previoustrack:()=>skip(-1),nexttrack:()=>skip(1),seekbackward:event=>seekBy(-(event.seekOffset||10)),seekforward:event=>seekBy(event.seekOffset||10),seekto:event=>{if(Number.isFinite(event.seekTime))seekTo(event.seekTime);}};
     function updateMedia() {
       const media=navigator.mediaSession;if(!media)return;
-      if(state.playing&&!mediaOwned){previousMetadata=media.metadata;mediaOwned=true;try{media.metadata=new MediaMetadata({title:document.title||'Sesli Oku',artist:'Sesli Oku'});}catch{}for(const [name,handler]of Object.entries(mediaActions))try{media.setActionHandler(name,handler);}catch{}}
+      if(state.playing&&!mediaOwned){previousMetadata=media.metadata;mediaOwned=true;try{media.metadata=new MediaMetadata({title:document.title||t('app.name'),artist:t('app.name')});}catch{}for(const [name,handler]of Object.entries(mediaActions))try{media.setActionHandler(name,handler);}catch{}}
       if(!mediaOwned)return;
       media.playbackState=state.playing?(state.paused?'paused':'playing'):'none';
       const value=timeline();try{if(state.playing&&value.total>0)media.setPositionState({duration:value.total,position:Math.min(value.total,value.elapsed),playbackRate:state.settings.playbackRate});else media.setPositionState();}catch{}
@@ -32,25 +35,25 @@
       for(const [index,chunk]of chunks.entries()){
         let heading=null;const scope=chunk.el?.closest('article,main')||document.body;
         for(const h of headings)if(chunk.el&&scope.contains(h)&&(h===chunk.el||h.contains(chunk.el)||h.compareDocumentPosition(chunk.el)&Node.DOCUMENT_POSITION_FOLLOWING))heading=h;
-        if(!result.length||heading!==previous){result.push({index,end:index+1,title:heading?.textContent.trim().slice(0,180)||'Başlangıç',level:heading?Number(heading.tagName[1]):1});previous=heading;}else result.at(-1).end=index+1;
+        if(!result.length||heading!==previous){result.push({index,end:index+1,title:heading?.textContent.trim().slice(0,180)||t('experience.alwaysStart'),level:heading?Number(heading.tagName[1]):1});previous=heading;}else result.at(-1).end=index+1;
       }
       return result;
     }
     let sectionChunks=[];let sectionRows=[];
     function refreshSections(fullPage=false) {
       const list=root?.querySelector('.reading-sections-list');if(!list)return;
-      sectionChunks=!fullPage&&state.chunks.length?state.chunks:prepareChunks();sectionRows=sectionsFor(sectionChunks);list.replaceChildren();
+      sectionChunks=!fullPage&&state.chunks.length?state.chunks:prepareChunks();sectionRows=sectionsFor(sectionChunks);list.replaceChildren();delete list.dataset.i18n;
       for(const [index,item]of sectionRows.entries()){
         const row=document.createElement('div');row.className='library-buttons';
         const label=document.createElement('label');const check=document.createElement('input');check.type='checkbox';check.checked=true;check.dataset.section=String(index);label.className='pref-check';const title=document.createElement('span');title.textContent=item.title;label.append(check,title);
-        const button=document.createElement('button');button.type='button';button.textContent='Buradan oku';button.addEventListener('click',()=>{state.chunks=sectionChunks;runtime.loop=null;startSession(item.index);});row.append(label,button);list.append(row);
+        const button=document.createElement('button');button.type='button';button.textContent=t('experience.readFromHere');button.dataset.i18n='experience.readFromHere';button.addEventListener('click',()=>{state.chunks=sectionChunks;runtime.loop=null;startSession(item.index);});row.append(label,button);list.append(row);
       }
-      if(!sectionRows.length)list.textContent='Bu sayfada okunabilir bölüm bulunamadı.';
+      if(!sectionRows.length){list.textContent=t('experience.noSection');list.dataset.i18n='experience.noSection';}
     }
     function readSections(){
       const selected=[...root.querySelectorAll('[data-section]:checked')].map(input=>sectionRows[Number(input.dataset.section)]);
-      if(!selected.length){setStatus('En az bir bölüm seçin.',true);return;}
-      state.chunks=selected.flatMap(item=>sectionChunks.slice(item.index,item.end));runtime.loop=null;startSession(0);setStatus('Seçili bölümler okunuyor');
+      if(!selected.length){setStatus(t('experience.selectSection'),true);return;}
+      state.chunks=selected.flatMap(item=>sectionChunks.slice(item.index,item.end));runtime.loop=null;startSession(0);setStatus(t('experience.sectionsReading'));
     }
     let scrub=null;let scrubFrame=null;const wordTimings=new Map();
     let root = null; let strip = null; let reader = null; let focusText = null;
@@ -72,8 +75,10 @@
       const value = scrub?.preview ? {...timeline(),total:scrub.total,elapsed:scrub.preview.elapsed,remaining:(scrub.total-scrub.preview.elapsed)/state.settings.playbackRate,estimated:scrub.preview.estimated} : timeline(); const slider = strip.querySelector("input");
       if (!slider._scrubbing) slider.value = String(value.total ? Math.round(value.elapsed / value.total * 1000) : 0);
       slider.disabled = !state.chunks.length;
-      slider.setAttribute("aria-valuetext", `${scrub?.preview?.estimated?"Yaklaşık · ":""}${scrub?.preview?state.chunks[scrub.preview.index].text.slice(scrub.preview.range.start,scrub.preview.range.end)+" · ":""}%${value.total ? Math.round(value.elapsed / value.total * 100) : 0}, kalan ${time(value.remaining)}`);
-      strip.querySelector("output").textContent = `${value.estimated ? "~" : ""}${time(value.remaining)} kalan`;
+      const approx = scrub?.preview?.estimated ? t("experience.approx") : "";
+      const previewText = scrub?.preview ? state.chunks[scrub.preview.index].text.slice(scrub.preview.range.start, scrub.preview.range.end) + " · " : "";
+      slider.setAttribute("aria-valuetext", `${approx}${previewText}${t("experience.progressAria", { percent: value.total ? Math.round(value.elapsed / value.total * 100) : 0, remaining: time(value.remaining) })}`);
+      strip.querySelector("output").textContent = `${value.estimated ? "~" : ""}${t("experience.remaining", { time: time(value.remaining) })}`;
       for (const button of strip.querySelectorAll("[data-seek]")) button.disabled = !state.chunks.length;
     }
     function anchor() {
@@ -154,7 +159,7 @@
       const point=pointFor(index,seconds,scrub.durations[index]);point.elapsed=elapsed;scrub.preview=point;
       previewWord(index,point.range);markFocus(index,point.range);updateProgress();
       const word=state.chunks[index].text.slice(point.range.start,point.range.end);
-      setStatus(`Önizleme · ${index+1}/${state.chunks.length} · ${point.estimated?'Yaklaşık · ':''}${word}`);
+      setStatus(t("experience.preview", { index: index + 1, total: state.chunks.length, approx: point.estimated ? t("experience.approx") : "", word }));
     }
     function previewScrub(){beginScrub();if(scrub&&scrubFrame===null)scrubFrame=requestAnimationFrame(showScrub);}
     function clearScrub(){if(scrubFrame!==null)cancelAnimationFrame(scrubFrame);scrubFrame=null;const saved=scrub;scrub=null;if(strip)strip.querySelector('input')._scrubbing=false;return saved;}
@@ -168,7 +173,7 @@
       state.paused=saved.paused;state.followReading=saved.follow;
       const index=Math.min(state.index,state.chunks.length-1);const text=state.chunks[index]?.text;
       if(text){const word=[...text.matchAll(/\S+/gu)].find(word=>word.index+word[0].length>runtime.wordOffset);if(word){const range={start:word.index,end:word.index+word[0].length};previewWord(index,range);markFocus(index,range);}}
-      if(saved.playing&&!saved.paused)state.audio?.play().catch(()=>{});setStatus(saved.status||'Duraklatıldı');updateUi();
+      if(saved.playing&&!saved.paused)state.audio?.play().catch(()=>{});setStatus(saved.status||t('player.paused'));updateUi();
     }
     function seekTo(seconds) {
       cancelScrub(true);
@@ -186,21 +191,21 @@
       await Promise.all([library.ready, preferences.ready]);
       state.queueItemId = null;
       value ||= library.current().pages[page().url]?.anchor;
-      if (!value) throw new Error("Bu sayfa için kayıtlı okuma konumu yok.");
+      if (!value) throw new Error(t("experience.resumeMissing"));
       const chunks = prepareChunks(); const point = library.resolveAnchor(value, chunks);
       state.chunks = chunks; startSession(point.index, { anchor: point.anchor });
-      if(point.repaired)setStatus('Yazıdaki değişikliklere göre kayıtlı konum bulundu.');
+      if(point.repaired)setStatus(t('experience.repaired'));
     }
     async function bookmark() {
-      if (!state.chunks.length) throw new Error("Önce okumayı başlatın.");
+      if (!state.chunks.length) throw new Error(t("errors.startFirst"));
       await library.mutate({ type: "bookmark", ...page(), anchor: anchor() });
-      return { message: "Yer imi kaydedildi." };
+      return { message: t("experience.bookmarkSaved") };
     }
     function buildFocus() {
       if (!focusText) return;
       focusText.replaceChildren(); runtime.focusRows = state.chunks.map((chunk, index) => {
         const paragraph = document.createElement("p"); paragraph.textContent = chunk.text; paragraph.dataset.focusChunk = String(index); paragraph.tabIndex = 0;
-        paragraph.setAttribute("aria-label", `Paragraf ${index + 1}: buradan okumak için Enter`); focusText.appendChild(paragraph); return paragraph;
+        paragraph.setAttribute("aria-label", t("experience.paragraphAria", { number: index + 1 })); focusText.appendChild(paragraph); return paragraph;
       });
     }
     function focusSettings() {
@@ -231,7 +236,7 @@
     }
     function toggleFocus(force) {
       if (!state.chunks.length) { state.chunks = prepareChunks(); state.index = 0; runtime.chunks = state.chunks; }
-      if (!state.chunks.length) throw new Error("Bu sayfada okunacak metin bulunamadı.");
+      if (!state.chunks.length) throw new Error(t("player.noText"));
       showUi(); runtime.focus = typeof force === "boolean" ? force : !runtime.focus;
       if (runtime.focus) { toggleSettings(false); buildFocus(); }
       reader.hidden = !runtime.focus; focusSettings(); markFocus(state.index); renderHighlightStyle();
@@ -275,11 +280,11 @@
         move(event); event.preventDefault(); event.stopImmediatePropagation();
         if (!candidate) return;
         const selected = candidate; cleanup();
-        library.mutate({ type: "exclude", ...page(), selector: elementPath(selected), quote: selected.innerText?.replace(/\s+/g, " ").trim().slice(0, 180) || "" }).then(() => setStatus("Alan okuma dışında bırakıldı")).catch(error => setStatus(error.message, true));
+        library.mutate({ type: "exclude", ...page(), selector: elementPath(selected), quote: selected.innerText?.replace(/\s+/g, " ").trim().slice(0, 180) || "" }).then(() => setStatus(t("experience.excluded"))).catch(error => setStatus(error.message, true));
       };
-      const key = event => { if (event.key === "Escape") { event.preventDefault(); event.stopImmediatePropagation(); cleanup(); setStatus("Alan seçimi iptal edildi"); } };
+      const key = event => { if (event.key === "Escape") { event.preventDefault(); event.stopImmediatePropagation(); cleanup(); setStatus(t("experience.excludeCanceled")); } };
       document.addEventListener("pointermove", move, true); document.addEventListener("click", click, true); document.addEventListener("keydown", key, true);
-      runtime.picker = cleanup; setStatus("Hariç tutulacak alana tıklayın · Esc iptal");
+      runtime.picker = cleanup; setStatus(t("experience.excludePrompt"));
     }
     function pointTime(point, result, audio) {
       if (point.end) return audio.duration;
@@ -291,35 +296,35 @@
     }
     function sentenceBounds() {
       const index=Math.min(state.index,state.chunks.length-1);const text=state.chunks[index]?.text;
-      if(!text)throw new Error('Önce okumayı başlatın.');
+      if(!text)throw new Error(t('errors.startFirst'));
       const cursor=runtime.wordOffset;let start=0,end=text.length;
       for(const match of text.matchAll(/[.!?…]["'”’)]*\s+/gu)){const next=match.index+match[0].length;if(next<=cursor)start=next;else{end=next;break;}}
       return {a:{index,charOffset:start},b:{index,charOffset:end,end:end===text.length}};
     }
     function paragraphBounds() {
-      const index=Math.min(state.index,state.chunks.length-1);const current=state.chunks[index];if(!current)throw new Error('Önce okumayı başlatın.');
+      const index=Math.min(state.index,state.chunks.length-1);const current=state.chunks[index];if(!current)throw new Error(t('errors.startFirst'));
       let first=index,last=index;
       if(current.el){while(first>0&&state.chunks[first-1].el===current.el)first--;while(last+1<state.chunks.length&&state.chunks[last+1].el===current.el)last++;}
       return {a:{index:first,seconds:0},b:{index:last,end:true}};
     }
     function repeatStatus() {
       const controls=root?.querySelector('.repeat-controls');if(!controls)return;
-      const names={sentence:'Cümle döngüsü',paragraph:'Paragraf döngüsü',ab:'A–B döngüsü'};
-      controls.querySelector('output').textContent=[runtime.loop?names[runtime.loop.mode]:'Döngü kapalı',runtime.a?`A: ${runtime.a.index+1}. parça ${time(runtime.a.seconds)}`:'',runtime.b?`B: ${runtime.b.index+1}. parça ${time(runtime.b.seconds)}`:''].filter(Boolean).join(' · ');
+      const names={sentence:t('experience.loopSentence'),paragraph:t('experience.loopParagraph'),ab:t('experience.loopAB')};
+      controls.querySelector('output').textContent=[runtime.loop?names[runtime.loop.mode]:t('experience.loopOff'),runtime.a?t('experience.pointA',{part:runtime.a.index+1,time:time(runtime.a.seconds)}):'',runtime.b?t('experience.pointB',{part:runtime.b.index+1,time:time(runtime.b.seconds)}):''].filter(Boolean).join(' · ');
       for(const button of controls.querySelectorAll('[data-repeat]'))if(['sentence','paragraph','ab'].includes(button.dataset.repeat))button.setAttribute('aria-pressed',String(runtime.loop?.mode===button.dataset.repeat));
     }
     function repeatAction(name) {
-      if(name==='off'){runtime.loop=null;repeatStatus();setStatus('Döngü kapatıldı');return;}
-      if(!state.chunks.length)throw new Error('Önce okumayı başlatın.');
+      if(name==='off'){runtime.loop=null;repeatStatus();setStatus(t('experience.loopClosed'));return;}
+      if(!state.chunks.length)throw new Error(t('errors.startFirst'));
       if(name==='a'||name==='b'){
-        if(!state.audio||!Number.isFinite(state.audio.duration))throw new Error('Sesin başlamasını bekleyin.');
-        runtime[name]={index:state.index,seconds:state.audio.currentTime};repeatStatus();setStatus(`${name.toUpperCase()} noktası: ${state.index+1}. parça · ${time(state.audio.currentTime)}`);return;
+        if(!state.audio||!Number.isFinite(state.audio.duration))throw new Error(t('experience.waitAudio'));
+        runtime[name]={index:state.index,seconds:state.audio.currentTime};repeatStatus();setStatus(t('experience.pointMarked',{point:name.toUpperCase(),part:state.index+1,time:time(state.audio.currentTime)}));return;
       }
       const bounds=name.startsWith('sentence')?sentenceBounds():name.startsWith('paragraph')?paragraphBounds():{a:runtime.a,b:runtime.b};
-      if(!bounds.a||!bounds.b||bounds.a.index>bounds.b.index||(bounds.a.index===bounds.b.index&&(bounds.b.seconds||0)<=(bounds.a.seconds||0)&&name==='ab'))throw new Error('Önce A, ardından daha ileride bir B noktası işaretleyin.');
+      if(!bounds.a||!bounds.b||bounds.a.index>bounds.b.index||(bounds.a.index===bounds.b.index&&(bounds.b.seconds||0)<=(bounds.a.seconds||0)&&name==='ab'))throw new Error(t('experience.abOrder'));
       runtime.loop=name.endsWith('once')?null:{...bounds,mode:name};
       startSession(bounds.a.index,{anchor:bounds.a});
-      repeatStatus();setStatus(runtime.loop?'Döngü etkin · kapatmak için Tekrar menüsünü kullanın':'Bölüm yeniden okunuyor');
+      repeatStatus();setStatus(runtime.loop?t('experience.loopActive'):t('experience.sectionRepeating'));
     }
     function loopTick(audio,result) {
       const loop=runtime.loop;if(!loop||state.index!==loop.b.index||loop.b.end||audio.currentTime+.015<pointTime(loop.b,result,audio))return false;
@@ -329,14 +334,14 @@
     function nextRepeat(index) { const loop=runtime.loop;return loop && index>=loop.b.index ? loop.a : null; }
     function mount(shadow) {
       root = shadow; strip = document.createElement("div"); strip.className = "playback-strip";
-      strip.innerHTML = '<button data-seek="-10" title="10 saniye geri">−10 sn</button><input type="range" min="0" max="1000" step="1" value="0" aria-label="Okuma ilerlemesi"><button data-seek="10" title="10 saniye ileri">+10 sn</button><output aria-live="off">~0:00 kalan</output><button data-experience="bookmark" title="Yer imi ekle" aria-label="Yer imi ekle">★</button><button data-experience="focus" title="Odak görünümü">Odak</button><button data-experience="sections" title="Okunacak bölümleri seç">Bölümler</button>';
+      strip.innerHTML = `<button data-seek="-10" title="${t("experience.seekBack")}" aria-label="${t("experience.seekBack")}" data-i18n-title="experience.seekBack" data-i18n-aria-label="experience.seekBack" data-i18n="experience.seekBackShort">${t("experience.seekBackShort")}</button><input type="range" min="0" max="1000" step="1" value="0" aria-label="${t("experience.progressLabel")}" data-i18n-aria-label="experience.progressLabel"><button data-seek="10" title="${t("experience.seekForward")}" aria-label="${t("experience.seekForward")}" data-i18n-title="experience.seekForward" data-i18n-aria-label="experience.seekForward" data-i18n="experience.seekForwardShort">${t("experience.seekForwardShort")}</button><output aria-live="off"></output><button data-experience="bookmark" title="${t("library.addBookmark")}" aria-label="${t("library.addBookmark")}" data-i18n-title="library.addBookmark" data-i18n-aria-label="library.addBookmark">★</button><button data-experience="focus" title="${t("library.focus")}" data-i18n-title="library.focus" data-i18n="experience.focusButton">${t("experience.focusButton")}</button><button data-experience="sections" title="${t("experience.sectionsTitle")}" data-i18n-title="experience.sectionsTitle" data-i18n="experience.sectionsButton">${t("experience.sectionsButton")}</button>`;
       shadow.querySelector(".bar").after(strip);
-      const repeat=document.createElement('details');repeat.className='repeat-controls';repeat.innerHTML='<summary>Tekrar / A–B döngüsü</summary><output role="status"></output><div class="library-buttons"><button data-repeat="sentence-once">Cümleyi tekrar oku</button><button data-repeat="paragraph-once">Paragrafı tekrar oku</button><button data-repeat="sentence">Cümle döngüsü</button><button data-repeat="paragraph">Paragraf döngüsü</button><button data-repeat="a">A işaretle</button><button data-repeat="b">B işaretle</button><button data-repeat="ab">A–B döngüsü</button><button data-repeat="off">Döngüyü kapat</button></div>';
+      const repeat=document.createElement('details');repeat.className='repeat-controls';repeat.innerHTML=`<summary data-i18n="experience.repeatSummary">${t("experience.repeatSummary")}</summary><output role="status"></output><div class="library-buttons"><button data-repeat="sentence-once" data-i18n="experience.repeatSentenceOnce">${t("experience.repeatSentenceOnce")}</button><button data-repeat="paragraph-once" data-i18n="experience.repeatParagraphOnce">${t("experience.repeatParagraphOnce")}</button><button data-repeat="sentence" data-i18n="experience.loopSentence">${t("experience.loopSentence")}</button><button data-repeat="paragraph" data-i18n="experience.loopParagraph">${t("experience.loopParagraph")}</button><button data-repeat="a" data-i18n="experience.markA">${t("experience.markA")}</button><button data-repeat="b" data-i18n="experience.markB">${t("experience.markB")}</button><button data-repeat="ab" data-i18n="experience.loopAB">${t("experience.loopAB")}</button><button data-repeat="off" data-i18n="experience.loopClose">${t("experience.loopClose")}</button></div>`;
       strip.after(repeat);repeat.addEventListener('click',event=>{const button=event.target.closest('[data-repeat]');if(button){try{repeatAction(button.dataset.repeat);}catch(error){setStatus(error.message,true);}}});
-      const sections=document.createElement('details');sections.className='reading-sections preferences';sections.innerHTML='<summary>Bölümler / seçerek oku</summary><div class="reading-sections-list"></div><div class="library-buttons"><button type="button" data-read-sections>Seçili bölümleri oku</button><button type="button" data-refresh-sections>Başlıkları yenile</button></div>';
+      const sections=document.createElement('details');sections.className='reading-sections preferences';sections.innerHTML=`<summary data-i18n="experience.sectionsSummary">${t("experience.sectionsSummary")}</summary><div class="reading-sections-list"></div><div class="library-buttons"><button type="button" data-read-sections data-i18n="experience.readSelected">${t("experience.readSelected")}</button><button type="button" data-refresh-sections data-i18n="experience.refreshHeadings">${t("experience.refreshHeadings")}</button></div>`;
       root.querySelector('[data-library-panel="records"]').prepend(sections);sections.addEventListener('toggle',()=>{if(sections.open)refreshSections();});sections.querySelector('[data-read-sections]').addEventListener('click',readSections);sections.querySelector('[data-refresh-sections]').addEventListener('click',()=>refreshSections(true));
-      reader = document.createElement("section"); reader.className = "focus-reader"; reader.hidden = true; reader.setAttribute("aria-label", "Odak okuma görünümü");
-      reader.innerHTML = '<div class="focus-heading"><h2></h2><button type="button" data-close-focus>Odaktan çık</button></div><div class="focus-text"></div>';
+      reader = document.createElement("section"); reader.className = "focus-reader"; reader.hidden = true; reader.setAttribute("aria-label", t("experience.focusAria")); reader.dataset.i18nAriaLabel = "experience.focusAria";
+      reader.innerHTML = `<div class="focus-heading"><h2></h2><button type="button" data-close-focus data-i18n="experience.closeFocus">${t("experience.closeFocus")}</button></div><div class="focus-text"></div>`;
       strip.after(reader); reader.querySelector("h2").textContent = document.title; focusText = reader.querySelector(".focus-text");
       strip.addEventListener("click", event => { const button = event.target.closest("button"); if (!button) return; if (button.dataset.seek) seekBy(Number(button.dataset.seek)); if (button.dataset.experience === "bookmark") bookmark().then(result => setStatus(result.message)).catch(error => setStatus(error.message, true)); if(button.dataset.experience==='sections'){toggleSettings(true);state.ui.preferences.activateTab('library');root.querySelector('.reading-library').dispatchEvent(new CustomEvent('library-activate',{detail:'records'}));sections.open=true;refreshSections();} if (button.dataset.experience === "focus") { try { toggleFocus(); } catch (error) { setStatus(error.message, true); } } });
       const slider = strip.querySelector("input");slider.addEventListener('input',previewScrub);slider.addEventListener('change',commitScrub);
@@ -347,17 +352,19 @@
       focusText.addEventListener("click", fromFocus); focusText.addEventListener("keydown", event => { if (event.key === "Enter") fromFocus(event); });
       focusText.addEventListener("wheel", () => { runtime.focusFollow = false; }, { passive: true });
       focusText.addEventListener("touchmove", () => { runtime.focusFollow = false; }, { passive: true });
+      i18n?.observe(shadow);
+      i18n?.subscribe(() => { repeatStatus(); updateProgress(); });
       repeatStatus();focusSettings(); updateProgress();
     }
     async function exportAudio(requestAudio, offline = false) {
-      if (runtime.exporting) throw new Error("Bir indirme zaten hazırlanıyor.");
+      if (runtime.exporting) throw new Error(t("experience.exportBusy"));
       const chunks = (state.chunks.length ? state.chunks : prepareChunks()).map(chunk => ({ ...chunk }));
-      if (!chunks.length) throw new Error("İndirilecek metin bulunamadı.");
+      if (!chunks.length) throw new Error(t("experience.exportEmpty"));
       const settings = structuredClone(state.settings); const token = ++runtime.exportToken; const session = state.session;
       const resumeAfter = state.playing && !state.paused;
       if (resumeAfter) { state.paused = true; state.audio?.pause(); updateUi(); }
       runtime.exporting = true; runtime.exportResume = { resumeAfter, session };
-      const filename = `${(document.title || "sesli-oku").replace(/[\\/:*?"<>|]/g, "_").slice(0, 120)}.mp3`;
+      const filename = `${(document.title || "read-aloud").replace(/[\\/:*?"<>|]/g, "_").slice(0, 120)}.mp3`;
       let offlineId=null;
       try {
         const parts = [];
@@ -365,10 +372,16 @@
         await library.mutate({ type: "export", value: { status: "working", percent: 0, filename, kind: offline ? "offline" : "mp3", bookId: offlineId } });
         for (let index = 0; index < chunks.length; index++) {
           if (token !== runtime.exportToken) return;
-          const result = await requestAudio(chunks[index].text, chunks[index], settings);
+          await library.mutate({ type: "export", value: { status: "working", percent: Math.round(index / chunks.length * 100), filename, kind: offline ? "offline" : "mp3", bookId: offlineId, completed: index, total: chunks.length, chars: chunks[index].text.length, waitingSince: Date.now() } });
+          const result = await requestAudio(chunks[index].text, chunks[index], settings, !offline);
           if (token !== runtime.exportToken) return;
           if(offline){let binary='';for(let pos=0;pos<result.audio.length;pos+=0x8000)binary+=String.fromCharCode(...result.audio.subarray(pos,pos+0x8000));await sendToBackground({type:'VAULT_PART',id:offlineId,index,part:{audio:btoa(binary),boundaries:result.boundaries,sourceOffsets:result.sourceOffsets}});}
-          else parts.push(library.stripMp3Tags(result.audio));
+          else {
+            if (settings.playbackRate !== 1) await library.mutate({ type: 'export', value: {status:'working', kind:'mp3', filename, percent:Math.round(index / chunks.length * 100), completed:index, total:chunks.length, chars:chunks[index].text.length, waitingSince:Date.now(), phase:'tempo', speed:settings.playbackRate} });
+            const audio = await globalThis.SesliOkuAudioExport.convert(result.audio, settings.playbackRate || 1, () => token !== runtime.exportToken);
+            if (token !== runtime.exportToken) return;
+            parts.push(library.stripMp3Tags(audio));
+          }
           await library.mutate({ type: "export", value: { status: "working", percent: Math.round((index + 1) / chunks.length * 100), filename, kind: offline ? "offline" : "mp3", bookId: offlineId } });
         }
         if (token !== runtime.exportToken) return;
@@ -390,15 +403,15 @@
     }
     function cancelExport() { if(runtime.offlineId){sendToBackground({type:'VAULT_REMOVE',id:runtime.offlineId}).catch(()=>{});runtime.offlineId=null;} runtime.exportToken++; runtime.exporting = false; restoreExportPlayback(); library.mutate({ type: "export", value: { status: "canceled" } }).catch(() => {}); }
     async function perform(action, args, requestAudio) {
-      if (action === "resume") { await resume(args?.anchor); return { message: "Kayıtlı konumdan devam ediliyor." }; }
+      if (action === "resume") { await resume(args?.anchor); return { message: t("experience.resumeMessage") }; }
       if (action === "bookmark") return bookmark();
-      if (action === "focus") { toggleFocus(); return { message: "Odak görünümü değiştirildi." }; }
-      if (action === "pickExclude") { pickExclude(); return { message: "Sayfada hariç tutulacak alana tıklayın." }; }
-      if(action==='offlineSave'){exportAudio(requestAudio,true).catch(error=>setStatus(error.message,true));return {message:'Çevrimdışı ses hazırlanıyor; ilerleme kitaplıkta gösterilecek.'};}
-      if(action==='repeat'){repeatAction(args?.mode);return {message:'Tekrar ayarı uygulandı.'};}
-      if (action === "export") { exportAudio(requestAudio).catch(error => setStatus(error.message, true)); return { message: "MP3 hazırlanıyor; ilerleme kitaplıkta gösterilecek." }; }
-      if (action === "cancelExport") { cancelExport(); return { message: "İndirme iptal edildi." }; }
-      throw new Error("Bilinmeyen okuma aracı.");
+      if (action === "focus") { toggleFocus(); return { message: t("experience.focusMessage") }; }
+      if (action === "pickExclude") { pickExclude(); return { message: t("experience.pickExcludeMessage") }; }
+      if(action==='offlineSave'){exportAudio(requestAudio,true).catch(error=>setStatus(error.message,true));return {message:t('experience.offlineMessage')};}
+      if(action==='repeat'){repeatAction(args?.mode);return {message:t('experience.repeatMessage')};}
+      if (action === "export") { exportAudio(requestAudio).catch(error => setStatus(error.message, true)); return { message: t("experience.exportMessage") }; }
+      if (action === "cancelExport") { cancelExport(); return { message: t("library.export.canceled") }; }
+      throw new Error(t("experience.unknownTool"));
     }
     function initialize() {
       library.subscribe(value => { try { applyExclusions(value); } catch {} });

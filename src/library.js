@@ -1,6 +1,9 @@
 /** Local reading history, bookmarks, queue and text-to-speech source mapping. */
 (() => {
   if (globalThis.SesliOkuLibrary) return;
+  const i18n = globalThis.SesliOkuI18n;
+  const t = (key, params, fallback) =>
+    i18n ? i18n.t(key, params, fallback) : fallback ?? key;
   const worker = typeof document === "undefined";
   const empty = () => ({ pages: {}, bookmarks: [], queue: [], queueRunning: false, queueItemId: null, queueTabId: null, export: null, sites: {} });
   let data = empty();
@@ -10,12 +13,12 @@
   const listeners = new Set();
   function pageKey(url) {
     const parsed = new URL(url);
-    if (!["http:", "https:", "file:"].includes(parsed.protocol) && !(parsed.protocol === "chrome-extension:" && parsed.host === chrome.runtime.id && parsed.pathname === "/src/reader.html")) throw new Error("Bu sayfa okuma kitaplığına eklenemiyor.");
+    if (!["http:", "https:", "file:"].includes(parsed.protocol) && !(parsed.protocol === "chrome-extension:" && parsed.host === chrome.runtime.id && parsed.pathname === "/src/reader.html")) throw new Error(t("errors.libraryPage"));
     parsed.hash = ""; return parsed.href;
   }
   function queueUrl(url) {
     const parsed = new URL(url);
-    if (!["https:", "http:"].includes(parsed.protocol)) throw new Error("Okuma listesi için http veya https adresi girin.");
+    if (!["https:", "http:"].includes(parsed.protocol)) throw new Error(t("errors.queueUrl"));
     return parsed.href;
   }
   function clean(value) {
@@ -47,7 +50,7 @@
   });
   async function rpc(type, payload = {}) {
     const response = await chrome.runtime.sendMessage({ target: "background", type, ...payload });
-    if (!response?.ok) throw new Error(response?.error || "İşlem tamamlanamadı.");
+    if (!response?.ok) throw new Error(response?.error || t("errors.generic"));
     return response;
   }
   function mutate(operation) {
@@ -74,26 +77,26 @@
       else if (op.type === "exclude") {
         const url = pageKey(op.url); const old = next.pages[url] || { url, title: op.title || url };
         const exclusions = [...(old.exclusions || [])].filter(item => item.selector !== op.selector);
-        if (exclusions.length >= 50) throw new Error("Bu sayfada en fazla 50 alan hariç tutulabilir.");
+        if (exclusions.length >= 50) throw new Error(t("errors.exclusionLimit"));
         exclusions.push({ id: crypto.randomUUID(), selector: String(op.selector).slice(0, 1000), quote: String(op.quote || "").slice(0, 180) });
         next.pages[url] = { ...old, exclusions, updated: Date.now() };
       } else if (op.type === "excludeRemove") {
         const entry = next.pages[pageKey(op.url)]; if (entry) entry.exclusions = (entry.exclusions || []).filter(item => item.id !== op.id);
       } else if (op.type === "queueAdd") {
         const url = queueUrl(op.url);
-        if (next.queue.length >= 50) throw new Error("Okuma listesine en fazla 50 yazı eklenebilir.");
+        if (next.queue.length >= 50) throw new Error(t("errors.queueLimit"));
         if (!next.queue.some(item => item.url === url && item.status !== "done")) next.queue.push({ id: crypto.randomUUID(), url, title: String(op.title || url).slice(0, 250), status: "pending" });
       } else if (op.type === "queueRemove") next.queue = next.queue.filter(item => item.id !== op.id);
       else if (op.type === "itemEdit") {
         const list = op.collection === 'queue' ? next.queue : next.bookmarks;
-        const item = list.find(entry=>entry.id===op.id); if (!item) throw new Error('Kayıt bulunamadı.');
+        const item = list.find(entry=>entry.id===op.id); if (!item) throw new Error(t("errors.recordMissing"));
         item.note = String(op.note || '').slice(0,3000); item.tags = tags(op.tags); item.updated = Math.max(Date.now(),(Number(item.updated||item.created)||0)+1,(Number(stored.syncJournal?.removed?.[item.id])||0)+1);
       } else if (op.type === 'siteSave') {
-        const origin = siteOrigin(op.url); if (!origin) throw new Error('Bu adres için site ayarı kaydedilemez.');
-        if (!next.sites[origin] && Object.keys(next.sites).length >= 100) throw new Error('En fazla 100 site kaydedilebilir.');
+        const origin = siteOrigin(op.url); if (!origin) throw new Error(t("errors.siteSaveUnavailable"));
+        if (!next.sites[origin] && Object.keys(next.sites).length >= 100) throw new Error(t("errors.siteLimit"));
         next.sites[origin] = { settings: op.settings, theme: op.theme, colorMode: op.colorMode, exclusions: next.pages[pageKey(op.url)]?.exclusions ?? next.sites[origin]?.exclusions ?? [] };
       } else if (op.type === 'sitePatch') {
-        const rule = Object.hasOwn(next.sites,op.origin) ? next.sites[op.origin] : null; if (!rule) throw new Error('Site ayarı bulunamadı.');
+        const rule = Object.hasOwn(next.sites,op.origin) ? next.sites[op.origin] : null; if (!rule) throw new Error(t("errors.siteMissing"));
         if (op.patch.settings) rule.settings = {...rule.settings,...op.patch.settings};
         if (op.patch.theme) rule.theme = op.patch.theme;
         if (op.patch.colorMode) rule.colorMode = op.patch.colorMode;
@@ -113,7 +116,7 @@
         next.queue = next.queue.map(item => item.status === "reading" ? { ...item, status: "pending" } : item);
       } else if (op.type === "export") next.export = op.value;
       else if (op.type === "forget") delete next.pages[pageKey(op.url)];
-      else throw new Error("Bilinmeyen kitaplık işlemi.");
+      else throw new Error(t("errors.unknownLibraryAction"));
       const pages = Object.entries(next.pages).sort((a, b) => (a[1].updated || 0) - (b[1].updated || 0)).slice(-100);
       next.pages = Object.fromEntries(pages);
       await chrome.storage.local.set({ readingLibrary: next }); data = next; notify(); return next;
@@ -160,18 +163,18 @@
       const point=candidates[0];const unchanged=chunks[point.index].text.startsWith(quote)&&point.charOffset===offset;
       return {index:point.index,anchor:{...anchor,charOffset:point.charOffset,seconds:unchanged?anchor.seconds:0},repaired:!unchanged};
     }
-    if(candidates.length>1)throw new Error('Kayıtlı metin birden fazla yerde bulundu. Konumu başlıktan seçin.');
-    throw new Error('Kayıtlı metin artık bu sayfada bulunamıyor. Yazıyı baştan başlatabilirsiniz.');
+    if(candidates.length>1)throw new Error(t("errors.anchorAmbiguous"));
+    throw new Error(t("errors.anchorMissing"));
   }
   function dictionary(text) {
     const rules = [];
     for (const line of String(text).split(/\r?\n/).map(line => line.trim()).filter(Boolean)) {
       const split = line.indexOf("=");
-      if (split <= 0 || !line.slice(split + 1).trim()) throw new Error("Her satırı sözcük = okunuş biçiminde yazın.");
+      if (split <= 0 || !line.slice(split + 1).trim()) throw new Error(t("errors.dictionaryFormat"));
       const from = line.slice(0, split).trim(); const to = line.slice(split + 1).trim();
-      if (from.length > 100 || to.length > 200) throw new Error("Sözlükte bir sözcük 100, okunuş 200 karakteri aşamaz.");
+      if (from.length > 100 || to.length > 200) throw new Error(t("errors.dictionaryLength"));
       rules.push({ from, to });
-      if (rules.length > 200) throw new Error("Sözlüğe en fazla 200 kayıt eklenebilir.");
+      if (rules.length > 200) throw new Error(t("errors.dictionaryLimit"));
     }
     return rules;
   }
@@ -238,22 +241,22 @@
   }
   function mount(root) {
     root.classList.add("reading-library");
-    const groups = [['records','Kayıtlar'],['documents','Belgeler'],['statistics','İstatistikler'],['management','Yönetim']];
+    const groups = [['records','library.group.records'],['documents','library.group.documents'],['statistics','library.group.statistics'],['management','library.group.management']];
     const tabPrefix = `library-${crypto.randomUUID()}`;
-    root.innerHTML = `<div class="library-current" role="status">Sayfa bilgisi alınıyor…</div>
-      <div class="library-buttons"><button type="button" class="pref-button" data-library="resume">Kaldığım yerden devam et</button><button type="button" class="pref-button" data-library="bookmark">Yer imi ekle</button></div>
+    root.innerHTML = `<div class="library-current" role="status">${t("library.loading")}</div>
+      <div class="library-buttons"><button type="button" class="pref-button" data-library="resume" data-i18n="library.resume">${t("library.resume")}</button><button type="button" class="pref-button" data-library="bookmark" data-i18n="library.addBookmark">${t("library.addBookmark")}</button></div>
       <div class="library-export" role="status"></div>
 
-      <div class="pref-tabs library-tabs" role="tablist" aria-label="Kitaplık grupları">${groups.map(([key,label],index)=>`<button type="button" class="pref-tab" role="tab" id="${tabPrefix}-tab-${key}" data-library-tab="${key}" aria-controls="${tabPrefix}-panel-${key}" aria-selected="${index===0}" tabindex="${index===0?0:-1}">${label}</button>`).join('')}</div>
+      <div class="pref-tabs library-tabs" role="tablist" aria-label="${t("library.tabsLabel")}" data-i18n-aria-label="library.tabsLabel">${groups.map(([key,labelKey],index)=>`<button type="button" class="pref-tab" role="tab" id="${tabPrefix}-tab-${key}" data-library-tab="${key}" aria-controls="${tabPrefix}-panel-${key}" aria-selected="${index===0}" tabindex="${index===0?0:-1}" data-i18n="${labelKey}">${t(labelKey)}</button>`).join('')}</div>
       ${groups.map(([key])=>`<section class="library-panel" role="tabpanel" id="${tabPrefix}-panel-${key}" data-library-panel="${key}" aria-labelledby="${tabPrefix}-tab-${key}" ${key==='records'?'':'hidden'}></section>`).join('')}
       <div class="library-feedback" role="status"></div>`;
-    root.querySelector('[data-library-panel="records"]').innerHTML = `      <label class="library-search">Kitaplıkta ara<input type="search" placeholder="Başlık, not, adres veya etiket" aria-label="Kitaplıkta ara"></label>
-      <details><summary>Yer imleri</summary><ul class="library-bookmarks"></ul></details>
-      <details><summary>Okuma listesi</summary><div class="library-buttons"><button type="button" class="pref-button" data-library="queueCurrent">Bu sayfayı ekle</button><button type="button" class="pref-button" data-library="queueStart">Sırayı başlat</button><button type="button" class="pref-button" data-library="queueStop">Sırayı durdur</button></div><div class="library-url"><input type="url" placeholder="https://…" aria-label="Okuma listesine eklenecek adres"><button type="button" class="pref-button" data-library="queueAdd">Adresi ekle</button></div><ul class="library-queue"></ul></details>
-<div class="library-buttons"><button type="button" class="pref-button" data-library="focus">Odak görünümü</button></div>`;
-    root.querySelector('[data-library-panel="documents"]').innerHTML = `<div class="library-buttons"><button type="button" class="pref-button" data-library="export">MP3 indir</button><button type="button" class="pref-button" data-library="cancelExport" hidden>İndirmeyi iptal et</button></div>`;
-    root.querySelector('[data-library-panel="management"]').innerHTML = `      <details><summary>Okunmayacak alanlar</summary><button type="button" class="pref-button" data-library="pickExclude">Sayfadan alan seç</button><ul class="library-exclusions"></ul></details>
-      <details><summary>Telaffuz sözlüğü</summary><label>Sözcük = okunuş<textarea rows="4" class="library-dictionary" placeholder="OpenAI = Open ey ay\nTBMM = Türkiye Büyük Millet Meclisi" aria-label="Telaffuz sözlüğü"></textarea></label><button type="button" class="pref-button" data-library="dictionary">Sözlüğü kaydet</button></details>
+    root.querySelector('[data-library-panel="records"]').innerHTML = `      <label class="library-search"><span data-i18n="library.search">${t("library.search")}</span><input type="search" placeholder="${t("library.searchPlaceholder")}" aria-label="${t("library.search")}" data-i18n-placeholder="library.searchPlaceholder" data-i18n-aria-label="library.search"></label>
+      <details><summary data-i18n="library.bookmarks">${t("library.bookmarks")}</summary><ul class="library-bookmarks"></ul></details>
+      <details><summary data-i18n="library.queue">${t("library.queue")}</summary><div class="library-buttons"><button type="button" class="pref-button" data-library="queueCurrent" data-i18n="library.queueCurrent">${t("library.queueCurrent")}</button><button type="button" class="pref-button" data-library="queueStart" data-i18n="library.queueStart">${t("library.queueStart")}</button><button type="button" class="pref-button" data-library="queueStop" data-i18n="library.queueStop">${t("library.queueStop")}</button></div><div class="library-url"><input type="url" placeholder="https://…" aria-label="${t("library.queueUrlPlaceholder")}" data-i18n-aria-label="library.queueUrlPlaceholder"><button type="button" class="pref-button" data-library="queueAdd" data-i18n="library.queueAdd">${t("library.queueAdd")}</button></div><ul class="library-queue"></ul></details>
+<div class="library-buttons"><button type="button" class="pref-button" data-library="focus" data-i18n="library.focus">${t("library.focus")}</button></div>`;
+    root.querySelector('[data-library-panel="documents"]').innerHTML = `<div class="library-buttons"><button type="button" class="pref-button" data-library="export" data-i18n="library.export">${t("library.export")}</button><button type="button" class="pref-button" data-library="cancelExport" data-i18n="library.cancelExport" hidden>${t("library.cancelExport")}</button></div>`;
+    root.querySelector('[data-library-panel="management"]').innerHTML = `      <details><summary data-i18n="library.exclusions">${t("library.exclusions")}</summary><button type="button" class="pref-button" data-library="pickExclude" data-i18n="library.pickExclude">${t("library.pickExclude")}</button><ul class="library-exclusions"></ul></details>
+      <details><summary data-i18n="library.dictionary">${t("library.dictionary")}</summary><label><span data-i18n="library.dictionaryLabel">${t("library.dictionaryLabel")}</span><textarea rows="4" class="library-dictionary" placeholder="${t("library.dictionaryPlaceholder")}" aria-label="${t("library.dictionary")}" data-i18n-placeholder="library.dictionaryPlaceholder" data-i18n-aria-label="library.dictionary"></textarea></label><button type="button" class="pref-button" data-library="dictionary" data-i18n="library.saveDictionary">${t("library.saveDictionary")}</button></details>
 `;
     function activateGroup(key, focus=false) {
       if(!groups.some(([id])=>id===key))return;
@@ -284,46 +287,71 @@
     function refresh(value) {
       let key = ""; try { if (context?.url) key = pageKey(context.url); } catch {}
       const page = value.pages[key];
-      root.querySelector(".library-current").textContent = page?.anchor && !page.completed ? `${context?.title || page.title} · kayıtlı konum var` : context?.title || "Bu sayfa için kayıtlı konum yok.";
+      root.querySelector(".library-current").textContent = page?.anchor && !page.completed
+        ? t("library.status.savedPosition", { title: context?.title || page.title })
+        : context?.title || t("library.status.noPosition");
       root.querySelector('[data-library="resume"]').disabled = !page?.anchor || page.completed;
       const active=root.getRootNode().activeElement||document.activeElement;
       if(!active?.closest('.library-item')) {
       const bookmarks = root.querySelector(".library-bookmarks"); bookmarks.replaceChildren();
-      const query = root.querySelector('[type="search"]').value.toLocaleLowerCase('tr');
-      const matches = item => [item.title,item.url,item.note,...(item.tags||[])].join(' ').toLocaleLowerCase('tr').includes(query);
+      const searchLocale = i18n?.locale() || "tr";
+      const query = root.querySelector('[type="search"]').value.toLocaleLowerCase(searchLocale);
+      const matches = item => [item.title,item.url,item.note,...(item.tags||[])].join(' ').toLocaleLowerCase(searchLocale).includes(query);
       const editor = (item,collection,title) => {
         const key=collection+':'+item.id;const draft=drafts.get(key)||item;
         const details=document.createElement('details');details.className='library-item';const summary=document.createElement('summary');summary.textContent=title;
-        const note=document.createElement('textarea');note.rows=2;note.value=draft.note||'';note.setAttribute('aria-label','Kayıt notu');note.placeholder='Not ekle';
-        const labels=document.createElement('input');labels.type='text';labels.value=Array.isArray(draft.tags)?draft.tags.join(', '):(draft.tags||'');labels.placeholder='Etiketler, virgülle ayırın';labels.setAttribute('aria-label','Etiketler');
-        const save=document.createElement('button');save.type='button';save.className='pref-button';save.textContent='Not ve etiketleri kaydet';save.addEventListener('click',async()=>{try{await action('itemEdit',{collection,id:item.id,note:note.value,tags:labels.value});drafts.delete(key);feedback('Not ve etiketler kaydedildi.');}catch(error){feedback(error.message);}});
+        const note=document.createElement('textarea');note.rows=2;note.value=draft.note||'';note.setAttribute('aria-label',t('library.noteLabel'));note.placeholder=t('library.notePlaceholder');
+        const labels=document.createElement('input');labels.type='text';labels.value=Array.isArray(draft.tags)?draft.tags.join(', '):(draft.tags||'');labels.placeholder=t('library.tagsPlaceholder');labels.setAttribute('aria-label',t('library.tagsLabel'));
+        const save=document.createElement('button');save.type='button';save.className='pref-button';save.textContent=t('library.saveNote');save.addEventListener('click',async()=>{try{await action('itemEdit',{collection,id:item.id,note:note.value,tags:labels.value});drafts.delete(key);feedback(t('library.noteSaved'));}catch(error){feedback(error.message);}});
         const remember=()=>drafts.set(key,{note:note.value,tags:labels.value});note.addEventListener('input',remember);labels.addEventListener('input',remember);
         details.append(summary,note,labels,save);return details;
       };
       for (const item of value.bookmarks.filter(matches)) {
         const row = document.createElement("li"); const title = document.createElement("span"); title.textContent = `${item.title} — ${item.anchor.quote.slice(0, 80)}`;
-        row.append(editor(item,'bookmarks',title.textContent), button("Aç", "bookmarkOpen", { id: item.id }), button("Sil", "bookmarkRemove", { id: item.id })); bookmarks.appendChild(row);
+        row.append(editor(item,'bookmarks',title.textContent), button(t("library.open"), "bookmarkOpen", { id: item.id }), button(t("library.remove"), "bookmarkRemove", { id: item.id })); bookmarks.appendChild(row);
       }
-      if (!bookmarks.children.length) bookmarks.textContent = "Henüz yer imi yok.";
+      if (!bookmarks.children.length) bookmarks.textContent = t("library.noBookmarks");
       const queue = root.querySelector(".library-queue"); queue.replaceChildren();
       for (const item of value.queue.filter(matches)) {
         const row = document.createElement("li"); const title = document.createElement("span"); title.textContent = `${item.status === "reading" ? "▶ " : item.status === "done" ? "✓ " : item.status === "error" ? "! " : ""}${item.title}`; title.title = item.error || item.url;
-        row.append(editor(item,'queue',title.textContent), button("↑", "queueMove", { id: item.id, direction: -1 }), button("↓", "queueMove", { id: item.id, direction: 1 }), button("Sil", "queueRemove", { id: item.id })); queue.appendChild(row);
+        row.append(editor(item,'queue',title.textContent), button("↑", "queueMove", { id: item.id, direction: -1 }), button("↓", "queueMove", { id: item.id, direction: 1 }), button(t("library.remove"), "queueRemove", { id: item.id })); queue.appendChild(row);
       }
-      if (!queue.children.length) queue.textContent = "Okuma listesi boş.";
+      if (!queue.children.length) queue.textContent = t("library.emptyQueue");
       }
       root.querySelector('[data-library="queueStop"]').disabled = !value.queueRunning;
       root.querySelector('[data-library="queueStart"]').disabled = !value.queue.length;
       const exclusions = root.querySelector(".library-exclusions"); exclusions.replaceChildren();
-      for (const item of page?.exclusions || []) { const row = document.createElement("li"); const text = document.createElement("span"); text.textContent = item.quote || item.selector; row.append(text, button("Kaldır", "excludeRemove", { id: item.id, url: key })); exclusions.appendChild(row); }
-      if (!exclusions.children.length) exclusions.textContent = "Bu sayfada hariç tutulan alan yok.";
+      for (const item of page?.exclusions || []) { const row = document.createElement("li"); const text = document.createElement("span"); text.textContent = item.quote || item.selector; row.append(text, button(t("library.removeExclusion"), "excludeRemove", { id: item.id, url: key })); exclusions.appendChild(row); }
+      if (!exclusions.children.length) exclusions.textContent = t("library.noExclusions");
+      refreshExport(value);
+    }
+    function refreshExport(value) {
       const job = value.export;
-      root.querySelector(".library-export").textContent = job?.status === "working" ? ` ${job.kind==='offline'?'Çevrimdışı ses':'MP3'} hazırlanıyor: %${job.percent}` : job?.status === "done" ? ` ${job.kind==='offline'?'Çevrimdışı hazır':'İndirildi'}: ${job.filename}` : job?.status === "error" ? job.error : job?.status === "canceled" ? "İndirme iptal edildi." : "";
+      const exportText = job?.status === "working"
+        ? t(job.kind === "offline" ? "library.export.workingOffline" : "library.export.workingMp3", { percent: job.percent })
+        : job?.status === "done"
+          ? t(job.kind === "offline" ? "library.export.offlineDone" : "library.export.downloaded", { filename: job.filename })
+          : job?.status === "error"
+            ? job.error
+            : job?.status === "canceled"
+              ? t("library.export.canceled")
+              : "";
+      const output = root.querySelector(".library-export");
+      output.textContent = exportText;
+      if (job?.status === "working" && job.waitingSince) {
+        const seconds = Math.max(0, Math.floor((Date.now() - job.waitingSince) / 1000));
+        output.textContent += " · " + t(job.phase === "tempo" ? "library.export.tempo" : "library.export.parts", { completed: job.completed, total: job.total, current: job.completed + 1, chars: job.chars, seconds, speed: job.speed });
+        if (seconds >= 30 && job.phase !== "tempo") output.textContent += " · " + t("library.export.slow");
+        output.textContent += " · " + t("library.export.keepOpen");
+      }
       root.querySelector('[data-library="export"]').disabled = job?.status === "working";
       root.querySelector('[data-library="cancelExport"]').hidden = job?.status !== "working";
     }
     root.querySelector('[type="search"]').addEventListener('input',()=>refresh(data));
     root.addEventListener('focusout',()=>setTimeout(()=>refresh(data),0));
+    const progressTimer = setInterval(() => {
+      if (root.isConnected && data.export?.status === "working") refreshExport(data);
+    }, 1000);
     const unsubscribe = subscribe(refresh);
     action("context").then(result => { context = result.context; refresh(data);root.dispatchEvent(new Event('library-context')); }).catch(error => feedback(error.message));
     const unsubscribeSettings = globalThis.SesliOkuSettings.subscribe(settings => {
@@ -333,15 +361,20 @@
       const target = event.target.closest("[data-library]"); if (!target || target.disabled) return;
       let name = target.dataset.library; const args = { ...(target._libraryArgs || {}) };
       try {
-        if (name === "dictionary") { await globalThis.SesliOkuSettings.update({ pronunciationRules: dictionary(root.querySelector(".library-dictionary").value) }); feedback("Telaffuz sözlüğü kaydedildi."); return; }
+        if (name === "dictionary") { await globalThis.SesliOkuSettings.update({ pronunciationRules: dictionary(root.querySelector(".library-dictionary").value) }); feedback(t("library.dictionarySaved")); return; }
         if (name === "queueAdd") { args.url = root.querySelector('input[type="url"]').value; name = "queueAddUrl"; }
         if (name === "queueCurrent") { args.url = context?.url; args.title = context?.title; name = "queueAddUrl"; }
-        const result = await action(name, args); feedback(result.message || "İşlem tamamlandı.");
+        const result = await action(name, args); feedback(result.message || t("library.done"));
         if (name === "pickExclude" && location.protocol === "chrome-extension:") window.close();
       } catch (error) { feedback(error.message); }
     });
     const toolsUi = globalThis.SesliOkuTools?.mount(root, { action, feedback, button, context: () => context, refresh });
-    return { activateGroup, dispose() { root.removeEventListener('click',onTabClick);root.removeEventListener('keydown',onTabKey);root.removeEventListener('library-activate',onActivate);unsubscribe(); unsubscribeSettings(); toolsUi?.dispose(); } };
+    const releaseI18n = i18n?.observe(root) || (() => {});
+    const unsubscribeLocale = (i18n?.subscribe(() => {
+      if (!root.isConnected) return;
+      refresh(data);
+    })) || (() => {});
+    return { activateGroup, dispose() { clearInterval(progressTimer); root.removeEventListener('click',onTabClick);root.removeEventListener('keydown',onTabKey);root.removeEventListener('library-activate',onActivate);unsubscribe(); unsubscribeSettings(); releaseI18n(); unsubscribeLocale(); toolsUi?.dispose(); } };
   }
   const css = `
     @layer base, themes, preferences, experience;

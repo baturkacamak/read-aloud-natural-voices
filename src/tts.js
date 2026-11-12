@@ -1,3 +1,4 @@
+import { record } from "./diagnostics.js";
 /**
  * Microsoft Edge Read Aloud WebSocket client.
  *
@@ -13,6 +14,10 @@ import {
   SEC_MS_GEC_VERSION,
   generateSecMsGecV2,
 } from "./drm.js";
+
+const i18n = globalThis.SesliOkuI18n;
+const t = (key, params, fallback) =>
+  i18n ? i18n.t(key, params, fallback) : fallback ?? key;
 
 const BASE = "speech.platform.bing.com/consumer/speech/synthesize/readaloud";
 const WSS_URL = `wss://${BASE}/edge/v1?TrustedClientToken=${TRUSTED_CLIENT_TOKEN}`;
@@ -137,7 +142,7 @@ class EdgeTtsClient {
           try {
             socket.close();
           } catch {}
-          reject(new Error("Microsoft ses servisine bağlanılamadı (zaman aşımı)."));
+          reject(new Error(t("tts.connectTimeout")));
         }, 15000);
 
         const cleanup = () => {
@@ -153,16 +158,14 @@ class EdgeTtsClient {
         const onError = () => {
           cleanup();
           reject(
-            new Error(
-              "Microsoft ses servisi bağlantıyı reddetti. Token algoritması değişmiş olabilir."
-            )
+            new Error(t("tts.rejected"))
           );
         };
         const onClose = (event) => {
           cleanup();
           reject(
             new Error(
-              `Microsoft ses servisi bağlantıyı kapattı (${event.code || "?"}).`
+              t("tts.closedWithCode", { code: event.code || "?" })
             )
           );
         };
@@ -173,14 +176,15 @@ class EdgeTtsClient {
       });
 
       socket.addEventListener("message", (event) => this.onMessage(event));
-      socket.addEventListener("close", () => {
-        if (this.ws === socket) this.onSocketClosed();
+      socket.addEventListener("close", (event) => {
+        if (this.ws === socket) { record("speech.socket_closed", { code: event.code }); this.onSocketClosed(); }
       });
       socket.addEventListener("error", () => {
-        if (this.ws === socket) this.onSocketClosed();
+        if (this.ws === socket) { record("speech.socket_error"); this.onSocketClosed(); }
       });
 
       this.ws = socket;
+      record("speech.connected");
       socket.send(configMessage());
     })();
 
@@ -200,7 +204,7 @@ class EdgeTtsClient {
 
   onSocketClosed() {
     this.ws = null;
-    this.rejectPending("Ses bağlantısı kesildi.");
+    this.rejectPending(t("tts.disconnected"));
   }
 
   onMessage(event) {
@@ -294,7 +298,7 @@ class EdgeTtsClient {
         return await new Promise((resolve, reject) => {
           const timer = setTimeout(() => {
             this.pending.delete(requestId);
-            reject(new Error("Ses üretimi zaman aşımına uğradı."));
+            reject(new Error(t("tts.timeout")));
           }, 60000);
 
           this.pending.set(requestId, {
@@ -319,6 +323,7 @@ class EdgeTtsClient {
           }
         });
       } catch (error) {
+        record("speech.request_failed", { attempt: attempt + 1, error });
         lastError = error;
         this.close();
         // A token produced just before a five-minute window boundary can be
@@ -337,15 +342,15 @@ class EdgeTtsClient {
         socket.close();
       } catch {}
     }
-    this.rejectPending("Ses bağlantısı kapatıldı.");
+    this.rejectPending(t("tts.connectionClosed"));
   }
 }
 
 export const tts = new EdgeTtsClient();
 export async function listVoices() {
   const response = await fetch(VOICES_URL, { cache: "no-store" });
-  if (!response.ok) throw new Error(`Ses listesi alınamadı (${response.status}).`);
+  if (!response.ok) throw new Error(t("tts.voicesFailed", { status: response.status }));
   const voices = await response.json();
-  if (!Array.isArray(voices)) throw new Error("Ses listesi biçimi beklenmedik.");
+  if (!Array.isArray(voices)) throw new Error(t("tts.voicesInvalid"));
   return voices;
 }

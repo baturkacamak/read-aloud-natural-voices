@@ -5,12 +5,13 @@ Usage:
     python3 scripts/package.py
 
 Output:
-    dist/sesli-oku-<version>.zip
+    dist/<product-slug>-<version>.zip
 """
 
 from __future__ import annotations
 
 import json
+import re
 import zipfile
 from pathlib import Path
 
@@ -18,6 +19,8 @@ ROOT = Path(__file__).resolve().parent.parent
 
 INCLUDE = [
     "manifest.json",
+    "_locales",
+    "locales",
     "icons",
     "src",
     "LICENSE",
@@ -29,7 +32,9 @@ INCLUDE = [
 def main() -> None:
     manifest = json.loads((ROOT / "manifest.json").read_text(encoding="utf-8"))
     version = manifest["version"]
-    output = ROOT / "dist" / f"sesli-oku-{version}.zip"
+    brand = json.loads((ROOT / "locales" / "invariants.json").read_text(encoding="utf-8"))["app.name"]
+    slug = re.sub(r"[^a-z0-9]+", "-", brand.lower()).strip("-")
+    output = ROOT / "dist" / f"{slug}-{version}.zip"
     output.parent.mkdir(parents=True, exist_ok=True)
 
     if output.exists():

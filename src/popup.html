@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Sesli Oku</title>
+    <title data-i18n="app.name"></title>
     <link rel="stylesheet" href="popup.css" />
   </head>
   <body data-theme="modern">
@@ -24,28 +24,37 @@
         </svg>
       </div>
       <div>
-        <h1>Sesli Oku</h1>
-        <p>Edge Read Aloud, Linux'ta</p>
+        <h1 data-i18n="app.name"></h1>
+        <p data-i18n="app.tagline">Edge Read Aloud, Linux'ta</p>
       </div>
     </header>
 
     <div class="actions">
-      <button id="read-page" class="primary">Sayfayı oku</button>
-      <button id="read-selection" class="secondary">Seçimi oku</button>
-      <button id="read-here" class="secondary full">İmleçten oku</button>
+      <button id="read-page" class="primary" data-i18n="popup.readPage">Sayfayı oku</button>
+      <button id="read-selection" class="secondary" data-i18n="popup.readSelection">Seçimi oku</button>
+      <button id="read-here" class="secondary full" data-i18n="popup.readHere">İmleçten oku</button>
     </div>
 
-    <section id="preferences" aria-label="Okuma ayarları"></section>
+    <section id="preferences" aria-label="Okuma ayarları" data-i18n-aria-label="settings.title"></section>
 
     <div class="status" id="status" role="status"></div>
 
+    <details class="diagnostics">
+      <summary data-i18n="diagnostics.title">Hata kayıtları</summary>
+      <p data-i18n="diagnostics.description">Son 500 olay bu cihazda saklanır. Okunan metin ve sayfa adresi kaydedilmez.</p>
+      <button id="export-log" class="secondary" data-i18n="diagnostics.download">Log dosyasını indir</button>
+      <button id="clear-log" class="link" data-i18n="diagnostics.clear">Kayıtları temizle</button>
+    </details>
+
     <footer>
-      <span title="R: sayfa, S: seçim, H: imleç"
-        >Kısayollar: <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>R/S/H</kbd></span
+      <span title="R: sayfa, S: seçim, H: imleç" data-i18n-title="popup.shortcutsTitle"
+        ><span data-i18n="popup.shortcuts">Kısayollar:</span> <kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>R/S/H</kbd></span
       >
-      <button id="stop" class="link">Durdur</button>
+      <button id="stop" class="link" data-i18n="common.stop">Durdur</button>
     </footer>
 
+    <script src="locales/base.js"></script>
+    <script src="i18n.js"></script>
     <script src="themes.js"></script>
     <script src="library.js"></script>
     <script src="settings.js"></script>

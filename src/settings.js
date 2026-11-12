@@ -1,6 +1,9 @@
 /** Shared settings schema, storage and Windows-style property pages. */
 (() => {
   if (globalThis.SesliOkuSettings) return;
+  const i18n = globalThis.SesliOkuI18n;
+  const t = (key, params, fallback) =>
+    i18n ? i18n.t(key, params, fallback) : fallback ?? key;
   const defaults = Object.freeze({
     voice: "tr-TR-EmelNeural", rate: 0, pitch: 0, volume: 0,
     playbackRate: 1, continueSelection: true,
@@ -46,9 +49,9 @@
     return theme === "xp" ? "#245edb" : theme === "win7" ? "#246b9c" : theme === "modern" ? "#d9f27a" : "#000080";
   }
   const presets = [
-    { id: "article", name: "Makale", settings: { rate: 0, pitch: 0, volume: 0, playbackRate: 1, highlightMode: "both", highlightColor: "theme", highlightOpacity: 35, glowIntensity: 60, autoFollow: true, scrollBehavior: "smooth", paragraphDelay: 350 } },
-    { id: "study", name: "Ders", settings: { rate: -10, pitch: 0, volume: 0, playbackRate: 1, highlightMode: "both", highlightColor: "#f5d76e", highlightOpacity: 45, glowIntensity: 30, autoFollow: true, scrollBehavior: "smooth", paragraphDelay: 1000 } },
-    { id: "night", name: "Gece", theme: "modern", settings: { rate: -15, pitch: -5, volume: -20, playbackRate: 1, highlightMode: "word", highlightColor: "#91b9ff", highlightOpacity: 25, glowIntensity: 10, autoFollow: true, scrollBehavior: "smooth", paragraphDelay: 700 } },
+    { id: "article", name: "Makale", nameKey: "presets.article", settings: { rate: 0, pitch: 0, volume: 0, playbackRate: 1, highlightMode: "both", highlightColor: "theme", highlightOpacity: 35, glowIntensity: 60, autoFollow: true, scrollBehavior: "smooth", paragraphDelay: 350 } },
+    { id: "study", name: "Ders", nameKey: "presets.study", settings: { rate: -10, pitch: 0, volume: 0, playbackRate: 1, highlightMode: "both", highlightColor: "#f5d76e", highlightOpacity: 45, glowIntensity: 30, autoFollow: true, scrollBehavior: "smooth", paragraphDelay: 1000 } },
+    { id: "night", name: "Gece", nameKey: "presets.night", theme: "modern", settings: { rate: -15, pitch: -5, volume: -20, playbackRate: 1, highlightMode: "word", highlightColor: "#91b9ff", highlightOpacity: 25, glowIntensity: 10, autoFollow: true, scrollBehavior: "smooth", paragraphDelay: 700 } },
   ];
   let baseSettings = normalize();
   let settings = baseSettings;
@@ -106,14 +109,14 @@
   }
   async function saveProfile(name) {
     const label = String(name || "").trim().slice(0, 40);
-    if (!label) throw new Error("Profil için bir ad yazın.");
+    if (!label) throw new Error(t("settings.error.profileName"));
     return enqueue(async () => {
       const stored = await chrome.storage.local.get(["settings", "readingProfiles", "appearanceTheme", "appearanceMode"]);
       const list = cleanProfiles(stored.readingProfiles);
       const existing = list.find(p => p.name === label);
       const profile = { id: existing?.id || `saved-${crypto.randomUUID()}`, name: label, settings: normalize(settings), theme: globalThis.SesliOkuThemes?.current() || stored.appearanceTheme || "modern", colorMode: globalThis.SesliOkuThemes?.mode() || stored.appearanceMode || "original" };
       const next = [...list.filter(p => p.id !== profile.id), profile];
-      if (next.length > 20) throw new Error("En fazla 20 profil kaydedebilirsiniz.");
+      if (next.length > 20) throw new Error(t("settings.error.profileLimit"));
       await chrome.storage.local.set({ readingProfiles: next });
       profiles = next; notify(); return profile;
     });
@@ -128,7 +131,7 @@
   async function applyProfile(id) {
     const stored = await chrome.storage.local.get("readingProfiles");
     const profile = [...presets, ...cleanProfiles(stored.readingProfiles)].find(p => p.id === id);
-    if (!profile) throw new Error("Profil bulunamadı.");
+    if (!profile) throw new Error(t("settings.error.profileMissing"));
     await update(profile.settings);
     if (profile.theme) await globalThis.SesliOkuThemes.set(profile.theme);
     await globalThis.SesliOkuThemes.setMode(profile.colorMode);
@@ -147,10 +150,28 @@
     list.id = `${select.id}-listbox`; list.setAttribute("popover", "auto"); list.setAttribute("role", "listbox");
     trigger.setAttribute("aria-controls", list.id);
     const labels = [...select.labels];
-    const label = select.getAttribute("aria-label") || labels.map(node => [...node.childNodes]
-      .filter(child => child.nodeType === Node.TEXT_NODE).map(child => child.textContent).join(" ").trim()).join(" ") || "Seçim";
+    const readLabel = () => {
+      const attribute = select.getAttribute("aria-label");
+      if (attribute) return attribute;
+      const text = labels
+        .map(node => {
+          // Exclude the native control itself: its option labels are not part
+          // of the field label and would make the accessible name noisy.
+          const clone = node.cloneNode(true);
+          clone.querySelectorAll("select, input, textarea, button").forEach(child => child.remove());
+          return clone.textContent.replace(/\s+/g, " ").trim();
+        })
+        .join(" ")
+        .trim();
+      return text || t("common.selection");
+    };
+    let label = readLabel();
     list.setAttribute("aria-label", label);
     select.before(wrapper); wrapper.append(select, trigger, list);
+    const selectedIcon = document.createElement("img");
+    selectedIcon.className = "pref-select-current-icon";
+    selectedIcon.alt = ""; selectedIcon.setAttribute("aria-hidden", "true");
+    selectedIcon.hidden = true; wrapper.appendChild(selectedIcon);
     const originalTabIndex = select.getAttribute("tabindex");
     select.tabIndex = -1; select.setAttribute("aria-hidden", "true"); select.classList.add("pref-native-select");
     let open = false;
@@ -205,6 +226,12 @@
         if (grouped) row.classList.add("grouped");
         row.id = `${list.id}-option-${index}`; row.dataset.optionIndex = String(index);
         row.setAttribute("role", "option"); row.textContent = option.label; row.title = option.label;
+        if (option.dataset.iconSrc) {
+          const icon = document.createElement("img");
+          icon.src = option.dataset.iconSrc; icon.alt = "";
+          icon.className = "pref-select-option-icon"; icon.setAttribute("aria-hidden", "true");
+          row.prepend(icon);
+        }
         row.setAttribute("aria-disabled", String(option.disabled || !!option.closest("optgroup")?.disabled));
         rows.set(index, row); parent.appendChild(row);
       }
@@ -260,6 +287,11 @@
     function sync() {
       const text = select.selectedOptions[0]?.label || "";
       trigger.setAttribute("aria-label", `${label}: ${text}`); trigger.textContent = text;
+      const iconSrc = select.selectedOptions[0]?.dataset.iconSrc;
+      selectedIcon.hidden = !iconSrc;
+      select.classList.toggle("pref-select-has-icon", !!iconSrc);
+      if (iconSrc) selectedIcon.src = iconSrc;
+      else selectedIcon.removeAttribute("src");
       trigger.disabled = select.disabled || !enabled().length;
       if (trigger.disabled) close();
       else if (open) { render(); position(); highlight(activeIndex); }
@@ -317,11 +349,11 @@
     document.addEventListener("scroll", onScroll, true); window.addEventListener("resize", onResize);
     const observer = new MutationObserver(sync);
     observer.observe(select, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ["disabled", "selected", "label", "hidden"] });
-    const controller = { sync, close, dispose() {
+    const controller = { sync, close, relabel() { label = readLabel(); list.setAttribute("aria-label", label); sync(); }, dispose() {
       close(); motion.removeEventListener('change',onMotionChange);observer.disconnect(); document.removeEventListener("scroll", onScroll, true); window.removeEventListener("resize", onResize);
       select.removeEventListener("focus", onNativeFocus); select.removeEventListener("click", onNativeClick); select.removeEventListener("change", sync);
       for (const label of labels) label.removeEventListener("click", onLabelClick);
-      select.removeAttribute("aria-hidden"); select.classList.remove("pref-native-select");
+      select.removeAttribute("aria-hidden"); select.classList.remove("pref-native-select", "pref-select-has-icon");
       if (originalTabIndex === null) select.removeAttribute("tabindex"); else select.setAttribute("tabindex", originalTabIndex);
       wrapper.replaceWith(select);
     } };
@@ -335,6 +367,7 @@
       .preferences { font: inherit; color: inherit; min-width: 0; }
       .pref-profile-box { margin-bottom: 10px; font-size: 11px; }
       .pref-profile-box > summary { cursor: pointer; margin-bottom: 7px; }
+      .pref-language { max-width: 260px; }
       .pref-profiles { display: flex; align-items: end; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
       .pref-profiles > label { flex: 1; min-width: 100px; font-size: 11px; }
       .pref-profiles select { margin-top: 4px; }
@@ -393,6 +426,13 @@
         text-align: left; user-select: none; -webkit-user-select: none;
         box-shadow: 0 3px 8px #0004; cursor: default; color-scheme: light;
       }
+      .preferences .pref-select-current-icon {
+        position: absolute; left: 8px; top: 50%; transform: translateY(-50%);
+        width: 16px; height: 16px; object-fit: contain; pointer-events: none;
+      }
+      .preferences select.pref-select-has-icon { padding-inline-start: 30px; }
+      .preferences .pref-select-option:has(.pref-select-option-icon) { display: flex; align-items: center; gap: 6px; }
+      .preferences .pref-select-option-icon { width: 16px; height: 16px; object-fit: contain; flex: none; }
       .preferences .pref-select-popup::backdrop { background: transparent; }
       /* Each historical skin has an explicit policy; source notes and the
          distinction between documented effects and chosen timings live in
@@ -611,54 +651,79 @@
   `;
   function mount(container, { prefix = "", onTimer = async () => {}, onLayout = () => {} } = {}) {
     const id = key => `${prefix}${key}`;
-    const select = (key, label, options) => `<div class="field"><label for="${id(key)}">${label}</label><select id="${id(key)}" data-setting="${key}">${options.map(([value, text]) => `<option value="${value}">${text}</option>`).join("")}</select></div>`;
-    const range = (key, label, min, max, step) => `<div class="field"><div class="label-row"><label for="${id(key)}">${label}</label><output id="${id(key)}-value"></output></div><input id="${id(key)}" data-setting="${key}" type="range" min="${min}" max="${max}" step="${step}"></div>`;
-    const check = (key, label) => `<label class="pref-check"><input id="${id(key)}" data-setting="${key}" type="checkbox"><span>${label}</span></label>`;
+    const option = (value, text, key) => `<option value="${value}"${key ? ` data-i18n="${key}"` : ""}>${key ? t(key) : text}</option>`;
+    const select = (key, labelKey, options) => `<div class="field"><label for="${id(key)}" data-i18n="${labelKey}">${t(labelKey)}</label><select id="${id(key)}" data-setting="${key}">${options.map(([value, text, optionKey]) => option(value, text, optionKey)).join("")}</select></div>`;
+    const range = (key, labelKey, min, max, step) => `<div class="field"><div class="label-row"><label for="${id(key)}" data-i18n="${labelKey}">${t(labelKey)}</label><output id="${id(key)}-value"></output></div><input id="${id(key)}" data-setting="${key}" type="range" min="${min}" max="${max}" step="${step}"></div>`;
+    const check = (key, labelKey) => `<label class="pref-check"><input id="${id(key)}" data-setting="${key}" type="checkbox"><span data-i18n="${labelKey}">${t(labelKey)}</span></label>`;
     container.innerHTML = `<div class="preferences">
-      <details class="pref-profile-box"><summary>Profiller</summary><div class="pref-profiles"><label for="${id("profile")}">Hazır / kayıtlı profil<select id="${id("profile")}"></select></label><button type="button" class="pref-button" data-profile="apply">Uygula</button><button type="button" class="pref-button" data-profile="delete">Sil</button></div>
-      <details class="pref-editor"><summary>Bu ayarları profil olarak kaydet</summary><div class="pref-save"><input id="${id("profile-name")}" type="text" maxlength="40" placeholder="Profil adı" aria-label="Profil adı"><button type="button" class="pref-button" data-profile="save">Kaydet</button></div></details></details>
-      <div class="pref-tabs" role="tablist" aria-label="Ayar grupları">${[["reading", "Okuma"], ["appearance", "Görünüm"], ["behavior", "Davranış"], ["library", "Kitaplık"]].map(([key, text], index) => `<button type="button" class="pref-tab" role="tab" id="${id(`tab-${key}`)}" data-tab="${key}" aria-controls="${id(`pane-${key}`)}" aria-selected="${!index}" tabindex="${index ? -1 : 0}">${text}</button>`).join("")}</div>
+      <details class="pref-profile-box"><summary data-i18n="settings.profiles.summary">${t("settings.profiles.summary")}</summary><div class="pref-profiles"><label for="${id("profile")}"><span data-i18n="settings.profiles.load">${t("settings.profiles.load")}</span><select id="${id("profile")}"></select></label><button type="button" class="pref-button" data-profile="apply" data-i18n="common.apply">${t("common.apply")}</button><button type="button" class="pref-button" data-profile="delete" data-i18n="common.delete">${t("common.delete")}</button></div>
+      <details class="pref-editor"><summary data-i18n="settings.profiles.saveSummary">${t("settings.profiles.saveSummary")}</summary><div class="pref-save"><input id="${id("profile-name")}" type="text" maxlength="40" placeholder="${t("settings.profilePlaceholder")}" aria-label="${t("settings.profilePlaceholder")}" data-i18n-placeholder="settings.profilePlaceholder" data-i18n-aria-label="settings.profilePlaceholder"><button type="button" class="pref-button" data-profile="save" data-i18n="common.save">${t("common.save")}</button></div></details></details>
+      <div class="pref-tabs" role="tablist" aria-label="${t("settings.tabsLabel")}" data-i18n-aria-label="settings.tabsLabel">${[["reading", "settings.tab.reading"], ["appearance", "settings.tab.appearance"], ["behavior", "settings.tab.behavior"], ["library", "settings.tab.library"]].map(([key, labelKey], index) => `<button type="button" class="pref-tab" role="tab" id="${id(`tab-${key}`)}" data-tab="${key}" aria-controls="${id(`pane-${key}`)}" aria-selected="${!index}" tabindex="${index ? -1 : 0}" data-i18n="${labelKey}">${t(labelKey)}</button>`).join("")}</div>
       <section class="pref-pane" role="tabpanel" id="${id("pane-reading")}" aria-labelledby="${id("tab-reading")}">
-        ${select("voice", "Ses", [[defaults.voice, "Emel · Türkçe"]])}
-        ${range("rate", "Okuma hızı", -50, 100, 5)}${range("pitch", "Ses perdesi", -50, 50, 5)}${range("volume", "Ses düzeyi", -50, 50, 5)}
-        ${select("playbackRate", "Oynatma hızı", [[.5, "0.5×"], [.75, "0.75×"], [1, "1.0×"], [1.25, "1.25×"], [1.5, "1.5×"], [1.75, "1.75×"], [2, "2.0×"]])}
-        ${check("continueSelection", "Seçimden sonra devam et")}
-        ${check("autoVoice", "Dile göre otomatik ses seç")}
-        ${select("turkishVoice", "Otomatik · Türkçe sesi", [[defaults.turkishVoice, "Emel · Türkçe"]])}
-        ${select("englishVoice", "Otomatik · İngilizce sesi", [[defaults.englishVoice, "Ava · İngilizce"]])}
+        ${select("voice", "settings.voice", [[defaults.voice, "", "settings.voiceDefaultTr"]])}
+        ${range("rate", "settings.rate", -50, 100, 5)}${range("pitch", "settings.pitch", -50, 50, 5)}${range("volume", "settings.volume", -50, 50, 5)}
+        ${select("playbackRate", "settings.playbackRate", [[.5, "0.5×"], [.75, "0.75×"], [1, "1.0×"], [1.25, "1.25×"], [1.5, "1.5×"], [1.75, "1.75×"], [2, "2.0×"]])}
+        ${check("continueSelection", "settings.continueSelection")}
+        ${check("autoVoice", "settings.autoVoice")}
+        ${select("turkishVoice", "settings.turkishVoice", [[defaults.turkishVoice, "", "settings.voiceDefaultTr"]])}
+        ${select("englishVoice", "settings.englishVoice", [[defaults.englishVoice, "", "settings.englishVoiceDefault"]])}
       </section>
       <section class="pref-pane" role="tabpanel" id="${id("pane-appearance")}" aria-labelledby="${id("tab-appearance")}" hidden>
-        ${select("theme", "Görünüm · Tema", [])}
-        ${select("colorMode", "Açık / koyu görünüm", [["original", "Özgün görünüm"], ["light", "Açık"], ["dark", "Koyu"]])}
-        ${select("highlightMode", "Vurgu biçimi", [["both", "Kelime ve paragraf"], ["word", "Yalnızca kelime"], ["paragraph", "Yalnızca paragraf"], ["off", "Kapalı"]])}
-        <div class="field"><label for="${id("highlightColor")}">Özel vurgu rengi</label><input id="${id("highlightColor")}" data-setting="highlightColor" type="color"><label class="pref-check"><input id="${id("theme-color")}" type="checkbox"><span>Tema rengini kullan</span></label></div>
-        ${range("highlightOpacity", "Vurgu yoğunluğu", 0, 100, 5)}${range("glowIntensity", "Işık halkası yoğunluğu", 0, 100, 5)}
-        ${range("focusFontSize", "Odak görünümü · Yazı boyutu", 16, 36, 1)}
-        ${select("focusFont", "Odak · Yazı tipi", [["serif", "Serif"], ["sans", "Sans serif"], ["mono", "Eş aralıklı"]])}
-        ${range("focusLineHeight", "Odak · Satır aralığı", 1.2, 2.6, .1)}
-        ${range("focusWidth", "Odak · Metin genişliği", 400, 1200, 40)}${range("focusPadding", "Odak · Kenar boşluğu", 8, 60, 2)}
-        ${select("focusBackground", "Odak görünümü · Arka plan", [["theme", "Temaya göre"], ["paper", "Kâğıt"], ["dark", "Koyu"]])}
+        ${select("theme", "settings.theme", [])}
+        ${select("colorMode", "settings.colorMode", [["original", "", "settings.colorMode.original"], ["light", "", "settings.colorMode.light"], ["dark", "", "settings.colorMode.dark"]])}
+        ${select("highlightMode", "settings.highlightMode", [["both", "", "settings.highlight.both"], ["word", "", "settings.highlight.word"], ["paragraph", "", "settings.highlight.paragraph"], ["off", "", "settings.highlight.off"]])}
+        <div class="field"><label for="${id("highlightColor")}" data-i18n="settings.highlightColor">${t("settings.highlightColor")}</label><input id="${id("highlightColor")}" data-setting="highlightColor" type="color"><label class="pref-check"><input id="${id("theme-color")}" type="checkbox"><span data-i18n="settings.useThemeColor">${t("settings.useThemeColor")}</span></label></div>
+        ${range("highlightOpacity", "settings.highlightOpacity", 0, 100, 5)}${range("glowIntensity", "settings.glow", 0, 100, 5)}
+        ${range("focusFontSize", "settings.focusFontSize", 16, 36, 1)}
+        ${select("focusFont", "settings.focusFont", [["serif", "", "settings.focusFont.serif"], ["sans", "", "settings.focusFont.sans"], ["mono", "", "settings.focusFont.mono"]])}
+        ${range("focusLineHeight", "settings.focusLine", 1.2, 2.6, .1)}
+        ${range("focusWidth", "settings.focusWidth", 400, 1200, 40)}${range("focusPadding", "settings.focusPadding", 8, 60, 2)}
+        ${select("focusBackground", "settings.focusBackground", [["theme", "", "settings.focusBackground.theme"], ["paper", "", "settings.focusBackground.paper"], ["dark", "", "settings.focusBackground.dark"]])}
       </section>
       <section class="pref-pane" role="tabpanel" id="${id("pane-behavior")}" aria-labelledby="${id("tab-behavior")}" hidden>
-        ${check("autoFollow", "Okunan metni otomatik takip et")}
-        ${check("rememberPosition", "Okuma konumumu yerel olarak hatırla")}
-        ${select("scrollBehavior", "Kaydırma", [["smooth", "Yumuşak"], ["instant", "Anında"]])}
-        ${range("paragraphDelay", "Paragraflar arası bekleme", 0, 3000, 100)}
-        <div class="field pref-wide"><label for="${id("sleep-mode")}">Uyku zamanlayıcısı</label><div class="pref-timer"><select id="${id("sleep-mode")}"><option value="off">Kapalı</option><option value="paragraph">Bu paragraf bitince</option><option value="10">10 dakika</option><option value="20">20 dakika</option><option value="30">30 dakika</option><option value="60">60 dakika</option><option value="custom">Özel süre</option></select><input id="${id("sleep-minutes")}" type="number" min="1" max="180" value="15" aria-label="Dakika" hidden><button type="button" class="pref-button" data-timer>Uygula</button></div><div class="pref-timer-status" role="status">Zamanlayıcı kapalı</div></div>
+        ${check("autoFollow", "settings.autoFollow")}
+        ${check("rememberPosition", "settings.rememberPosition")}
+        ${select("scrollBehavior", "settings.scroll", [["smooth", "", "settings.scroll.smooth"], ["instant", "", "settings.scroll.instant"]])}
+        ${range("paragraphDelay", "settings.paragraphDelay", 0, 3000, 100)}
+        <div class="field pref-language"><label for="${id("uiLocale")}" data-i18n="settings.language">${t("settings.language")}</label><select id="${id("uiLocale")}" data-locale></select></div>
+        <div class="field pref-wide"><label for="${id("sleep-mode")}" data-i18n="settings.sleep">${t("settings.sleep")}</label><div class="pref-timer"><select id="${id("sleep-mode")}">${[["off", "settings.sleep.off"], ["paragraph", "settings.sleep.paragraph"], ["10", "settings.sleep.10"], ["20", "settings.sleep.20"], ["30", "settings.sleep.30"], ["60", "settings.sleep.60"], ["custom", "settings.sleep.custom"]].map(([value, key]) => option(value, "", key)).join("")}</select><input id="${id("sleep-minutes")}" type="number" min="1" max="180" value="15" aria-label="${t("settings.sleep.minutesLabel")}" data-i18n-aria-label="settings.sleep.minutesLabel" hidden><button type="button" class="pref-button" data-timer data-i18n="common.apply">${t("common.apply")}</button></div><div class="pref-timer-status" role="status">${t("settings.timer.off")}</div></div>
       </section>
       <section class="pref-pane" role="tabpanel" id="${id("pane-library")}" aria-labelledby="${id("tab-library")}" hidden><div class="library-mount"></div></section>
       <div class="pref-feedback" role="status"></div>
     </div>`;
     const root = container.querySelector(".preferences");
     const byId = key => root.querySelector(`[id="${id(key)}"]`);
+    const localeSelect = byId("uiLocale");
+    if (localeSelect && i18n) {
+      localeSelect.replaceChildren(
+        ...i18n.available().map(({ code, label }) => {
+          const item = document.createElement("option");
+          item.value = code;
+          item.textContent = label;
+          return item;
+        })
+      );
+      localeSelect.value = i18n.locale();
+    }
+    const releaseI18n = i18n?.observe(root) || (() => {});
     const dropdowns = [];
     const elements = Object.fromEntries([...Object.keys(defaults), "theme", "colorMode"].map(key => [key, byId(key)]));
     const feedback = (text, error = false) => { root.querySelector(".pref-feedback").textContent = text; root.querySelector(".pref-feedback").style.color = error ? "var(--danger, #ff9d8c)" : ""; };
     const report = operation => Promise.resolve(operation).catch(error => feedback(error.message, true));
+    const formatValue = (key, value) =>
+      ["focusFontSize", "focusWidth", "focusPadding"].includes(key)
+        ? `${value} px`
+        : key === "focusLineHeight"
+          ? `${Number(value).toFixed(1)}${t("units.times")}`
+          : key === "paragraphDelay"
+            ? `${(value / 1000).toFixed(1)} ${t("units.seconds")}`
+            : key === "pitch"
+              ? `${value > 0 ? "+" : ""}${value} ${t("units.hertz")}`
+              : `${["rate", "volume"].includes(key) && value > 0 ? "+" : ""}${value}${t("units.percent")}`;
     const profileSelect = byId("profile");
     const refreshProfiles = () => {
       const previous = profileSelect.value;
-      profileSelect.replaceChildren(...[...presets, ...profiles].map(profile => { const option = document.createElement("option"); option.value = profile.id; option.textContent = profile.name; return option; }));
+      profileSelect.replaceChildren(...[...presets, ...profiles].map(profile => { const option = document.createElement("option"); option.value = profile.id; option.textContent = profile.nameKey ? t(profile.nameKey) : profile.name; return option; }));
       if ([...profileSelect.options].some(option => option.value === previous)) profileSelect.value = previous;
       root.querySelector('[data-profile="delete"]').disabled = !profiles.some(p => p.id === profileSelect.value);
     };
@@ -673,7 +738,7 @@
         } else if (key === "highlightColor") element.value = highlightColorFor(value, globalThis.SesliOkuThemes.current());
         else element.value = String(value[key]);
         const output = byId(`${key}-value`);
-        if (output) output.textContent = ["focusFontSize", "focusWidth", "focusPadding"].includes(key) ? `${value[key]} px` : key === "focusLineHeight" ? `${Number(value[key]).toFixed(1)}×` : key === "paragraphDelay" ? `${(value[key] / 1000).toFixed(1)} sn` : key === "pitch" ? `${value[key] > 0 ? "+" : ""}${value[key]} Hz` : `${["rate", "volume"].includes(key) && value[key] > 0 ? "+" : ""}${value[key]}%`;
+        if (output) output.textContent = formatValue(key, value[key]);
       }
       byId("theme-color").checked = value.highlightColor === "theme";
       elements.highlightColor.disabled = value.highlightColor === "theme";
@@ -681,7 +746,11 @@
       for (const dropdown of dropdowns) dropdown.sync();
     }
     function syncTimer(value) {
-      const text = !value || value.mode === "off" ? "Zamanlayıcı kapalı" : value.mode === "paragraph" ? "Bu paragrafın sonunda duracak" : `Kalan: ${Math.max(0, Math.ceil((value.deadline - Date.now()) / 60000))} dakika`;
+      const text = !value || value.mode === "off"
+        ? t("settings.timer.off")
+        : value.mode === "paragraph"
+          ? t("settings.timer.paragraphEnd")
+          : t("settings.timer.remaining", { minutes: Math.max(0, Math.ceil((value.deadline - Date.now()) / 60000)) });
       root.querySelector(".pref-timer-status").textContent = text;
     }
     let timerValue = timer;
@@ -692,7 +761,7 @@
       if (event.target.type === "range") {
         const value = { ...settings, [key]: Number(event.target.value) };
         const output = byId(`${key}-value`);
-        output.textContent = ["focusFontSize", "focusWidth", "focusPadding"].includes(key) ? `${value[key]} px` : key === "focusLineHeight" ? `${Number(value[key]).toFixed(1)}×` : key === "paragraphDelay" ? `${(value[key] / 1000).toFixed(1)} sn` : key === "pitch" ? `${value[key]} Hz` : `${value[key]}%`;
+        output.textContent = formatValue(key, value[key]);
       }
     });
     root.addEventListener("change", event => {
@@ -702,6 +771,7 @@
       else if (key === "colorMode") report(globalThis.SesliOkuThemes.setMode(element.value));
       else if (key) report(update({ [key]: element.type === "checkbox" ? element.checked : ["range", "number"].includes(element.type) || key === "playbackRate" ? Number(element.value) : element.value }));
       else if (element === byId("theme-color")) report(update({ highlightColor: element.checked ? "theme" : elements.highlightColor.value }));
+      else if (element === localeSelect) i18n?.setLocale(element.value);
       else if (element === byId("sleep-mode")) { byId("sleep-minutes").hidden = element.value !== "custom"; onLayout(); }
       else if (element === profileSelect) refreshProfiles();
     });
@@ -727,9 +797,9 @@
       if (!button) return;
       if (button.dataset.tab) activateTab(button.dataset.tab);
       if (button.hasAttribute("data-timer")) report(Promise.resolve().then(() => onTimer({ mode: byId("sleep-mode").value, minutes: number(byId("sleep-minutes").value, 15, 1, 180) })));
-      if (button.dataset.profile === "apply") report(applyProfile(profileSelect.value).then(() => feedback("Profil uygulandı.")));
-      if (button.dataset.profile === "save") report(saveProfile(byId("profile-name").value).then(profile => { profileSelect.value = profile.id; refreshProfiles(); feedback("Profil kaydedildi."); }));
-      if (button.dataset.profile === "delete") report(removeProfile(profileSelect.value).then(() => feedback("Profil silindi.")));
+      if (button.dataset.profile === "apply") report(applyProfile(profileSelect.value).then(() => feedback(t("settings.feedback.applied"))));
+      if (button.dataset.profile === "save") report(saveProfile(byId("profile-name").value).then(profile => { profileSelect.value = profile.id; refreshProfiles(); feedback(t("settings.feedback.saved")); }));
+      if (button.dataset.profile === "delete") report(removeProfile(profileSelect.value).then(() => feedback(t("settings.feedback.deleted"))));
     });
     for (const details of root.querySelectorAll("details")) details.addEventListener("toggle", onLayout);
     const themeApi = globalThis.SesliOkuThemes;
@@ -755,8 +825,14 @@
       }
     }
     for (const select of root.querySelectorAll("select")) dropdowns.push(enhanceSelect(select));
+    const releaseLocale = (i18n?.subscribe?.(() => {
+      if (localeSelect) localeSelect.value = i18n.locale();
+      for (const dropdown of dropdowns) dropdown.relabel?.();
+      sync(settings);
+      syncTimer(timerValue);
+    })) || (() => {});
     return { ...elements, closeDropdowns, renderVoiceChoices, rateValue: byId("rate-value"), volumeValue: byId("volume-value"), root, sync, syncTimer, activateTab,
-      dispose() { root.removeEventListener('library-group-change',onLayout);unsubscribe(); unsubscribeTheme(); libraryUi.dispose(); clearInterval(timerInterval); for (const dropdown of dropdowns) dropdown.dispose(); } };
+      dispose() { releaseLocale(); releaseI18n(); root.removeEventListener('library-group-change',onLayout);unsubscribe(); unsubscribeTheme(); libraryUi.dispose(); clearInterval(timerInterval); for (const dropdown of dropdowns) dropdown.dispose(); } };
   }
   function subscribe(listener) { listeners.add(listener); listener(settings, profiles, timer); return () => listeners.delete(listener); }
   globalThis.SesliOkuLibrary?.subscribe(value=>{const signature=JSON.stringify(value.sites||{});if(signature!==siteSignature){siteSignature=signature;setContext(contextUrl,contextSpeech);}});

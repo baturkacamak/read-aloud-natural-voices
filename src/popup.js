@@ -1,5 +1,8 @@
 const themes = globalThis.SesliOkuThemes;
 const preferences = globalThis.SesliOkuSettings;
+const i18n = globalThis.SesliOkuI18n;
+const t = (key, params, fallback) => (i18n ? i18n.t(key, params, fallback) : fallback ?? key);
+i18n?.observe(document);
 const themeStyle = document.createElement("style");
 themeStyle.textContent = themes.css + preferences.css + globalThis.SesliOkuLibrary.css;
 document.head.appendChild(themeStyle);
@@ -18,19 +21,27 @@ const elements = {
 let settings = preferences.current();
 preferences.subscribe(value => { settings = value; });
 
-const languageNames = (() => {
-  try {
-    return new Intl.DisplayNames(["tr"], { type: "language" });
-  } catch {
-    return null;
+let languageNamesLocale = "";
+let languageNames = null;
+
+function displayNames() {
+  const current = i18n?.locale() || "tr";
+  if (current !== languageNamesLocale) {
+    languageNamesLocale = current;
+    try {
+      languageNames = new Intl.DisplayNames([current], { type: "language" });
+    } catch {
+      languageNames = null;
+    }
   }
-})();
+  return languageNames;
+}
 
 function localeLabel(locale) {
   const [language, region] = (locale || "").split("-");
   let name = language || locale;
   try {
-    name = languageNames?.of(language) || name;
+    name = displayNames()?.of(language) || name;
   } catch {}
   name = name.charAt(0).toUpperCase() + name.slice(1);
   return region ? `${name} (${region})` : name;
@@ -41,7 +52,12 @@ function voiceLabel(voice) {
   const pieces = short.split("-");
   let name = pieces.slice(2).join("-") || short;
   name = name.replace(/MultilingualNeural$|Neural$/, "");
-  const gender = voice.Gender === "Female" ? "Kadın" : voice.Gender === "Male" ? "Erkek" : "";
+  const gender =
+    voice.Gender === "Female"
+      ? t("common.female")
+      : voice.Gender === "Male"
+        ? t("common.male")
+        : "";
   return gender ? `${name} · ${gender}` : name;
 }
 
@@ -57,12 +73,15 @@ async function callBackground(type, payload = {}) {
     ...payload,
   });
   if (!response?.ok) {
-    throw new Error(response?.error || "İşlem tamamlanamadı.");
+    throw new Error(response?.error || t("errors.generic"));
   }
   return response;
 }
 
+let lastVoices = [];
+
 function renderVoices(voices) {
+  lastVoices = voices;
   const groups = new Map();
   for (const voice of voices) {
     const locale = voice.Locale || "other";
@@ -70,10 +89,11 @@ function renderVoices(voices) {
     groups.get(locale).push(voice);
   }
 
+  const current = i18n?.locale() || "tr";
   const sorted = [...groups.keys()].sort((a, b) => {
-    if (a.startsWith("tr")) return -1;
-    if (b.startsWith("tr")) return 1;
-    return localeLabel(a).localeCompare(localeLabel(b), "tr");
+    if (a.startsWith(current)) return -1;
+    if (b.startsWith(current)) return 1;
+    return localeLabel(a).localeCompare(localeLabel(b), current);
   });
 
   elements.voice.innerHTML = "";
@@ -82,7 +102,7 @@ function renderVoices(voices) {
     group.label = localeLabel(locale);
     const voicesInGroup = groups
       .get(locale)
-      .sort((a, b) => voiceLabel(a).localeCompare(voiceLabel(b), "tr"));
+      .sort((a, b) => voiceLabel(a).localeCompare(voiceLabel(b), current));
     for (const voice of voicesInGroup) {
       const option = document.createElement("option");
       option.value = voice.ShortName;
@@ -107,11 +127,11 @@ async function start(type) {
   elements.readPage.disabled = true;
   elements.readSelection.disabled = true;
   elements.readHere.disabled = true;
-  setStatus("Başlatılıyor…");
+  setStatus(t("popup.starting"));
   try {
     await preferences.ready;
     await callBackground(type);
-    setStatus("Başladı");
+    setStatus(t("popup.started"));
     setTimeout(() => window.close(), 220);
   } catch (error) {
     setStatus(error.message, true);
@@ -128,7 +148,7 @@ async function init() {
   try {
     const { voices, warning } = await callBackground("GET_VOICES");
     renderVoices(voices);
-    if (warning) setStatus("Ses listesi alınamadı, temel liste kullanılıyor.", true);
+    if (warning) setStatus(t("popup.voiceWarning"), true);
   } catch (error) {
     setStatus(error.message, true);
   }
@@ -141,7 +161,7 @@ elements.readHere.addEventListener("click", () => start("START_FROM_CURSOR"));
 elements.stop.addEventListener("click", async () => {
   try {
     await callBackground("STOP_ACTIVE");
-    setStatus("Durduruldu");
+    setStatus(t("popup.stopped"));
   } catch (error) {
     setStatus(error.message, true);
   }
@@ -150,3 +170,28 @@ elements.stop.addEventListener("click", async () => {
 init();
 
 callBackground('LIBRARY_ACTION', {action:'context'}).then(result=>preferences.setContext(result.context?.url,result.context?.speech)).catch(()=>{});
+
+i18n?.subscribe(() => {
+  if (lastVoices.length) renderVoices(lastVoices);
+});
+
+// A user-triggered download works without adding a downloads permission.
+document.getElementById("export-log").addEventListener("click", async () => {
+  try {
+    const { log } = await callBackground("EXPORT_DIAGNOSTICS");
+    const url = URL.createObjectURL(new Blob([log], { type: "text/plain;charset=utf-8" }));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `read-aloud-${new Date().toISOString().replace(/[:.]/g, "-")}.log`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 30000);
+  } catch (error) { setStatus(error.message, true); }
+});
+document.getElementById("clear-log").addEventListener("click", async () => {
+  try {
+    await callBackground("CLEAR_DIAGNOSTICS");
+    setStatus(t("diagnostics.cleared", {}, "Logs cleared."));
+  } catch (error) { setStatus(error.message, true); }
+});

@@ -1,8 +1,8 @@
-# Gizlilik Politikası — Sesli Oku
+# Gizlilik Politikası — Read Aloud: Natural Voices
 
-**Son güncelleme:** 1 Kasım 2026
+**Son güncelleme:** 2 Kasım 2026
 
-Sesli Oku, Microsoft Edge için bir metin okuma (text-to-speech) eklentisidir.
+Read Aloud: Natural Voices, Microsoft Edge için bir metin okuma (text-to-speech) eklentisidir.
 Bu politika, eklentinin hangi verileri işlediğini açıklar.
 
 ## Özet
@@ -43,7 +43,7 @@ yer imleri, liste öğeleri ve hariç tutma kuralları Kitaplıktan silinebilir.
 Tarayıcı profilini silmek veya eklentiyi kaldırmak bu yerel kayıtları temizler.
 
 MP3 indirmede ses bellekte birleştirilir ve tarayıcının normal indirme
-mekanizmasıyla kaydedilir. İndirilen dosya, eklenti kaldırıldığında silinmez.
+mekanizmasıyla kaydedilir. Tamamlanan MP3 parçaları ve kelime zamanları, kesintiden sonra yeniden kullanılmak üzere uzantının yerel IndexedDB önbelleğinde tutulur. Önbellek anahtarı seslendirilen metin ve ses ayarlarının SHA-256 özetidir. Parçalar 7 gün geçerlidir; yeni kayıt sırasında süresi dolanlar ve 100 MB sınırını aşan eski kayıtlar temizlenir. Bu önbellek senkronize edilmez. İndirilen dosya, eklenti kaldırıldığında silinmez.
 Okuma listesi yalnızca kullanıcı başlattığında sıradaki adreslere gider.
 
 ### 4. Belge ve çevrimdışı ses kitaplığı
@@ -91,6 +91,16 @@ ve bu istatistikler hesap eşitlemesine/JSON yedeğine dahil değildir. Kitaplı
 İstatistikleri sil düğmesi geçmişi temizler. Ses çalarken mevcut sayfa başlığı,
 oynatma durumu ve ilerlemesi tarayıcı/işletim sisteminin yerel medya kontrollerine
 sunulur; bu işlem geliştiriciye bir ağ isteği oluşturmaz.
+
+### 8. Yerel hata kayıtları
+
+Son 500 teknik olay (UTC zamanı, okuma başlangıcı/duruşu, parça numarası,
+ses hata kodları, bağlantı kesilmeleri ve hata mesajları) yalnızca
+`chrome.storage.local` içindeki `diagnosticLog` anahtarında tutulur.
+Okunan metin, sayfa adresleri, başlıklar ve ses verileri günlüğe eklenmez;
+hata mesajlarındaki URL'ler maskelenir. Kayıtlar eşitlenmez ve geliştiriciye gönderilmez.
+Eklenti menüsündeki Hata kayıtları bölümünden `.log` dosyası indirilebilir
+veya kayıtlar temizlenebilir. Tarayıcı çökerken son olay kaydedilemeyebilir.
 
 ## İzinler ve gerekçeleri
 
