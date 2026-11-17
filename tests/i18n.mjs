@@ -2,7 +2,7 @@
  * Unit checks for the localization catalogs and the shared i18n runtime.
  *
  * Source of truth is the JSON under locales/. The runtime file
- * src/locales/all.js is generated and verified by `npm run locales:check`
+ * src/locales/base.js is generated and verified by `npm run locales:check`
  * before this test runs.
  *
  * Runs without a browser:
@@ -138,6 +138,42 @@ check("locale is persisted for other surfaces", storage.uiLocale === "en");
 check("full locale tags resolve to their base language", (await i18n.setLocale("en-US")) === "en");
 check("a fetched catalog is cached for reuse", !!runtimeCatalogs.en);
 check("unknown locales fall back to the base language", (await i18n.setLocale("xx")) === base);
+
+// Installation on an already-open tab uses the background fallback injector.
+console.log("\n  Injection into an already-open tab");
+const backgroundSource = read("src/background.js");
+const injectorSource = backgroundSource.slice(
+  backgroundSource.indexOf("async function ensureContent("),
+  backgroundSource.indexOf("async function sendToTab(")
+);
+let injected = false;
+let injectedFiles = [];
+const injectionContext = vm.createContext({
+  console,
+  setTimeout,
+  pingContent: async () => injected,
+  chrome: {
+    ...chrome,
+    scripting: {
+      insertCSS: async () => {},
+      executeScript: async ({ files }) => {
+        injectedFiles = files;
+        for (const file of files) {
+          if (["src/locales/base.js", "src/i18n.js"].includes(file)) {
+            vm.runInContext(read(file), injectionContext, { filename: file });
+          }
+        }
+        injected = true;
+      },
+    },
+  },
+});
+await vm.runInContext(`${injectorSource}\nensureContent(1)`, injectionContext);
+const injectedI18n = injectionContext.SesliOkuI18n;
+await injectedI18n?.ready;
+check("fallback injection initializes translated strings", injectedI18n?.t("popup.readPage") === catalogs[base]["popup.readPage"]);
+const manifestScripts = readJson("manifest.json").content_scripts[0].js;
+check("fallback injection has the same dependencies and order as automatic injection", JSON.stringify(injectedFiles) === JSON.stringify(manifestScripts));
 
 // ---------------------------------------------------------------- source keys
 

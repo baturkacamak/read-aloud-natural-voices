@@ -120,7 +120,8 @@ async function ensureContent(tabId) {
     });
     await chrome.scripting.executeScript({
       target: { tabId },
-      files: ["src/themes.js", "src/library.js", "src/settings.js", "src/tools.js", "src/vendor/audio/codecs.js", "src/audio-export.js", "src/experience.js", "src/content.js"],
+      // Tabs open before installation need the same i18n bootstrap as new tabs.
+      files: ["src/locales/base.js", "src/i18n.js", "src/themes.js", "src/library.js", "src/settings.js", "src/tools.js", "src/vendor/audio/codecs.js", "src/audio-export.js", "src/experience.js", "src/content.js"],
     });
   } catch {
     return false;
