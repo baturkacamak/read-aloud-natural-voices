@@ -344,7 +344,13 @@
     select.addEventListener("focus", onNativeFocus); select.addEventListener("click", onNativeClick); select.addEventListener("change", sync);
     const onLabelClick = event => { if (!wrapper.contains(event.target)) { event.preventDefault(); trigger.focus({ preventScroll: true }); } };
     for (const label of labels) label.addEventListener("click", onLabelClick);
-    const onScroll = event => { if (open && event.target !== list && !list.contains(event.target)) close(); };
+    // Reading follow can scroll the page while a preference menu is open.
+    // Reposition it without interrupting the pending selection.
+    const onScroll = event => {
+      if (!open || event.composedPath().includes(list)) return;
+      if (!select.getClientRects().length) { close(); return; }
+      position();
+    };
     const onResize = () => { if (open) close(); };
     document.addEventListener("scroll", onScroll, true); window.addEventListener("resize", onResize);
     const observer = new MutationObserver(sync);

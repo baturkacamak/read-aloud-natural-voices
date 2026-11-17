@@ -25,6 +25,7 @@ import { zipSync, strToU8 } from "fflate";
 import { checkAdditions } from "./additions.mjs";
 import { checkScrubbing } from "./scrubbing.mjs";
 import { checkPlaybackSpeed } from "./playback-speed.mjs";
+import { checkLongText } from "./long-text.mjs";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const EDGE = process.env.EDGE_BIN || "microsoft-edge";
@@ -235,6 +236,42 @@ async function main() {
 
     const snapshot = () => evalIso("JSON.stringify(__sesliOkuTest.snapshot())").then(JSON.parse);
 
+    console.log('\n  Preferences after closing and reloading, on pages with form fields named id');
+    await evalIso(`SesliOkuSettings.update({...SesliOkuSettings.defaults, autoFollow:false})`,true);
+    await evalIso(`(() => {
+      const icon = document.createElement('form');
+      icon.setAttribute('id', 'site-icon'); icon.innerHTML = '<input name="id" value="synthetic">'; document.body.append(icon);
+      __sesliOkuTest.syntheticAudio(5000);
+      __sesliOkuTest.startBlocks(['#p1']);
+      __sesliOkuTest.toggleSettings(true);
+      const root = document.querySelector('#sesli-oku-host').shadowRoot;
+      const speed = root.querySelector('#sesli-oku-playbackRate');
+      speed.value = '2'; speed.dispatchEvent(new Event('change', {bubbles:true}));
+    })()`);
+    await waitFor('speed saved from the panel', () => evalIso(`SesliOkuSettings.current().playbackRate === 2`));
+    check('panel speed is persisted in extension storage', await evalIso(`chrome.storage.local.get('settings').then(s => s.settings.playbackRate === 2)`,true));
+    await evalIso(`__sesliOkuTest.stop(); __sesliOkuTest.startBlocks(['#p1'])`);
+    await waitFor('reopened player uses saved native audio speed', () => evalIso(`__sesliOkuTest.snapshot().audioState?.rate === 2`));
+    check('closing and reopening reading keeps 2x on pages with form fields named id', await evalIso(`document.querySelector('#sesli-oku-host').shadowRoot.querySelector('[data-act="speed"]').textContent === '2.0×'`));
+    await evalIso(`document.querySelector('#site-icon').remove(); __sesliOkuTest.stop()`);
+    await evalIso(`SesliOkuSettings.update({voice:'tr-TR-AhmetNeural', rate:15, pitch:5, volume:-10, playbackRate:2, continueSelection:false, highlightMode:'word', highlightColor:'#123456', highlightOpacity:45, glowIntensity:25, autoFollow:false, scrollBehavior:'instant', paragraphDelay:350, rememberPosition:false, autoVoice:true, turkishVoice:'tr-TR-AhmetNeural', englishVoice:'en-GB-RyanNeural', pronunciationRules:[{from:'API',to:'test'}], focusFontSize:26, focusBackground:'paper', focusFont:'sans', focusLineHeight:2, focusWidth:900, focusPadding:30})`,true);
+    const savedPreferences = await evalIso(`JSON.stringify(SesliOkuSettings.current())`);
+    check('all reading, appearance and behavior preferences reach persistent storage', await evalIso(`chrome.storage.local.get('settings').then(s => JSON.stringify(SesliOkuSettings.normalize(s.settings)))`,true) === savedPreferences);
+    contexts.length = 0;
+    await pageCdp.send('Page.reload');
+    activeContext = await waitFor('reloaded extension context', () => contexts.find(context => context.auxData?.type === 'isolated'));
+    await waitFor('reloaded settings', () => evalIso(`typeof __sesliOkuTest === 'object' && typeof SesliOkuSettings === 'object' && SesliOkuSettings.current().playbackRate === 2`));
+    check('every saved preference survives a fresh page context', await evalIso(`JSON.stringify(SesliOkuSettings.current())`) === savedPreferences);
+    await evalIso(`__sesliOkuTest.syntheticAudio(5000); __sesliOkuTest.startBlocks(['#p1']); __sesliOkuTest.toggleSettings(true)`);
+    await waitFor('reloaded audio plays at saved speed', () => evalIso(`__sesliOkuTest.snapshot().audioState?.rate === 2`));
+    check('page reload restores 2x in settings, toolbar and actual audio', await evalIso(`(() => {const r=document.querySelector('#sesli-oku-host').shadowRoot;return r.querySelector('#sesli-oku-playbackRate').value==='2' && r.querySelector('[data-act="speed"]').textContent==='2.0×';})()`));
+    await evalIso(`(() => {const form=document.createElement('form'); form.innerHTML='<input name="id" value="synthetic">'; document.body.append(form);})()`);
+    await WAIT(100);
+    check('forms added during playback keep reading active', (await snapshot()).playing);
+    await evalIso(`__sesliOkuTest.stop(); SesliOkuSettings.update(SesliOkuSettings.defaults)`,true);
+    await evalIso(`__sesliOkuTest.syntheticAudio(150)`);
+
+
     async function checkAdvancedTools() {
       console.log('\n  Site profiles, study tools, backups and documents');
       await pageCdp.send('Page.bringToFront');
@@ -390,6 +427,8 @@ async function main() {
       } finally { await evalIso("document.querySelector('#shadow-fixture').remove()"); }
     }
     await checkShadowReading();
+    await checkLongText({evalIso,check});
+    if(process.env.LONG_TEXT_ONLY){console.log(`\n${passed} passed, ${failed} failed`);if(failed)process.exitCode=1;return;}
     if(process.env.SHADOW_ONLY){console.log(`\n${passed} passed, ${failed} failed`);if(failed)process.exitCode=1;return;}
     if(process.env.SCRUB_ONLY){await checkScrubbing({evalIso,check,waitFor,WAIT,pageCdp});console.log(`\n${passed} passed, ${failed} failed`);if(failed)process.exitCode=1;return;}
     if(process.env.SPEED_ONLY){await checkPlaybackSpeed({evalIso,check,waitFor,WAIT,pageCdp});console.log(`\n${passed} passed, ${failed} failed`);if(failed)process.exitCode=1;return;}
@@ -1588,6 +1627,27 @@ async function main() {
     await evalIso(`SesliOkuThemes.set('modern')`,true);await WAIT(350);
 
     console.log("\n  Themed dropdown interactions");
+    const scrollMenu = await evalIso(`(async () => {
+      const root = document.querySelector('#sesli-oku-host').shadowRoot;
+      const trigger = root.querySelector('[data-select-for="sesli-oku-playbackRate"]');
+      const list = root.querySelector('#sesli-oku-playbackRate-listbox');
+      const select = root.querySelector('#sesli-oku-playbackRate');
+      const original = select.value;
+      trigger.click();
+      trigger.dispatchEvent(new KeyboardEvent('keydown', {key:'End', bubbles:true}));
+      const pending = trigger.getAttribute('aria-activedescendant');
+      const before = window.scrollY;
+      window.scrollTo({top:before > 100 ? 0 : 400, behavior:'instant'});
+      await new Promise(resolve => setTimeout(resolve, 150));
+      const stayedOpen = list.matches(':popover-open') && trigger.getAttribute('aria-expanded') === 'true';
+      const retained = trigger.getAttribute('aria-activedescendant') === pending && select.value === original;
+      const moved = Math.abs(window.scrollY - before) > 10;
+      trigger.dispatchEvent(new KeyboardEvent('keydown', {key:'Escape', bubbles:true}));
+      return {stayedOpen, retained, moved, closed:!list.matches(':popover-open')};
+    })()`,true);
+    check('page scrolling keeps the preference menu open and its pending selection intact', scrollMenu.moved && scrollMenu.stayedOpen && scrollMenu.retained, JSON.stringify(scrollMenu));
+    check('Escape still closes the preference menu after scrolling', scrollMenu.closed);
+
     await evalIso(`(() => {
       const select = document.querySelector("#sesli-oku-host").shadowRoot.querySelector("#sesli-oku-voice");
       select.options[1].disabled = true;
@@ -1958,10 +2018,11 @@ async function main() {
     await evalIso("__sesliOkuTest.timer({ mode: 'off' })");
     check("timer can be canceled without stopping reading", (await snapshot()).sleepTimer === null && (await snapshot()).playing);
     await evalIso("__sesliOkuTest.stop()");
-    await evalIso(`SesliOkuSettings.update(SesliOkuSettings.defaults)`, true);
+    await evalIso(`SesliOkuSettings.update({...SesliOkuSettings.defaults, playbackRate:2, pitch:15, glowIntensity:25, autoFollow:false})`, true);
     await popupCdp.send("Page.reload");
-    await waitFor("preferences after popup reload", () => evalPopup(`typeof SesliOkuSettings === "object" && document.querySelector("#pitch")?.value === "0"`));
-    check("new preferences survive reloading popup", await evalPopup(`document.querySelector("#glowIntensity").value === "60" && document.querySelector("#autoFollow").checked`));
+    await waitFor("preferences after popup reload", () => evalPopup(`typeof SesliOkuSettings === "object" && document.querySelector("#pitch")?.value === "15"`));
+    check("non-default preferences survive closing and reloading popup", await evalPopup(`document.querySelector("#playbackRate").value === "2" && document.querySelector("#glowIntensity").value === "25" && !document.querySelector("#autoFollow").checked`));
+    await evalIso(`SesliOkuSettings.update(SesliOkuSettings.defaults)`, true);
 
     await checkClickReading();
     await checkColorModes();

@@ -702,7 +702,7 @@
       const height = state.host.getBoundingClientRect().height;
       const rules = [`html:root { padding-top: calc(${padding} + ${height}px) !important; }`];
       for (const element of document.body?.querySelectorAll("*") || []) {
-        if (element === state.host || element.id.startsWith("sesli-oku-")) continue;
+        if (element === state.host || (element.getAttribute("id") || "").startsWith("sesli-oku-")) continue;
         const style = getComputedStyle(element);
         if (style.position !== "fixed" && style.position !== "sticky") continue;
         const top = parseFloat(style.top);
@@ -772,7 +772,7 @@
     layoutObserver.observe(state.host);
     pageObserver ||= new MutationObserver((records) => {
       if (records.some(record => [...record.addedNodes, ...record.removedNodes].some(
-        node => node.nodeType === Node.ELEMENT_NODE && !node.id?.startsWith("sesli-oku-")
+        node => node.nodeType === Node.ELEMENT_NODE && !(node.getAttribute("id") || "").startsWith("sesli-oku-")
       ))) schedulePageLayout();
     });
     if (document.body) pageObserver.observe(document.body, { childList: true, subtree: true });
@@ -1759,14 +1759,19 @@
     }
     if (composedClosest(root, TEXT_SKIP_SELECTOR)) return { text: "", positions: [] };
 
-    let text = "";
+    // Checking endsWith() on an ever-growing concatenated string repeatedly
+    // flattens V8's string ropes. On book-sized articles that makes mapping
+    // quadratic and blocks the page. Join once after the walk instead.
+    const characters = [];
     const positions = [];
+    let lastWasSpace = false;
     let lastBlock = null;
 
     const pushSpace = () => {
-      if (!text || text.endsWith(" ")) return;
-      text += " ";
+      if (!characters.length || lastWasSpace) return;
+      characters.push(" ");
       positions.push(null);
+      lastWasSpace = true;
     };
 
     for (const node of visibleNodes(root)) {
@@ -1791,12 +1796,14 @@
         if (/\s/.test(char)) {
           pushSpace();
         } else {
-          text += char;
+          characters.push(char);
           positions.push({ node, offset: index });
+          lastWasSpace = false;
         }
       }
     }
 
+    const text = characters.join("");
     let start = 0;
     let end = text.length;
     while (start < end && text[start] === " ") start++;
